@@ -11,6 +11,31 @@ import { dateToIsoString } from './utils/date.utils';
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
 
+// Run migrations on startup
+async function runMigrations() {
+  if (!USE_REAL_DB) {
+    console.log('Skipping migrations - using in-memory database');
+    return;
+  }
+
+  try {
+    console.log('Running database migrations...');
+    const knex = require('knex');
+    const knexfile = require('../config/knexfile');
+    const env = process.env.NODE_ENV || 'development';
+    const db = knex(knexfile[env]);
+
+    const [batchNo, logs] = await db.migrate.latest();
+    console.log(`✅ Migrations completed. Batch: ${batchNo}, Changes: ${logs.length}`);
+    if (logs.length > 0) {
+      logs.forEach((log: string) => console.log(`  - ${log}`));
+    }
+  } catch (error: any) {
+    console.warn('⚠️  Migration warning (may already be applied):', error.message);
+    // Don't fail the startup if migrations already ran
+  }
+}
+
 // Initialize database
 async function initializeDatabase() {
   if (USE_REAL_DB) {
@@ -153,47 +178,56 @@ async function initializeDatabase() {
 // Initialize and start server
 let server: any;
 
-initializeDatabase().then(() => {
-  server = app.listen(PORT, () => {
-    console.log(`\n✅ Server running on http://localhost:${PORT}`);
-    console.log(`📊 API Base URL: http://localhost:${PORT}/api`);
-    console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
-    if (!USE_REAL_DB) {
-      console.log('💾 Using in-memory storage (data will reset on restart)');
-      console.log(`🔧 Dev endpoints available at http://localhost:${PORT}/api/dev`);
-    }
-    console.log('');
-  });
+(async () => {
+  try {
+    // Run migrations first if using real database
+    await runMigrations();
+    
+    // Then initialize database
+    await initializeDatabase();
 
-  // Graceful shutdown
-  process.on('SIGTERM', () => {
-    console.log('\nSIGTERM received, shutting down gracefully...');
-    server.close(() => {
-      console.log('Server closed');
-      process.exit(0);
+    // Start server
+    server = app.listen(PORT, () => {
+      console.log(`\n✅ Server running on http://localhost:${PORT}`);
+      console.log(`📊 API Base URL: http://localhost:${PORT}/api`);
+      console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
+      if (!USE_REAL_DB) {
+        console.log('💾 Using in-memory storage (data will reset on restart)');
+        console.log(`🔧 Dev endpoints available at http://localhost:${PORT}/api/dev`);
+      }
+      console.log('');
     });
-  });
 
-  process.on('SIGINT', () => {
-    console.log('\nSIGINT received, shutting down gracefully...');
-    server.close(() => {
-      console.log('Server closed');
-      process.exit(0);
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('\nSIGTERM received, shutting down gracefully...');
+      server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+      });
     });
-  });
 
-  process.on('uncaughtException', (error) => {
-    console.error('Uncaught Exception:', error);
-    process.exit(1);
-  });
+    process.on('SIGINT', () => {
+      console.log('\nSIGINT received, shutting down gracefully...');
+      server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+      });
+    });
 
-  process.on('unhandledRejection', (reason, promise) => {
-    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    process.on('uncaughtException', (error) => {
+      console.error('Uncaught Exception:', error);
+      process.exit(1);
+    });
+
+    process.on('unhandledRejection', (reason, promise) => {
+      console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+      process.exit(1);
+    });
+  } catch (err) {
+    console.error('Failed to start server:', err);
     process.exit(1);
-  });
-}).catch(err => {
-  console.error('Failed to initialize database:', err);
-  process.exit(1);
-});
+  }
+})();
 
 export default server;
