@@ -60,9 +60,10 @@ export class FinancialProfileRepository {
   /**
    * Get the active profile (only one per app in v1)
    */
-  getActive(): FinancialProfile | null {
+  getActive() {
     const profiles = this.findAll();
-    return profiles.length > 0 ? profiles[0] ;}
+    return profiles.length > 0 ? profiles[0] : null;
+  }
 
   /**
    * Update profile

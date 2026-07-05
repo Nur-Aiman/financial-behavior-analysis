@@ -123,8 +123,8 @@ export class InMemoryStore {
     this.categories.clear();
     this.transactions.clear();
     this.fixedExpensePayments.clear();
-    this.balanceAdjustments = [];}}
-
-// Singleton instance
+    this.balanceAdjustments = [];
+  }
+}
 export const store = new InMemoryStore();
 

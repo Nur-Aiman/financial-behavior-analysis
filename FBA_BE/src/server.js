@@ -87,7 +87,7 @@ async function initializeDatabase() {
         const convertToIsoDate = (dateValue) => {
           if (!dateValue) return dateToIsoString(new Date()); // fallback to today if null
           if (typeof dateValue === 'string') {
-            return dateValue.includes('T') ? dateValue.split('T')[0] ;}
+            return dateValue.includes('T') ? dateValue.split('T')[0] : dateValue;
           return dateToIsoString(new Date(dateValue));};
         
         store.addProfile({
