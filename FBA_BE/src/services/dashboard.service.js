@@ -155,7 +155,7 @@ export class DashboardService {
     const dailyAverage =
       forecast.remainingDays > 0
         ? Math.floor(forecast.dailySpendingPoolCents / forecast.remainingDays)
-        ;
+        : 0;
 
     for (let i = 0; i <= forecast.remainingDays; i++) {
       const dateStr = getDateNDaysFromNow(i);

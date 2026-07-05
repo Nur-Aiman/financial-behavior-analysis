@@ -44,8 +44,8 @@ export class CategoryController {
           ...cat,
           allocatedAmount: formatCentsAsRinggit(cat.allocatedAmountCents),
           preferredDailyAmount: cat.preferredDailyAmountCents
-            ? formatCentsAsRinggit(cat.preferredDailyAmountCents),
-          expectedAmount: cat.expectedAmountCents ? formatCentsAsRinggit(cat.expectedAmountCents),
+            ? formatCentsAsRinggit(cat.preferredDailyAmountCents) : undefined,
+          expectedAmount: cat.expectedAmountCents ? formatCentsAsRinggit(cat.expectedAmountCents) : undefined,
           spent,
           remaining,
           spentAmount: formatCentsAsRinggit(spent),
