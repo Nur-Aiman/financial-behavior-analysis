@@ -1,5 +1,6 @@
 /**
  * Server Entry Point
+ * Handles auto-migrations on startup and database initialization
  */
 
 import 'dotenv/config';
