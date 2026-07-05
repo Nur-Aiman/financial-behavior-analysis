@@ -7,7 +7,7 @@
  */
 
 import { v4} from 'uuid';
-import { store} from './in-memory.store';
+import { store} from './in-memory.store.js';
 import {
   FinancialProfile,
   SpendingCategory,
@@ -362,6 +362,7 @@ export function seedData() {
 export function clearAllData() {
   store.clear();
   console.log('âœ“ All data cleared');}
+
 
 
 

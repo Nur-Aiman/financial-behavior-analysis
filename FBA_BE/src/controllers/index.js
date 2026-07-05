@@ -2,14 +2,15 @@
  * Controllers Index - Export all controllers
  */
 
-export { FinancialProfileController} from './financial-profile.controller';
-export { BalanceController} from './balance.controller';
-export { CategoryController} from './category.controller';
-export { TransactionController} from './transaction.controller';
-export { FixedExpenseController} from './fixed-expense.controller';
-export { ForecastController} from './forecast.controller';
-export { DashboardController} from './dashboard.controller';
-export { DevelopmentController} from './development.controller';
+export { FinancialProfileController} from './financial-profile.controller.js';
+export { BalanceController} from './balance.controller.js';
+export { CategoryController} from './category.controller.js';
+export { TransactionController} from './transaction.controller.js';
+export { FixedExpenseController} from './fixed-expense.controller.js';
+export { ForecastController} from './forecast.controller.js';
+export { DashboardController} from './dashboard.controller.js';
+export { DevelopmentController} from './development.controller.js';
+
 
 
 

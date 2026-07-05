@@ -4,10 +4,10 @@
  */
 
 import 'dotenv/config';
-import app from './app';
-import { seedData} from './storage/seed-data';
-import { store} from './storage/in-memory.store';
-import { dateToIsoString} from './utils/date.utils';
+import app from './app.js';
+import { seedData} from './storage/seed-data.js';
+import { store} from './storage/in-memory.store.js';
+import { dateToIsoString} from './utils/date.utils.js';
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
@@ -224,6 +224,7 @@ let server;
     process.exit(1);}})();
 
 export default server;
+
 
 
 

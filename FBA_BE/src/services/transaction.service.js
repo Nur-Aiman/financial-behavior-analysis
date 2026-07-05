@@ -7,8 +7,8 @@
 
 import { Transaction, TransactionType, TransactionSource} from '../models/index';
 import { transactionRepository} from '../repositories/transaction.repository';
-import { categoryService} from './category.service';
-import { balanceService} from './balance.service';
+import { categoryService} from './category.service.js';
+import { balanceService} from './balance.service.js';
 import { AppError} from '../errors/app-error';
 import { getTodayIsoString} from '../utils/date.utils';
 
@@ -211,6 +211,7 @@ export class TransactionService {
     return transactions.reduce((sum, t) => sum + t.amountCents, 0);}}
 
 export const transactionService = new TransactionService();
+
 
 
 

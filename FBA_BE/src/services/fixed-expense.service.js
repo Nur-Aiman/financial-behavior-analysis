@@ -12,9 +12,9 @@ import {
   TransactionType,
   TransactionSource,} from '../models/index';
 import { fixedExpenseRepository} from '../repositories/fixed-expense.repository';
-import { categoryService} from './category.service';
+import { categoryService} from './category.service.js';
 import { transactionRepository} from '../repositories/transaction.repository';
-import { balanceService} from './balance.service';
+import { balanceService} from './balance.service.js';
 import { AppError} from '../errors/app-error';
 import { getTodayIsoString} from '../utils/date.utils';
 
@@ -193,6 +193,7 @@ export class FixedExpenseService {
           status: FixedExpensePaymentStatus.OVERDUE,});}}
 
 export const fixedExpenseService = new FixedExpenseService();
+
 
 
 

@@ -5,7 +5,7 @@
  */
 
 import { BalanceAdjustment, TransactionType, TransactionSource} from '../models/index';
-import { financialProfileService} from './financial-profile.service';
+import { financialProfileService} from './financial-profile.service.js';
 import { financialProfileRepository} from '../repositories/financial-profile.repository';
 import { balanceAdjustmentRepository} from '../repositories/balance-adjustment.repository';
 import { transactionRepository} from '../repositories/transaction.repository';
@@ -118,6 +118,7 @@ export class BalanceService {
       currentBalanceCents});}}
 
 export const balanceService = new BalanceService();
+
 
 
 

@@ -3,14 +3,14 @@
  */
 
 import { Router} from 'express';
-import { financialProfileRoutes} from './financial-profile.routes';
-import { balanceRoutes} from './balance.routes';
-import { categoryRoutes} from './category.routes';
-import { transactionRoutes} from './transaction.routes';
-import { fixedExpenseRoutes} from './fixed-expense.routes';
-import { forecastRoutes} from './forecast.routes';
-import { dashboardRoutes} from './dashboard.routes';
-import { developmentRoutes} from './development.routes';
+import { financialProfileRoutes} from './financial-profile.routes.js';
+import { balanceRoutes} from './balance.routes.js';
+import { categoryRoutes} from './category.routes.js';
+import { transactionRoutes} from './transaction.routes.js';
+import { fixedExpenseRoutes} from './fixed-expense.routes.js';
+import { forecastRoutes} from './forecast.routes.js';
+import { dashboardRoutes} from './dashboard.routes.js';
+import { developmentRoutes} from './development.routes.js';
 
 const router = Router();
 
@@ -24,6 +24,7 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/dev', developmentRoutes);
 
 export default router;
+
 
 
 

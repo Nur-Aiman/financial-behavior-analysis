@@ -2,7 +2,7 @@
  * Application Error Class
  */
 
-import { ErrorCode} from './error-codes';
+import { ErrorCode} from './error-codes.js';
 
 
   code;
@@ -83,6 +83,7 @@ export function developmentEndpointsNotAvailableError(): AppError {
     code: 'DEVELOPMENT_ENDPOINTS_NOT_AVAILABLE',
     message: 'Development endpoints are not available in production',
     statusCode});}
+
 
 
 

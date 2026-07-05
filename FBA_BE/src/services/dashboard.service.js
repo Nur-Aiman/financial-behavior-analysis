@@ -10,10 +10,10 @@ import {
   SpendingTrend,
   PlannedVsActual,} from '../models/index';
 import { SpendingCategoryType} from '../models/index';
-import { financialProfileService} from './financial-profile.service';
-import { categoryService} from './category.service';
-import { transactionService} from './transaction.service';
-import { financialForecastService} from './financial-forecast.service';
+import { financialProfileService} from './financial-profile.service.js';
+import { categoryService} from './category.service.js';
+import { transactionService} from './transaction.service.js';
+import { financialForecastService} from './financial-forecast.service.js';
 import { getTodayIsoString, getDateNDaysAgo} from '../utils/date.utils';
 import { centsAsPercentage} from '../utils/money.utils';
 
@@ -171,6 +171,7 @@ export class DashboardService {
     return projections;}}
 
 export const dashboardService = new DashboardService();
+
 
 
 
