@@ -49,7 +49,7 @@ export class CategoryRepository {
   /**
    * Find category by ID
    */
-  findById(id): SpendingCategory | null {
+  findById(id) {
     return store.getCategory(id);}
 
   /**
@@ -134,7 +134,7 @@ export class CategoryRepository {
   /**
    * Delete category (hard delete)
    */
-  delete(id): void {
+  delete(id) {
     store.deleteCategory(id);
 
     // Persist to database
@@ -148,9 +148,10 @@ export class CategoryRepository {
   /**
    * Clear all categories
    */
-  clear(): void {
+  clear() {
     const categories = this.findAll();
     categories.forEach(c => this.delete(c.id));}}
 
 export const categoryRepository = new CategoryRepository();
+
 

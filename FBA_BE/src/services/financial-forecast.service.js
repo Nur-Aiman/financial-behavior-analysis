@@ -201,7 +201,7 @@ export class FinancialForecastService {
   /**
    * Calculate reserved fixed expenses (unpaid only)
    */
-  private calculateReservedFixedExpenses(payments): number {
+  private calculateReservedFixedExpenses(payments) {
     let total = 0;
 
     for (const payment of payments) {
@@ -215,7 +215,7 @@ export class FinancialForecastService {
    */
   private calculateProtectedUsageAllocation(
     categories,
-    categorySpending): number {
+    categorySpending) {
     let total = 0;
 
     for (const category of categories) {
@@ -326,7 +326,7 @@ export class FinancialForecastService {
     profile,
     dailyForecasts,
     reservedFixedExpensesCents,
-    remainingDays): number {
+    remainingDays) {
     let projected = profile.currentBalanceCents;
 
     // Deduct unpaid fixed expenses
@@ -356,7 +356,7 @@ export class FinancialForecastService {
     preferredAmount,
     categoryRemaining,
     remainingDays,
-    status): string {
+    status) {
     if (recommendedAmount <= 0) {
       return `Your allocation for ${category.name} is fully used. No spending is recommended until next payday.`;}
 
@@ -409,4 +409,5 @@ export class FinancialForecastService {
       dailyForecasts};}}
 
 export const financialForecastService = new FinancialForecastService();
+
 

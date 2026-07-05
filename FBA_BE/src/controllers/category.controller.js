@@ -13,7 +13,7 @@ export class CategoryController {
    * POST /api/categories
    * Create spending category
    */
-  static async create(req, res, next): Promise<void> {
+  static async create(req, res, next) {
     try {
       const data = createCategorySchema.parse(req.body);
       // Zod allows nullable optional fields, but service doesn't accept null
@@ -26,7 +26,7 @@ export class CategoryController {
    * GET /api/categories
    * Get all categories with optional filters
    */
-  static async getAll(req, res, next): Promise<void> {
+  static async getAll(req, res, next) {
     try {
       const filters = categoryFilterSchema.parse(req.query);
       let categories = categoryService.getAll();
@@ -58,7 +58,7 @@ export class CategoryController {
    * GET /api/categories/:id
    * Get category by ID
    */
-  static async getById(req, res, next): Promise<void> {
+  static async getById(req, res, next) {
     try {
       const category = categoryService.getById(req.params.id);
       const spent = categoryService.getSpendingTotal(category.id);
@@ -80,7 +80,7 @@ export class CategoryController {
    * PUT /api/categories/:id
    * Update category
    */
-  static async update(req, res, next): Promise<void> {
+  static async update(req, res, next) {
     try {
       const data = updateCategorySchema.parse(req.body);
       // Zod allows nullable optional fields, but service doesn't accept null
@@ -93,7 +93,7 @@ export class CategoryController {
    * PATCH /api/categories/:id/deactivate
    * Deactivate category
    */
-  static async deactivate(req, res, next): Promise<void> {
+  static async deactivate(req, res, next) {
     try {
       const category = categoryService.deactivate(req.params.id);
       res.json(successResponse(category, 'Category deactivated'));} catch (err) {
@@ -103,7 +103,7 @@ export class CategoryController {
    * DELETE /api/categories/:id
    * Delete category
    */
-  static async delete(req, res, next): Promise<void> {
+  static async delete(req, res, next) {
     try {
       categoryService.delete(req.params.id);
       res.json(successResponse({ id: req.params.id}, 'Category deleted'));} catch (err) {
@@ -113,7 +113,7 @@ export class CategoryController {
    * PUT /api/categories/reorder
    * Update category display order
    */
-  static async reorder(req, res, next): Promise<void> {
+  static async reorder(req, res, next) {
     try {
       const { categoryIds} = req.body;
       if (!Array.isArray(categoryIds)) {
@@ -121,4 +121,5 @@ export class CategoryController {
       const categories = categoryService.reorder(categoryIds);
       res.json(successResponse(categories, 'Categories reordered successfully'));} catch (err) {
       next(err);}}}
+
 

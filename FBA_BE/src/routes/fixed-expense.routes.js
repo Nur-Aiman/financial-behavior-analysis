@@ -13,3 +13,4 @@ fixedExpenseRoutes.get('/overdue', FixedExpenseController.getOverdue);
 fixedExpenseRoutes.post('/:categoryId/pay', FixedExpenseController.payExpense);
 fixedExpenseRoutes.post('/:categoryId/reverse-payment', FixedExpenseController.reversePayment);
 
+

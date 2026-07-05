@@ -14,7 +14,7 @@ export class DevelopmentController {
    * POST /api/dev/reset
    * Clear all data
    */
-  static async reset(_req, res, next): Promise<void> {
+  static async reset(_req, res, next) {
     try {
       clearAllData();
       res.json(successResponse({ cleared}, 'All data cleared'));} catch (err) {
@@ -24,7 +24,7 @@ export class DevelopmentController {
    * POST /api/dev/seed
    * Load seed data with example scenario
    */
-  static async seed(_req, res, next): Promise<void> {
+  static async seed(_req, res, next) {
     try {
       store.clear();
       seedData();
@@ -35,4 +35,5 @@ export class DevelopmentController {
             message: 'Example scenario loaded, 5 categories',},
           'Seed data loaded'));} catch (err) {
       next(err);}}}
+
 

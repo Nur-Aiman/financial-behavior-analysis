@@ -13,7 +13,7 @@ export class ForecastController {
    * GET /api/forecast/today
    * Get today's forecast
    */
-  static async getToday(_req, res, next): Promise<void> {
+  static async getToday(_req, res, next) {
     try {
       const profile = financialProfileService.getProfile();
       const forecast = financialForecastService.calculateForecast(profile);
@@ -41,7 +41,7 @@ export class ForecastController {
    * GET /api/forecast/categories
    * Get forecast for all daily categories
    */
-  static async getCategories(_req, res, next): Promise<void> {
+  static async getCategories(_req, res, next) {
     try {
       const profile = financialProfileService.getProfile();
       const forecast = financialForecastService.calculateForecast(profile);
@@ -60,7 +60,7 @@ export class ForecastController {
    * GET /api/forecast/projected-balance
    * Get projected balance until payday
    */
-  static async getProjectedBalance(_req, res, next): Promise<void> {
+  static async getProjectedBalance(_req, res, next) {
     try {
       const profile = financialProfileService.getProfile();
       const forecast = financialForecastService.calculateForecast(profile);
@@ -81,11 +81,12 @@ export class ForecastController {
    * POST /api/forecast/recalculate
    * Manually trigger forecast recalculation
    */
-  static async recalculate(_req, res, next): Promise<void> {
+  static async recalculate(_req, res, next) {
     try {
       const profile = financialProfileService.getProfile();
       const forecast = financialForecastService.calculateForecast(profile);
 
       res.json(successResponse(forecast, 'Forecast recalculated'));} catch (err) {
       next(err);}}}
+
 

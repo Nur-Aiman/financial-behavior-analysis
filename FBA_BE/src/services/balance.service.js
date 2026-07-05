@@ -17,7 +17,7 @@ export class BalanceService {
   /**
    * Get current balance
    */
-  getCurrentBalance(): number {
+  getCurrentBalance() {
     const profile = financialProfileService.getProfile();
     return profile.currentBalanceCents;}
 
@@ -30,7 +30,7 @@ export class BalanceService {
   /**
    * Update balance with reason
    */
-  async updateBalance(newBalanceCents, reason): Promise<BalanceAdjustment> {
+  async updateBalance(newBalanceCents, reason) {
     if (!reason || reason.trim().length === 0) {
       throw new AppError({
         code: 'INVALID_REQUEST_DATA',
@@ -70,7 +70,7 @@ export class BalanceService {
   /**
    * Add income
    */
-  async addIncome(amountCents, description?): Promise<void> {
+  async addIncome(amountCents, description?) {
     if (amountCents <= 0) {
       throw new AppError({
         code: 'INVALID_BALANCE_AMOUNT',
@@ -94,7 +94,7 @@ export class BalanceService {
   /**
    * Deduct from balance
    */
-  async deductFromBalance(amountCents): Promise<void> {
+  async deductFromBalance(amountCents) {
     if (amountCents <= 0) {
       throw new AppError({
         code: 'INVALID_BALANCE_AMOUNT',
@@ -118,4 +118,5 @@ export class BalanceService {
       currentBalanceCents});}}
 
 export const balanceService = new BalanceService();
+
 

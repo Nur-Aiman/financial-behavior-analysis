@@ -13,7 +13,7 @@ export class BalanceController {
    * GET /api/balance
    * Get current balance
    */
-  static async getBalance(_req, res, next): Promise<void> {
+  static async getBalance(_req, res, next) {
     try {
       const currentBalanceCents = balanceService.getCurrentBalance();
       res.json(
@@ -28,7 +28,7 @@ export class BalanceController {
    * PUT /api/balance
    * Update current balance with reason
    */
-  static async updateBalance(req, res, next): Promise<void> {
+  static async updateBalance(req, res, next) {
     try {
       const data = updateBalanceSchema.parse(req.body);
       const adjustment = await balanceService.updateBalance(data.newBalanceCents, data.reason);
@@ -44,7 +44,7 @@ export class BalanceController {
    * GET /api/balance/history
    * Get balance adjustment history
    */
-  static async getHistory(_req, res, next): Promise<void> {
+  static async getHistory(_req, res, next) {
     try {
       const history = balanceService.getAdjustmentHistory();
       const enriched = history.map(adj => ({
@@ -54,4 +54,5 @@ export class BalanceController {
         adjustmentAmount: formatCentsAsRinggit(adj.adjustmentAmountCents),}));
       res.json(successResponse(enriched, 'Adjustment history retrieved'));} catch (err) {
       next(err);}}}
+
 

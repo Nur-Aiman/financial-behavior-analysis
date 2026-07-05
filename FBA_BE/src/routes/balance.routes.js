@@ -11,3 +11,4 @@ balanceRoutes.get('/', BalanceController.getBalance);
 balanceRoutes.put('/', BalanceController.updateBalance);
 balanceRoutes.get('/history', BalanceController.getHistory);
 
+

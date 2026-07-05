@@ -25,91 +25,91 @@ export class InMemoryStore {
   /**
    * Financial Profiles
    */
-  addProfile(profile): void {
+  addProfile(profile) {
     this.financialProfiles.set(profile.id, { ...profile});}
 
-  getProfile(id): FinancialProfile | null {
+  getProfile(id) {
     const profile = this.financialProfiles.get(id);
     return profile ? { ...profile} ;}
 
   getAllProfiles()] {
     return Array.from(this.financialProfiles.values()).map(p => ({ ...p}));}
 
-  updateProfile(id, updates): void {
+  updateProfile(id, updates) {
     const profile = this.financialProfiles.get(id);
     if (profile) {
       this.financialProfiles.set(id, { ...profile, ...updates, id, updatedAt: new Date().toISOString()});}}
 
-  deleteProfile(id): void {
+  deleteProfile(id) {
     this.financialProfiles.delete(id);}
 
   /**
    * Categories
    */
-  addCategory(category): void {
+  addCategory(category) {
     this.categories.set(category.id, { ...category});}
 
-  getCategory(id): SpendingCategory | null {
+  getCategory(id) {
     const category = this.categories.get(id);
     return category ? { ...category} ;}
 
   getAllCategories()] {
     return Array.from(this.categories.values()).map(c => ({ ...c}));}
 
-  updateCategory(id, updates): void {
+  updateCategory(id, updates) {
     const category = this.categories.get(id);
     if (category) {
       this.categories.set(id, { ...category, ...updates, id, updatedAt: new Date().toISOString()});}}
 
-  deleteCategory(id): void {
+  deleteCategory(id) {
     this.categories.delete(id);}
 
   /**
    * Transactions
    */
-  addTransaction(transaction): void {
+  addTransaction(transaction) {
     this.transactions.set(transaction.id, { ...transaction});}
 
-  getTransaction(id): Transaction | null {
+  getTransaction(id) {
     const transaction = this.transactions.get(id);
     return transaction ? { ...transaction} ;}
 
   getAllTransactions()] {
     return Array.from(this.transactions.values()).map(t => ({ ...t}));}
 
-  updateTransaction(id, updates): void {
+  updateTransaction(id, updates) {
     const transaction = this.transactions.get(id);
     if (transaction) {
       this.transactions.set(id, { ...transaction, ...updates, id, updatedAt: new Date().toISOString()});}}
 
-  deleteTransaction(id): void {
+  deleteTransaction(id) {
     this.transactions.delete(id);}
 
   /**
    * Fixed Expense Payments
    */
-  addFixedExpensePayment(payment): void {
+  addFixedExpensePayment(payment) {
     this.fixedExpensePayments.set(payment.id, { ...payment});}
 
-  getFixedExpensePayment(id): FixedExpensePayment | null {
+  getFixedExpensePayment(id) {
     const payment = this.fixedExpensePayments.get(id);
     return payment ? { ...payment} ;}
 
   getAllFixedExpensePayments()] {
     return Array.from(this.fixedExpensePayments.values()).map(p => ({ ...p}));}
 
-  updateFixedExpensePayment(id, updates): void {
+  updateFixedExpensePayment(id, updates) {
     const payment = this.fixedExpensePayments.get(id);
     if (payment) {
       this.fixedExpensePayments.set(id, { ...payment, ...updates, id, updatedAt: new Date().toISOString()});}}
 
-  deleteFixedExpensePayment(id): void {
+  deleteFixedExpensePayment(id) {
     this.fixedExpensePayments.delete(id);}
 
   /**
    * Balance Adjustments
    */
-  addBalanceAdjustment(adjustment): void {
+  addBalanceAdjustment(adjustment) {
     this.balanceAdjustments.push({ ...adjustment});}
 
   getBalanceAdjustments()] {
@@ -118,7 +118,7 @@ export class InMemoryStore {
   /**
    * Utility: Clear all data
    */
-  clear(): void {
+  clear() {
     this.financialProfiles.clear();
     this.categories.clear();
     this.transactions.clear();
@@ -127,4 +127,5 @@ export class InMemoryStore {
   }
 }
 export const store = new InMemoryStore();
+
 

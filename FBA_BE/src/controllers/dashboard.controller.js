@@ -12,7 +12,7 @@ export class DashboardController {
    * GET /api/dashboard/summary
    * Get dashboard summary
    */
-  static async getSummary(_req, res, next): Promise<void> {
+  static async getSummary(_req, res, next) {
     try {
       const summary = dashboardService.getDashboardSummary();
 
@@ -33,7 +33,7 @@ export class DashboardController {
    * GET /api/dashboard/category-utilisation
    * Get category utilisation data
    */
-  static async getCategoryUtilisation(_req, res, next): Promise<void> {
+  static async getCategoryUtilisation(_req, res, next) {
     try {
       const utilisation = dashboardService.getCategoryUtilisation();
 
@@ -50,7 +50,7 @@ export class DashboardController {
    * GET /api/dashboard/spending-trend
    * Get spending trend for last 30 days
    */
-  static async getSpendingTrend(_req, res, next): Promise<void> {
+  static async getSpendingTrend(_req, res, next) {
     try {
       const trend = dashboardService.getSpendingTrend();
 
@@ -70,7 +70,7 @@ export class DashboardController {
    * GET /api/dashboard/planned-vs-actual
    * Get planned vs actual spending
    */
-  static async getPlannedVsActual(_req, res, next): Promise<void> {
+  static async getPlannedVsActual(_req, res, next) {
     try {
       const data = dashboardService.getPlannedVsActual();
 
@@ -87,7 +87,7 @@ export class DashboardController {
    * GET /api/dashboard/projected-balances
    * Get projected balance for remaining days
    */
-  static async getProjectedBalances(_req, res, next): Promise<void> {
+  static async getProjectedBalances(_req, res, next) {
     try {
       const projections = dashboardService.getProjectedBalances();
 
@@ -97,4 +97,5 @@ export class DashboardController {
 
       res.json(successResponse(enriched, 'Projected balances retrieved'));} catch (err) {
       next(err);}}}
+
 

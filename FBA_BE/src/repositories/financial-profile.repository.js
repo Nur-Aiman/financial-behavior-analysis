@@ -16,7 +16,7 @@ export class FinancialProfileRepository {
   /**
    * Create a new financial profile
    */
-  async create(data, 'id' | 'createdAt' | 'updatedAt'>): Promise<FinancialProfile> {
+  async create(data, 'id' | 'createdAt' | 'updatedAt'>) {
     const now = new Date().toISOString();
     const profile= {
       id: generateId(),
@@ -48,7 +48,7 @@ export class FinancialProfileRepository {
   /**
    * Find profile by ID
    */
-  findById(id): FinancialProfile | null {
+  findById(id) {
     return store.getProfile(id);}
 
   /**
@@ -68,7 +68,7 @@ export class FinancialProfileRepository {
   /**
    * Update profile
    */
-  async update(id, data, 'id' | 'createdAt'>>): Promise<FinancialProfile> {
+  async update(id, data, 'id' | 'createdAt'>>) {
     const existing = this.findById(id);
     if (!existing) {
       throw new Error(`Profile not found: ${id}`);}
@@ -101,7 +101,7 @@ export class FinancialProfileRepository {
   /**
    * Delete profile
    */
-  async delete(id): Promise<void> {
+  async delete(id) {
     store.deleteProfile(id);
 
     // Persist to database
@@ -115,9 +115,10 @@ export class FinancialProfileRepository {
   /**
    * Clear all profiles
    */
-  clear(): void {
+  clear() {
     const profiles = this.findAll();
     profiles.forEach(p => this.delete(p.id));}}
 
 export const financialProfileRepository = new FinancialProfileRepository();
+
 

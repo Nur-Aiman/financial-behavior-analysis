@@ -19,7 +19,7 @@ export class FinancialProfileService {
     openingBalanceCents?;
     currentBalanceCents;
     salaryCycleStartDate;
-    nextPayday;}): Promise<FinancialProfile> {
+    nextPayday;}) {
     // Check if profile already exists
     const existing = financialProfileRepository.getActive();
     if (existing) {
@@ -55,7 +55,7 @@ export class FinancialProfileService {
     openingBalanceCents?;
     currentBalanceCents?;
     salaryCycleStartDate?;
-    nextPayday?;}): Promise<FinancialProfile> {
+    nextPayday?;}) {
     const profile = this.getProfile();
 
     return await financialProfileRepository.update(profile.id, data);}
@@ -63,7 +63,7 @@ export class FinancialProfileService {
   /**
    * Get remaining days until payday
    */
-  getRemainingDays(): number {
+  getRemainingDays() {
     const profile = this.getProfile();
     const today = getTodayIsoString();
     return calculateRemainingDays(today, profile.nextPayday);}
@@ -71,10 +71,11 @@ export class FinancialProfileService {
   /**
    * Validate payday is in future
    */
-  validatePayday(payday): boolean {
+  validatePayday(payday) {
     const today = getTodayIsoString();
     const remaining = calculateRemainingDays(today, payday);
     return remaining > 0;}}
 
 export const financialProfileService = new FinancialProfileService();
+
 

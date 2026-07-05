@@ -15,3 +15,4 @@ categoryRoutes.put('/:id', CategoryController.update);
 categoryRoutes.patch('/:id/deactivate', CategoryController.deactivate);
 categoryRoutes.delete('/:id', CategoryController.delete);
 
+

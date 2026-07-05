@@ -23,7 +23,7 @@ export class TransactionService {
     transactionDate;
     merchant?;
     description?;
-    notes?;}): Promise<Transaction> {
+    notes?;}) {
     // Validate amount
     if (data.amountCents <= 0) {
       throw new AppError({
@@ -112,7 +112,7 @@ export class TransactionService {
    */
   async updateTransaction(
     id,
-    data, 'id' | 'createdAt'>>): Promise<Transaction> {
+    data, 'id' | 'createdAt'>>) {
     const oldTransaction = this.getTransaction(id);
 
     // Prevent updating fixed expense payment transactions
@@ -147,7 +147,7 @@ export class TransactionService {
   /**
    * Delete transaction
    */
-  async deleteTransaction(id): Promise<void> {
+  async deleteTransaction(id) {
     const transaction = this.getTransaction(id);
 
     // Prevent deletion of fixed expense payment transactions
@@ -166,7 +166,7 @@ export class TransactionService {
   /**
    * Reverse transaction's balance effect
    */
-  private async reverseTransactionEffect(transaction): Promise<void> {
+  private async reverseTransactionEffect(transaction) {
     if (transaction.type === TransactionType.EXPENSE) {
       // Add back the deducted amount
       const profile = require('../repositories/financial-profile.repository')
@@ -203,7 +203,7 @@ export class TransactionService {
   getCategorySpendingByDateRange(
     categoryId,
     startDate,
-    endDate): number {
+    endDate) {
     const transactions = transactionRepository.findByCategoryAndDateRange(
       categoryId,
       startDate,
@@ -211,4 +211,5 @@ export class TransactionService {
     return transactions.reduce((sum, t) => sum + t.amountCents, 0);}}
 
 export const transactionService = new TransactionService();
+
 

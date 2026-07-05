@@ -105,7 +105,7 @@ export class CategoryService {
    * Delete category (hard delete)
    * Only if no transactions reference it
    */
-  delete(id): void {
+  delete(id) {
     this.getById(id);
 
     // Check for transactions
@@ -122,14 +122,14 @@ export class CategoryService {
   /**
    * Get category spending total
    */
-  getSpendingTotal(categoryId): number {
+  getSpendingTotal(categoryId) {
     const transactions = transactionRepository.findByCategory(categoryId);
     return transactions.reduce((sum, t) => sum + t.amountCents, 0);}
 
   /**
    * Get category remaining allocation
    */
-  getRemainingAllocation(categoryId): number {
+  getRemainingAllocation(categoryId) {
     const category = this.getById(categoryId);
     const spent = this.getSpendingTotal(categoryId);
     return Math.max(0, category.allocatedAmountCents - spent);}
@@ -137,7 +137,7 @@ export class CategoryService {
   /**
    * Get category utilisation percentage
    */
-  getUtilisationPercentage(categoryId): number {
+  getUtilisationPercentage(categoryId) {
     const category = this.getById(categoryId);
     const spent = this.getSpendingTotal(categoryId);
 
@@ -160,4 +160,5 @@ export class CategoryService {
     return categoryIds.map(id => this.getById(id));}}
 
 export const categoryService = new CategoryService();
+
 

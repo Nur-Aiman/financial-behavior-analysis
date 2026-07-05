@@ -18,7 +18,7 @@ import {
   FixedExpensePayment,
   FixedExpensePaymentStatus,} from '../models/index';
 
-export function seedData(): void {
+export function seedData() {
   store.clear();
 
   // Calculate dates: today + 20 days
@@ -359,7 +359,8 @@ export function seedData(): void {
 /**
  * Clear all data
  */
-export function clearAllData(): void {
+export function clearAllData() {
   store.clear();
   console.log('âœ“ All data cleared');}
+
 

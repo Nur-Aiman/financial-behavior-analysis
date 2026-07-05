@@ -13,7 +13,7 @@ export class BalanceAdjustmentRepository {
   /**
    * Create a new balance adjustment
    */
-  async create(data, 'id'>): Promise<BalanceAdjustment> {
+  async create(data, 'id'>) {
     const adjustment= {
       id: generateId(),
       ...data,
@@ -54,11 +54,12 @@ export class BalanceAdjustmentRepository {
   /**
    * Clear all adjustments
    */
-  clear(): void {
+  clear() {
     const adjustments = this.findAll();
     adjustments.forEach(() => {
       // In memory store, just clear all});
     store.clear();}}
 
 export const balanceAdjustmentRepository = new BalanceAdjustmentRepository();
+
 

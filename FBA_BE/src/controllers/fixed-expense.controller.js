@@ -13,7 +13,7 @@ export class FixedExpenseController {
    * GET /api/fixed-expenses
    * Get all fixed expenses
    */
-  static async getAll(_req, res, next): Promise<void> {
+  static async getAll(_req, res, next) {
     try {
       const payments = fixedExpenseService.getAllFixedExpenses();
       fixedExpenseService.updateOverdueStatus();
@@ -30,7 +30,7 @@ export class FixedExpenseController {
    * GET /api/fixed-expenses/unpaid
    * Get unpaid fixed expenses
    */
-  static async getUnpaid(_req, res, next): Promise<void> {
+  static async getUnpaid(_req, res, next) {
     try {
       const payments = fixedExpenseService.getUnpaidExpenses();
 
@@ -46,7 +46,7 @@ export class FixedExpenseController {
    * GET /api/fixed-expenses/overdue
    * Get overdue fixed expenses
    */
-  static async getOverdue(_req, res, next): Promise<void> {
+  static async getOverdue(_req, res, next) {
     try {
       fixedExpenseService.updateOverdueStatus();
       const payments = fixedExpenseService.getOverdueExpenses();
@@ -62,7 +62,7 @@ export class FixedExpenseController {
    * POST /api/fixed-expenses/:categoryId/pay
    * Pay fixed expense
    */
-  static async payExpense(req, res, next): Promise<void> {
+  static async payExpense(req, res, next) {
     try {
       const data = payFixedExpenseSchema.parse(req.body);
       const transaction = await fixedExpenseService.payFixedExpense(
@@ -82,9 +82,10 @@ export class FixedExpenseController {
    * POST /api/fixed-expenses/:categoryId/reverse-payment
    * Reverse fixed expense payment
    */
-  static async reversePayment(req, res, next): Promise<void> {
+  static async reversePayment(req, res, next) {
     try {
       fixedExpenseService.reverseFixedExpensePayment(req.params.categoryId);
       res.json(successResponse({ categoryId: req.params.categoryId}, 'Payment reversed'));} catch (err) {
       next(err);}}}
+
 

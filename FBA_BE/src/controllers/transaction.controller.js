@@ -13,7 +13,7 @@ export class TransactionController {
    * POST /api/transactions
    * Create transaction
    */
-  static async create(req, res, next): Promise<void> {
+  static async create(req, res, next) {
     try {
       const data = createTransactionSchema.parse(req.body);
       const transaction = await transactionService.createTransaction(data);
@@ -29,7 +29,7 @@ export class TransactionController {
    * GET /api/transactions
    * Get all transactions with optional filters
    */
-  static async getAll(req, res, next): Promise<void> {
+  static async getAll(req, res, next) {
     try {
       const filters = transactionFilterSchema.parse(req.query);
       // Remove null values for service function
@@ -50,7 +50,7 @@ export class TransactionController {
       res.json(successResponse(enriched, 'Transactions retrieved'));} catch (err) {
       next(err);}}
 
-  static async getById(req, res, next): Promise<void> {
+  static async getById(req, res, next) {
     try {
       const transaction = transactionService.getTransaction(req.params.id);
       res.json(
@@ -65,7 +65,7 @@ export class TransactionController {
    * PUT /api/transactions/:id
    * Update transaction
    */
-  static async update(req, res, next): Promise<void> {
+  static async update(req, res, next) {
     try {
       const data = updateTransactionSchema.parse(req.body);
       const transaction = await transactionService.updateTransaction(req.params.id, data);
@@ -81,9 +81,10 @@ export class TransactionController {
    * DELETE /api/transactions/:id
    * Delete transaction
    */
-  static async delete(req, res, next): Promise<void> {
+  static async delete(req, res, next) {
     try {
       await transactionService.deleteTransaction(req.params.id);
       res.json(successResponse({ id: req.params.id}, 'Transaction deleted'));} catch (err) {
       next(err);}}}
+
 

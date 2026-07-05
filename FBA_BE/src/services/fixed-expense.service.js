@@ -46,13 +46,13 @@ export class FixedExpenseService {
   /**
    * Get fixed expense for a category
    */
-  getExpenseForCategory(categoryId): FixedExpensePayment | null {
+  getExpenseForCategory(categoryId) {
     return fixedExpenseRepository.findUnpaidByCategory(categoryId);}
 
   /**
    * Create fixed expense payment record
    */
-  async createFixedExpense(categoryId): Promise<FixedExpensePayment> {
+  async createFixedExpense(categoryId) {
     // Verify category is FIXED_ONE_TIME type
     const category = categoryService.getById(categoryId);
 
@@ -73,7 +73,7 @@ export class FixedExpenseService {
   /**
    * Pay fixed expense
    */
-  async payFixedExpense(categoryId, actualAmountCents, paymentDate): Promise<Transaction> {
+  async payFixedExpense(categoryId, actualAmountCents, paymentDate) {
     if (actualAmountCents <= 0) {
       throw new AppError({
         code: 'NEGATIVE_TRANSACTION_AMOUNT',
@@ -124,7 +124,7 @@ export class FixedExpenseService {
   /**
    * Reverse fixed expense payment
    */
-  reverseFixedExpensePayment(categoryId): void {
+  reverseFixedExpensePayment(categoryId) {
     const payment = fixedExpenseRepository.findByCategory(categoryId).find(
       p => p.status === FixedExpensePaymentStatus.PAID);
 
@@ -163,7 +163,7 @@ export class FixedExpenseService {
   /**
    * Check if fixed expense is overdue
    */
-  isOverdue(categoryId): boolean {
+  isOverdue(categoryId) {
     const payment = this.getExpenseForCategory(categoryId);
     if (!payment) return false;
 
@@ -173,7 +173,7 @@ export class FixedExpenseService {
   /**
    * Get days until due
    */
-  getDaysUntilDue(categoryId): number {
+  getDaysUntilDue(categoryId) {
     const { calculateRemainingDays} = require('../utils/date.utils');
     const payment = this.getExpenseForCategory(categoryId);
     if (!payment) return -1;
@@ -183,7 +183,7 @@ export class FixedExpenseService {
 
   /**
    * Mark*/
-  updateOverdueStatus(): void {
+  updateOverdueStatus() {
     const unpaid = fixedExpenseRepository.findUnpaid();
     const today = getTodayIsoString();
 
@@ -193,4 +193,5 @@ export class FixedExpenseService {
           status: FixedExpensePaymentStatus.OVERDUE,});}}}}
 
 export const fixedExpenseService = new FixedExpenseService();
+
 

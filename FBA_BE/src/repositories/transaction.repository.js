@@ -14,7 +14,7 @@ export class TransactionRepository {
   /**
    * Create a new transaction
    */
-  async create(data, 'id' | 'createdAt' | 'updatedAt'>): Promise<Transaction> {
+  async create(data, 'id' | 'createdAt' | 'updatedAt'>) {
     const now = new Date().toISOString();
     const transaction= {
       id: generateId(),
@@ -49,7 +49,7 @@ export class TransactionRepository {
   /**
    * Find transaction by ID
    */
-  findById(id): Transaction | null {
+  findById(id) {
     return store.getTransaction(id);}
 
   /**
@@ -96,14 +96,14 @@ export class TransactionRepository {
   /**
    * Find transaction linked to fixed expense payment
    */
-  findByFixedExpensePaymentId(paymentId): Transaction | null {
+  findByFixedExpensePaymentId(paymentId) {
     const transactions = this.findAll();
     return transactions.find(t => t.linkedFixedExpensePaymentId === paymentId) || null;}
 
   /**
    * Update transaction
    */
-  async update(id, data, 'id' | 'createdAt'>>): Promise<Transaction> {
+  async update(id, data, 'id' | 'createdAt'>>) {
     const existing = this.findById(id);
     if (!existing) {
       throw new Error(`Transaction not found: ${id}`);}
@@ -139,7 +139,7 @@ export class TransactionRepository {
   /**
    * Delete transaction
    */
-  async delete(id): Promise<void> {
+  async delete(id) {
     store.deleteTransaction(id);
 
     // Persist to database
@@ -153,9 +153,10 @@ export class TransactionRepository {
   /**
    * Clear all transactions
    */
-  clear(): void {
+  clear() {
     const transactions = this.findAll();
     transactions.forEach(t => this.delete(t.id));}}
 
 export const transactionRepository = new TransactionRepository();
+
 

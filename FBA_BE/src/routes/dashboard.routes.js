@@ -13,3 +13,4 @@ dashboardRoutes.get('/spending-trend', DashboardController.getSpendingTrend);
 dashboardRoutes.get('/planned-vs-actual', DashboardController.getPlannedVsActual);
 dashboardRoutes.get('/projected-balances', DashboardController.getProjectedBalances);
 
+

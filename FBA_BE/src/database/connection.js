@@ -22,3 +22,4 @@ export function getDatabase(): Knex {
 
 export const db = getDatabase;
 
+

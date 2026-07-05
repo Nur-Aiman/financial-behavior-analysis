@@ -14,7 +14,7 @@ export class FixedExpenseRepository {
   /**
    * Create a new fixed expense payment
    */
-  async create(data, 'id' | 'createdAt' | 'updatedAt'>): Promise<FixedExpensePayment> {
+  async create(data, 'id' | 'createdAt' | 'updatedAt'>) {
     const now = new Date().toISOString();
     const payment= {
       id: generateId(),
@@ -47,7 +47,7 @@ export class FixedExpenseRepository {
   /**
    * Find payment by ID
    */
-  findById(id): FixedExpensePayment | null {
+  findById(id) {
     return store.getFixedExpensePayment(id);}
 
   /**
@@ -83,21 +83,21 @@ export class FixedExpenseRepository {
   /**
    * Find unpaid payment for a category
    */
-  findUnpaidByCategory(categoryId): FixedExpensePayment | null {
+  findUnpaidByCategory(categoryId) {
     const payments = this.findByCategory(categoryId);
     return payments.find(p => p.status === FixedExpensePaymentStatus.UNPAID) || null;}
 
   /**
    * Find payment by transaction ID
    */
-  findByTransactionId(transactionId): FixedExpensePayment | null {
+  findByTransactionId(transactionId) {
     const payments = this.findAll();
     return payments.find(p => p.transactionId === transactionId) || null;}
 
   /**
    * Update payment
    */
-  async update(id, data, 'id' | 'createdAt'>>): Promise<FixedExpensePayment> {
+  async update(id, data, 'id' | 'createdAt'>>) {
     const existing = this.findById(id);
     if (!existing) {
       throw new Error(`Payment not found: ${id}`);}
@@ -131,7 +131,7 @@ export class FixedExpenseRepository {
   /**
    * Delete payment
    */
-  async delete(id): Promise<void> {
+  async delete(id) {
     store.deleteFixedExpensePayment(id);
 
     // Persist to database
@@ -145,9 +145,10 @@ export class FixedExpenseRepository {
   /**
    * Clear all payments
    */
-  clear(): void {
+  clear() {
     const payments = this.findAll();
     payments.forEach(p => this.delete(p.id));}}
 
 export const fixedExpenseRepository = new FixedExpenseRepository();
+
 

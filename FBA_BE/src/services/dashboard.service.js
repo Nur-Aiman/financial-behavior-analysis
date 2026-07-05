@@ -140,12 +140,12 @@ export class DashboardService {
   /**
    * Get projected balance for remaining days
    */
-  getProjectedBalances(): Array<{ date; balanceCents}> {
+  getProjectedBalances() {
     const profile = financialProfileService.getProfile();
     const forecast = financialForecastService.calculateForecast(profile);
     const { getDateNDaysFromNow} = require('../utils/date.utils');
 
-    const projections: Array<{ date; balanceCents}> = [];
+    const projections = [];
     let currentBalance = profile.currentBalanceCents;
 
     // Subtract reserved amounts first
@@ -171,4 +171,5 @@ export class DashboardService {
     return projections;}}
 
 export const dashboardService = new DashboardService();
+
 

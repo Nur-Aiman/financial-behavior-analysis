@@ -18,7 +18,7 @@ export function parseIsoDate(dateStr): Date {
  * Convert Date object to ISO date string
  * Example: Date object -> "2026-07-05"
  */
-export function dateToIsoString(date): string {
+export function dateToIsoString(date) {
   const year = date.getUTCFullYear();
   const month = String(date.getUTCMonth() + 1).padStart(2, '0');
   const day = String(date.getUTCDate()).padStart(2, '0');
@@ -26,7 +26,7 @@ export function dateToIsoString(date): string {
 
 /**
  * Get today's date*/
-export function getTodayIsoString(): string {
+export function getTodayIsoString() {
   return dateToIsoString(new Date());}
 
 /**
@@ -39,7 +39,7 @@ export function getTodayIsoString(): string {
  */
 export function calculateRemainingDays(
   startDateStr,
-  endDateStr): number {
+  endDateStr) {
   const startDate = parseIsoDate(startDateStr);
   const endDate = parseIsoDate(endDateStr);
 
@@ -51,7 +51,7 @@ export function calculateRemainingDays(
 /**
  * Check if a date has passed (is before today)
  */
-export function hasDatePassed(dateStr): boolean {
+export function hasDatePassed(dateStr) {
   const date = parseIsoDate(dateStr);
   const today = parseIsoDate(getTodayIsoString());
   return date < today;}
@@ -59,13 +59,13 @@ export function hasDatePassed(dateStr): boolean {
 /**
  * Check if a date is today
  */
-export function isToday(dateStr): boolean {
+export function isToday(dateStr) {
   return dateStr === getTodayIsoString();}
 
 /**
  * Check if a date is in the past (includes today)
  */
-export function isDateInPast(dateStr): boolean {
+export function isDateInPast(dateStr) {
   const date = parseIsoDate(dateStr);
   const today = parseIsoDate(getTodayIsoString());
   return date <= today;}
@@ -73,13 +73,13 @@ export function isDateInPast(dateStr): boolean {
 /**
  * Check if a date is in the future
  */
-export function isDateInFuture(dateStr): boolean {
+export function isDateInFuture(dateStr) {
   return !isDateInPast(dateStr);}
 
 /**
  * Get date N days from now
  */
-export function getDateNDaysFromNow(days): string {
+export function getDateNDaysFromNow(days) {
   const date = new Date();
   date.setUTCDate(date.getUTCDate() + days);
   return dateToIsoString(date);}
@@ -87,7 +87,7 @@ export function getDateNDaysFromNow(days): string {
 /**
  * Get date N days before now
  */
-export function getDateNDaysAgo(days): string {
+export function getDateNDaysAgo(days) {
   const date = new Date();
   date.setUTCDate(date.getUTCDate() - days);
   return dateToIsoString(date);}
@@ -98,7 +98,7 @@ export function getDateNDaysAgo(days): string {
 export function isDateInRange(
   dateStr,
   startStr,
-  endStr): boolean {
+  endStr) {
   const date = parseIsoDate(dateStr);
   const start = parseIsoDate(startStr);
   const end = parseIsoDate(endStr);
@@ -107,14 +107,14 @@ export function isDateInRange(
 /**
  * Get day of week (0 = Sunday, 6 = Saturday)
  */
-export function getDayOfWeek(dateStr): number {
+export function getDayOfWeek(dateStr) {
   const date = parseIsoDate(dateStr);
   return date.getUTCDay();}
 
 /**
  * Get day name
  */
-export function getDayName(dateStr): string {
+export function getDayName(dateStr) {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   return days[getDayOfWeek(dateStr)];}
 
@@ -122,7 +122,7 @@ export function getDayName(dateStr): string {
  * Format ISO date for display
  * Example: "2026-07-05" -> "5 Jul 2026"
  */
-export function formatDateForDisplay(dateStr, locale= 'en-MY'): string {
+export function formatDateForDisplay(dateStr, locale= 'en-MY') {
   const date = parseIsoDate(dateStr);
   return date.toLocaleDateString(locale, {
     year: 'numeric',
@@ -132,7 +132,7 @@ export function formatDateForDisplay(dateStr, locale= 'en-MY'): string {
 /**
  * Calculate days between two dates (absolute value)
  */
-export function daysBetween(dateStr1, dateStr2): number {
+export function daysBetween(dateStr1, dateStr2) {
   const date1 = parseIsoDate(dateStr1);
   const date2 = parseIsoDate(dateStr2);
   const diffTime = Math.abs(date2.getTime() - date1.getTime());
@@ -141,14 +141,17 @@ export function daysBetween(dateStr1, dateStr2): number {
 /**
  * Check if year is a leap year
  */
-export function isLeapYear(year): boolean {
+export function isLeapYear(year) {
   return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;}
 
 /**
  * Get number of days in a month
  */
-export function getDaysInMonth(year, month): number {
+export function getDaysInMonth(year, month) {
   if (month === 2) {
-    return isLeapYear(year) ? 29 ;}
-  return [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];}
+    return isLeapYear(year) ? 29 : 28;
+  }
+  return [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+}
+
 
