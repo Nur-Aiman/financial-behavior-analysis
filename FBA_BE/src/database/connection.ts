@@ -10,7 +10,9 @@ let dbInstance: Knex | null = null;
 export function initializeDatabase(): Knex {
   if (!dbInstance) {
     const knexfile = require('../../config/knexfile') as any;
-    dbInstance = knex(knexfile.development);
+    const env = process.env.NODE_ENV || 'development';
+    console.log(`Initializing database for environment: ${env}`);
+    dbInstance = knex(knexfile[env]);
   }
   return dbInstance;
 }
