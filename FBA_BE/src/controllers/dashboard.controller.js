@@ -96,6 +96,7 @@ export class DashboardController {
         balance: formatCentsAsRinggit(p.balanceCents),}));
 
       res.json(successResponse(enriched, 'Projected balances retrieved'));} catch (err) {
-      next(err);}}}
+      next(err);}}
+
 
 

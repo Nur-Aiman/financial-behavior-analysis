@@ -85,6 +85,7 @@ export class TransactionController {
     try {
       await transactionService.deleteTransaction(req.params.id);
       res.json(successResponse({ id: req.params.id}, 'Transaction deleted'));} catch (err) {
-      next(err);}}}
+      next(err);}}
+
 
 

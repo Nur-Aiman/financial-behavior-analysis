@@ -87,6 +87,7 @@ export class ForecastController {
       const forecast = financialForecastService.calculateForecast(profile);
 
       res.json(successResponse(forecast, 'Forecast recalculated'));} catch (err) {
-      next(err);}}}
+      next(err);}}
+
 
 

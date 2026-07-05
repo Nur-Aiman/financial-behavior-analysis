@@ -156,7 +156,7 @@ export class FinancialForecastService {
             'INFO',
             'BILL_APPROACHING',
             `${category?.name || 'Bill'} is due on ${formatDateForDisplay(payment.dueDate)} (${daysUntilDue} days)`,
-            { categoryId: payment.categoryId, daysUntilDue}));}}}
+            { categoryId: payment.categoryId, daysUntilDue}));}}
 
     // Step 10= dailyForecasts.reduce(
       (sum, forecast) => addCents(sum, forecast.recommendedDailyAmountCents),
@@ -409,5 +409,6 @@ export class FinancialForecastService {
       dailyForecasts};}}
 
 export const financialForecastService = new FinancialForecastService();
+
 
 

@@ -143,7 +143,7 @@ export class CategoryRepository {
         const db = getDatabase();
         db('spending_categories').where('id', id).del().catch((err) => {
           console.error('Error deleting category from database:', err);});} catch (err) {
-        console.error('Error persisting category deletion to database:', err);}}}
+        console.error('Error persisting category deletion to database:', err);}}
 
   /**
    * Clear all categories
@@ -153,5 +153,6 @@ export class CategoryRepository {
     categories.forEach(c => this.delete(c.id));}}
 
 export const categoryRepository = new CategoryRepository();
+
 
 

@@ -140,7 +140,7 @@ export class FixedExpenseRepository {
         const db = getDatabase();
         await db('fixed_expense_payments').where('id', id).del();
         console.log(`âœ… Fixed expense payment deleted from database: ${id}`);} catch (err) {
-        console.error(`âŒ Error persisting fixed expense payment deletion to database: ${err.message}`);}}}
+        console.error(`âŒ Error persisting fixed expense payment deletion to database: ${err.message}`);}}
 
   /**
    * Clear all payments
@@ -150,5 +150,6 @@ export class FixedExpenseRepository {
     payments.forEach(p => this.delete(p.id));}}
 
 export const fixedExpenseRepository = new FixedExpenseRepository();
+
 
 

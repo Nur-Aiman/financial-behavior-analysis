@@ -53,6 +53,7 @@ export class BalanceController {
         newBalance: formatCentsAsRinggit(adj.newBalanceCents),
         adjustmentAmount: formatCentsAsRinggit(adj.adjustmentAmountCents),}));
       res.json(successResponse(enriched, 'Adjustment history retrieved'));} catch (err) {
-      next(err);}}}
+      next(err);}}
+
 
 

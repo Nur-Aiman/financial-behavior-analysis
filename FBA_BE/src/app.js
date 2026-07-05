@@ -37,11 +37,12 @@ app.use('*', (req, res) => {
     success,
     error: {
       code: 'NOT_FOUND',
-      message: `Route ${req.method} ${req.path} not found`,},});});
+      message: `Route ${req.method} ${req.path} not found`,});});
 
 // Error handler (must be last)
 app.use(errorHandler);
 
 export default app;
+
 
 

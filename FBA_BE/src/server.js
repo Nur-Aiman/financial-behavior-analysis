@@ -88,7 +88,9 @@ async function initializeDatabase() {
           if (!dateValue) return dateToIsoString(new Date()); // fallback to today if null
           if (typeof dateValue === 'string') {
             return dateValue.includes('T') ? dateValue.split('T')[0] : dateValue;
-          return dateToIsoString(new Date(dateValue));};
+          }
+          return dateToIsoString(new Date(dateValue));
+        };
         
         store.addProfile({
           id: profile.id,
@@ -162,15 +164,20 @@ async function initializeDatabase() {
           transactionId: fp.transaction_id,
           createdAt: fp.created_at,
           updatedAt: fp.updated_at,});});
-      console.log(`âœ… Loaded ${fixedExpenses.length} fixed expense payments from PostgreSQL`);
+      console.log(`✅ Loaded ${fixedExpenses.length} fixed expense payments from PostgreSQL`);
       
-      await db.destroy();} catch (err) {
-      console.error('âŒ Error loading from PostgreSQL:', err.message);
-      console.log('Falling back to in-memory storage');}} else {
+      await db.destroy();
+    } catch (err) {
+      console.error('❌ Error loading from PostgreSQL:', err.message);
+      console.log('Falling back to in-memory storage');
+    }
+  } else {
     console.log('Loading seed data for in-memory storage...');
-    seedData();}
+    seedData();
+  }
   
-  console.log('Seed data loaded successfully');}
+  console.log('Seed data loaded successfully');
+}
 
 // Initialize and start server
 let server;
@@ -217,5 +224,6 @@ let server;
     process.exit(1);}})();
 
 export default server;
+
 
 

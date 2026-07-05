@@ -50,6 +50,7 @@ export class FinancialProfileController {
     try {
       const remainingDays = financialProfileService.getRemainingDays();
       res.json(successResponse({ remainingDays}, 'Remaining days calculated'));} catch (err) {
-      next(err);}}}
+      next(err);}}
+
 
 

@@ -120,6 +120,7 @@ export class CategoryController {
         throw new Error('categoryIds must be an array');}
       const categories = categoryService.reorder(categoryIds);
       res.json(successResponse(categories, 'Categories reordered successfully'));} catch (err) {
-      next(err);}}}
+      next(err);}}
+
 
 

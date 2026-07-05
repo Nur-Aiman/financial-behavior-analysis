@@ -97,7 +97,7 @@ export class FixedExpenseService {
         statusCode,
         details: {
           available,
-          required},});}
+          required});}
 
     // Deduct from balance
     await balanceService.deductFromBalance(actualAmountCents);
@@ -190,8 +190,9 @@ export class FixedExpenseService {
     for (const payment of unpaid) {
       if (payment.dueDate < today && payment.status !== FixedExpensePaymentStatus.OVERDUE) {
         fixedExpenseRepository.update(payment.id, {
-          status: FixedExpensePaymentStatus.OVERDUE,});}}}}
+          status: FixedExpensePaymentStatus.OVERDUE,});}}
 
 export const fixedExpenseService = new FixedExpenseService();
+
 
 

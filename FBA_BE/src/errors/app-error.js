@@ -34,7 +34,7 @@ export class AppError extends Error {
       error: {
         code: this.code,
         message: this.message,
-        details: this.details,},};}
+        details: this.details,};}
 
   /**
    * Log error for debugging
@@ -64,7 +64,7 @@ export function insufficientBalanceError(current, required): AppError {
     code: 'INSUFFICIENT_BALANCE',
     message: `Insufficient balance. Current: ${current}, Required: ${required}`,
     statusCode,
-    details: { current, required},});}
+    details: { current, required});}
 
 export function alreadyPaidError(expenseId): AppError {
   return new AppError({
@@ -83,5 +83,6 @@ export function developmentEndpointsNotAvailableError(): AppError {
     code: 'DEVELOPMENT_ENDPOINTS_NOT_AVAILABLE',
     message: 'Development endpoints are not available in production',
     statusCode});}
+
 
 

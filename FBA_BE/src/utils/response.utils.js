@@ -37,7 +37,7 @@ export function errorResponse(
     error: {
       code,
       message,
-      details,},};}
+      details,};}
 
 /**
  * Create a paginated response
@@ -65,6 +65,7 @@ export function paginatedResponse<T>(
       total,
       page,
       pageSize,
-      totalPages,},};}
+      totalPages,};}
+
 
 

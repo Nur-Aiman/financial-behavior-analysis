@@ -34,6 +34,7 @@ export class DevelopmentController {
             seeded,
             message: 'Example scenario loaded, 5 categories',},
           'Seed data loaded'));} catch (err) {
-      next(err);}}}
+      next(err);}}
+
 
 

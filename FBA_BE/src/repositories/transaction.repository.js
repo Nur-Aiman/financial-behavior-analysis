@@ -148,7 +148,7 @@ export class TransactionRepository {
         const db = getDatabase();
         await db('transactions').where('id', id).del();
         console.log(`âœ… Transaction deleted from database: ${id}`);} catch (err) {
-        console.error(`âŒ Error persisting transaction deletion to database: ${err.message}`);}}}
+        console.error(`âŒ Error persisting transaction deletion to database: ${err.message}`);}}
 
   /**
    * Clear all transactions
@@ -158,5 +158,6 @@ export class TransactionRepository {
     transactions.forEach(t => this.delete(t.id));}}
 
 export const transactionRepository = new TransactionRepository();
+
 
 

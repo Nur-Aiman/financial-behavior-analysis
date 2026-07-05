@@ -89,7 +89,7 @@ export class DashboardService {
           const category = categories.find(c => c.id === transaction.categoryId);
           if (category) {
             byCategory[category.name] = (byCategory[category.name] || 0) + transaction.amountCents;
-            totalSpent += transaction.amountCents;}}}
+            totalSpent += transaction.amountCents;}}
 
       trends.push({
         date,
@@ -171,5 +171,6 @@ export class DashboardService {
     return projections;}}
 
 export const dashboardService = new DashboardService();
+
 
 

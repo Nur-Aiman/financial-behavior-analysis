@@ -110,7 +110,7 @@ export class FinancialProfileRepository {
         const db = getDatabase();
         await db('financial_profiles').where('id', id).del();
         console.log(`âœ… Financial profile deleted from database: ${id}`);} catch (err) {
-        console.error(`âŒ Error persisting financial profile deletion to database: ${err.message}`);}}}
+        console.error(`âŒ Error persisting financial profile deletion to database: ${err.message}`);}}
 
   /**
    * Clear all profiles
@@ -120,5 +120,6 @@ export class FinancialProfileRepository {
     profiles.forEach(p => this.delete(p.id));}}
 
 export const financialProfileRepository = new FinancialProfileRepository();
+
 
 

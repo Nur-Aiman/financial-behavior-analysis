@@ -50,7 +50,7 @@ export class TransactionService {
           statusCode,
           details: {
             available,
-            required: data.amountCents,},});}
+            required: data.amountCents,});}
 
       // Deduct from balance
       await balanceService.deductFromBalance(data.amountCents);} else if (data.type === TransactionType.INCOME) {
@@ -211,5 +211,6 @@ export class TransactionService {
     return transactions.reduce((sum, t) => sum + t.amountCents, 0);}}
 
 export const transactionService = new TransactionService();
+
 
 

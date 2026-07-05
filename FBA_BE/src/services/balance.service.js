@@ -110,7 +110,7 @@ export class BalanceService {
         statusCode,
         details: {
           available: profile.currentBalanceCents,
-          required},});}
+          required});}
 
     const newBalance = profile.currentBalanceCents - amountCents;
 
@@ -118,5 +118,6 @@ export class BalanceService {
       currentBalanceCents});}}
 
 export const balanceService = new BalanceService();
+
 
 

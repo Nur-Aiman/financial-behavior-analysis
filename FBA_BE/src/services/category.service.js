@@ -115,7 +115,7 @@ export class CategoryService {
         code: 'CATEGORY_HAS_TRANSACTIONS',
         message: `Cannot delete category with ${transactions.length} transactions. Deactivate instead.`,
         statusCode,
-        details: { transactionCount: transactions.length},});}
+        details: { transactionCount: transactions.length});}
 
     categoryRepository.delete(id);}
 
@@ -160,5 +160,6 @@ export class CategoryService {
     return categoryIds.map(id => this.getById(id));}}
 
 export const categoryService = new CategoryService();
+
 
 

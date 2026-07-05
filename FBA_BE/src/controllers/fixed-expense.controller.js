@@ -86,6 +86,7 @@ export class FixedExpenseController {
     try {
       fixedExpenseService.reverseFixedExpensePayment(req.params.categoryId);
       res.json(successResponse({ categoryId: req.params.categoryId}, 'Payment reversed'));} catch (err) {
-      next(err);}}}
+      next(err);}}
+
 
 
