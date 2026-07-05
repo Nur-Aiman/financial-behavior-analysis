@@ -14,8 +14,7 @@
     "sourceMap": false,
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "moduleResolution": "node"
+    "noImplicitReturns": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "tests"]
