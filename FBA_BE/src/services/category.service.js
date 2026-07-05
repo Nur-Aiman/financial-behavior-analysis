@@ -39,7 +39,7 @@ export class CategoryService {
     const allCategories = categoryRepository.findAll();
     const nextDisplayOrder = allCategories.length > 0
       ? Math.max(...allCategories.map(cat => cat.displayOrder)) + 1
-      ;
+      : 1;
 
     return categoryRepository.create({
       ...data,

@@ -149,7 +149,7 @@ async function initializeDatabase() {
           ? (typeof fp.payment_date === 'string' 
             ? fp.payment_date 
             : dateToIsoString(new Date(fp.payment_date)))
-          ;
+          : undefined;
         
         store.addFixedExpensePayment({
           id: fp.id,
