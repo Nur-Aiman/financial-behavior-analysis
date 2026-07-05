@@ -1,15 +1,14 @@
-/**
+﻿/**
  * Application Error Class
  */
 
-import { ErrorCode } from './error-codes';
+import { ErrorCode} from './error-codes';
 
 
   code;
   message;
   statusCode?;
-  details?;
-}
+  details?;}
 
 export class AppError extends Error {
   public readonly code;
@@ -24,8 +23,7 @@ export class AppError extends Error {
     this.name = 'AppError';
 
     // Maintain prototype chain for instanceof checks
-    Object.setPrototypeOf(this, AppError.prototype);
-  }
+    Object.setPrototypeOf(this, AppError.prototype);}
 
   /**
    * Convert to API error response format
@@ -36,18 +34,13 @@ export class AppError extends Error {
       error: {
         code: this.code,
         message: this.message,
-        details: this.details,
-      },
-    };
-  }
+        details: this.details,},};}
 
   /**
    * Log error for debugging
    */
   log() {
-    console.error(`[${this.code}] ${this.message}`, this.details);
-  }
-}
+    console.error(`[${this.code}] ${this.message}`, this.details);}}
 
 /**
  * Helper functions for common errors
@@ -58,42 +51,36 @@ export function notFoundError(resource, id?): AppError {
   return new AppError({
     code: 'NOT_FOUND',
     message,
-    statusCode});
-}
+    statusCode});}
 
 export function validationError(message, details?): AppError {
   return new AppError({
     code: 'VALIDATION_FAILED',
     message,
-    statusCode});
-}
+    statusCode});}
 
 export function insufficientBalanceError(current, required): AppError {
   return new AppError({
     code: 'INSUFFICIENT_BALANCE',
     message: `Insufficient balance. Current: ${current}, Required: ${required}`,
     statusCode,
-    details: { current, required },
-  });
-}
+    details: { current, required},});}
 
 export function alreadyPaidError(expenseId): AppError {
   return new AppError({
     code: 'FIXED_EXPENSE_ALREADY_PAID',
     message: `Fixed expense already paid: ${expenseId}`,
-    statusCode});
-}
+    statusCode});}
 
 export function internalError(message): AppError {
   return new AppError({
     code: 'INTERNAL_ERROR',
     message,
-    statusCode});
-}
+    statusCode});}
 
 export function developmentEndpointsNotAvailableError(): AppError {
   return new AppError({
     code: 'DEVELOPMENT_ENDPOINTS_NOT_AVAILABLE',
     message: 'Development endpoints are not available in production',
-    statusCode});
-}
+    statusCode});}
+

@@ -1,12 +1,12 @@
-/**
+﻿/**
  * Category Controller
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { categoryService } from '../services/category.service';
-import { createCategorySchema, updateCategorySchema, categoryFilterSchema } from '../validators/schemas';
-import { successResponse } from '../utils/response.utils';
-import { formatCentsAsRinggit } from '../utils/money.utils';
+import { Request, Response, NextFunction} from 'express';
+import { categoryService} from '../services/category.service';
+import { createCategorySchema, updateCategorySchema, categoryFilterSchema} from '../validators/schemas';
+import { successResponse} from '../utils/response.utils';
+import { formatCentsAsRinggit} from '../utils/money.utils';
 
 export class CategoryController {
   /**
@@ -19,11 +19,8 @@ export class CategoryController {
       // Zod allows nullable optional fields, but service doesn't accept null
       // This is safe because we only pass non-null values
       const category = categoryService.create(data);
-      res.status(201).json(successResponse(category, 'Category created'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.status(201).json(successResponse(category, 'Category created'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/categories
@@ -35,12 +32,10 @@ export class CategoryController {
       let categories = categoryService.getAll();
 
       if (filters.type) {
-        categories = categories.filter(c => c.type === filters.type);
-      }
+        categories = categories.filter(c => c.type === filters.type);}
 
       if (filters.active !== undefined) {
-        categories = categories.filter(c => c.active === filters.active);
-      }
+        categories = categories.filter(c => c.active === filters.active);}
 
       const enriched = categories.map(cat => {
         const spent = categoryService.getSpendingTotal(cat.id);
@@ -49,21 +44,15 @@ export class CategoryController {
           ...cat,
           allocatedAmount: formatCentsAsRinggit(cat.allocatedAmountCents),
           preferredDailyAmount: cat.preferredDailyAmountCents
-            ? formatCentsAsRinggit(cat.preferredDailyAmountCents)
-            ,
-          expectedAmount: cat.expectedAmountCents ? formatCentsAsRinggit(cat.expectedAmountCents) ,
+            ? formatCentsAsRinggit(cat.preferredDailyAmountCents),
+          expectedAmount: cat.expectedAmountCents ? formatCentsAsRinggit(cat.expectedAmountCents),
           spent,
           remaining,
           spentAmount: formatCentsAsRinggit(spent),
-          remainingAmount: formatCentsAsRinggit(remaining),
-        };
-      });
+          remainingAmount: formatCentsAsRinggit(remaining),};});
 
-      res.json(successResponse(enriched, 'Categories retrieved'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(enriched, 'Categories retrieved'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/categories/:id
@@ -84,13 +73,8 @@ export class CategoryController {
             spent: formatCentsAsRinggit(spent),
             remaining: formatCentsAsRinggit(remaining),
             utilisationPercentage},
-          'Category retrieved'
-        )
-      );
-    } catch (err) {
-      next(err);
-    }
-  }
+          'Category retrieved'));} catch (err) {
+      next(err);}}
 
   /**
    * PUT /api/categories/:id
@@ -102,11 +86,8 @@ export class CategoryController {
       // Zod allows nullable optional fields, but service doesn't accept null
       // This is safe because we only pass non-null values
       const category = categoryService.update(req.params.id, data);
-      res.json(successResponse(category, 'Category updated'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(category, 'Category updated'));} catch (err) {
+      next(err);}}
 
   /**
    * PATCH /api/categories/:id/deactivate
@@ -115,11 +96,8 @@ export class CategoryController {
   static async deactivate(req, res, next): Promise<void> {
     try {
       const category = categoryService.deactivate(req.params.id);
-      res.json(successResponse(category, 'Category deactivated'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(category, 'Category deactivated'));} catch (err) {
+      next(err);}}
 
   /**
    * DELETE /api/categories/:id
@@ -128,11 +106,8 @@ export class CategoryController {
   static async delete(req, res, next): Promise<void> {
     try {
       categoryService.delete(req.params.id);
-      res.json(successResponse({ id: req.params.id }, 'Category deleted'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse({ id: req.params.id}, 'Category deleted'));} catch (err) {
+      next(err);}}
 
   /**
    * PUT /api/categories/reorder
@@ -140,14 +115,10 @@ export class CategoryController {
    */
   static async reorder(req, res, next): Promise<void> {
     try {
-      const { categoryIds } = req.body;
+      const { categoryIds} = req.body;
       if (!Array.isArray(categoryIds)) {
-        throw new Error('categoryIds must be an array');
-      }
+        throw new Error('categoryIds must be an array');}
       const categories = categoryService.reorder(categoryIds);
-      res.json(successResponse(categories, 'Categories reordered successfully'));
-    } catch (err) {
-      next(err);
-    }
-  }
-}
+      res.json(successResponse(categories, 'Categories reordered successfully'));} catch (err) {
+      next(err);}}}
+

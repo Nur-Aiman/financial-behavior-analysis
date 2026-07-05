@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Fixed Expense Service
  * 
  * Manages fixed expenses (bills, subscriptions, loans)
@@ -10,50 +10,44 @@ import {
   FixedExpensePaymentStatus,
   Transaction,
   TransactionType,
-  TransactionSource,
-} from '../models/index';
-import { fixedExpenseRepository } from '../repositories/fixed-expense.repository';
-import { categoryService } from './category.service';
-import { transactionRepository } from '../repositories/transaction.repository';
-import { balanceService } from './balance.service';
-import { AppError } from '../errors/app-error';
-import { getTodayIsoString } from '../utils/date.utils';
+  TransactionSource,} from '../models/index';
+import { fixedExpenseRepository} from '../repositories/fixed-expense.repository';
+import { categoryService} from './category.service';
+import { transactionRepository} from '../repositories/transaction.repository';
+import { balanceService} from './balance.service';
+import { AppError} from '../errors/app-error';
+import { getTodayIsoString} from '../utils/date.utils';
 
 export class FixedExpenseService {
   /**
    * Get all fixed expenses
    */
   getAllFixedExpenses()] {
-    return fixedExpenseRepository.findAll();
-  }
+    return fixedExpenseRepository.findAll();}
 
   /**
    * Get unpaid fixed expenses
    */
   getUnpaidExpenses()] {
-    return fixedExpenseRepository.findUnpaid();
-  }
+    return fixedExpenseRepository.findUnpaid();}
 
   /**
    * Get paid fixed expenses
    */
   getPaidExpenses()] {
-    return fixedExpenseRepository.findPaid();
-  }
+    return fixedExpenseRepository.findPaid();}
 
   /**
    * Get overdue fixed expenses
    */
   getOverdueExpenses()] {
-    return fixedExpenseRepository.findOverdue();
-  }
+    return fixedExpenseRepository.findOverdue();}
 
   /**
    * Get fixed expense for a category
    */
   getExpenseForCategory(categoryId): FixedExpensePayment | null {
-    return fixedExpenseRepository.findUnpaidByCategory(categoryId);
-  }
+    return fixedExpenseRepository.findUnpaidByCategory(categoryId);}
 
   /**
    * Create fixed expense payment record
@@ -62,22 +56,19 @@ export class FixedExpenseService {
     // Verify category is FIXED_ONE_TIME type
     const category = categoryService.getById(categoryId);
 
-    const { SpendingCategoryType } = require('../models');
+    const { SpendingCategoryType} = require('../models');
     if (category.type !== SpendingCategoryType.FIXED_ONE_TIME) {
       throw new AppError({
         code: 'CATEGORY_TYPE_MISMATCH',
         message: `Category must be FIXED_ONE_TIME type, got ${category.type}`,
-        statusCode});
-    }
+        statusCode});}
 
     // Create payment record
     return await fixedExpenseRepository.create({
       categoryId,
       expectedAmountCents: category.expectedAmountCents!,
       dueDate: category.dueDate!,
-      status: FixedExpensePaymentStatus.UNPAID,
-    });
-  }
+      status: FixedExpensePaymentStatus.UNPAID,});}
 
   /**
    * Pay fixed expense
@@ -87,8 +78,7 @@ export class FixedExpenseService {
       throw new AppError({
         code: 'NEGATIVE_TRANSACTION_AMOUNT',
         message: 'Payment amount must be positive',
-        statusCode});
-    }
+        statusCode});}
 
     // Find unpaid payment
     const payment = fixedExpenseRepository.findUnpaidByCategory(categoryId);
@@ -96,8 +86,7 @@ export class FixedExpenseService {
       throw new AppError({
         code: 'FIXED_EXPENSE_ALREADY_PAID',
         message: `No unpaid fixed expense for category: ${categoryId}`,
-        statusCode});
-    }
+        statusCode});}
 
     // Check balance
     const currentBalance = balanceService.getCurrentBalance();
@@ -108,9 +97,7 @@ export class FixedExpenseService {
         statusCode,
         details: {
           available,
-          required},
-      });
-    }
+          required},});}
 
     // Deduct from balance
     await balanceService.deductFromBalance(actualAmountCents);
@@ -123,34 +110,29 @@ export class FixedExpenseService {
       amountCents,
       transactionDate,
       description: `Fixed expense payment: ${categoryService.getById(categoryId).name}`,
-      linkedFixedExpensePaymentId: payment.id,
-    });
+      linkedFixedExpensePaymentId: payment.id,});
 
     // Update payment record
     await fixedExpenseRepository.update(payment.id, {
       status: FixedExpensePaymentStatus.PAID,
       actualAmountCents,
       paymentDate,
-      transactionId: transaction.id,
-    });
+      transactionId: transaction.id,});
 
-    return transaction;
-  }
+    return transaction;}
 
   /**
    * Reverse fixed expense payment
    */
   reverseFixedExpensePayment(categoryId): void {
     const payment = fixedExpenseRepository.findByCategory(categoryId).find(
-      p => p.status === FixedExpensePaymentStatus.PAID
-    );
+      p => p.status === FixedExpensePaymentStatus.PAID);
 
     if (!payment) {
       throw new AppError({
         code: 'FIXED_EXPENSE_NOT_PAID',
         message: `No paid fixed expense to reverse for category: ${categoryId}`,
-        statusCode});
-    }
+        statusCode});}
 
     // Find linked transaction
     const transaction = transactionRepository.findByFixedExpensePaymentId(payment.id);
@@ -158,8 +140,7 @@ export class FixedExpenseService {
       throw new AppError({
         code: 'INVALID_OPERATION',
         message: `No linked transaction found for payment: ${payment.id}`,
-        statusCode});
-    }
+        statusCode});}
 
     // Restore balance
     const currentBalance = balanceService.getCurrentBalance();
@@ -168,8 +149,7 @@ export class FixedExpenseService {
     const profile = financialProfileRepository.getActive();
 
     financialProfileRepository.update(profile.id, {
-      currentBalanceCents: currentBalance + transaction.amountCents,
-    });
+      currentBalanceCents: currentBalance + transaction.amountCents,});
 
     // Delete transaction
     transactionRepository.delete(transaction.id);
@@ -178,8 +158,7 @@ export class FixedExpenseService {
       status: FixedExpensePaymentStatus.UNPAID,
       actualAmountCents,
       paymentDate,
-      transactionId});
-  }
+      transactionId});}
 
   /**
    * Check if fixed expense is overdue
@@ -189,20 +168,18 @@ export class FixedExpenseService {
     if (!payment) return false;
 
     const today = getTodayIsoString();
-    return payment.dueDate < today;
-  }
+    return payment.dueDate < today;}
 
   /**
    * Get days until due
    */
   getDaysUntilDue(categoryId): number {
-    const { calculateRemainingDays } = require('../utils/date.utils');
+    const { calculateRemainingDays} = require('../utils/date.utils');
     const payment = this.getExpenseForCategory(categoryId);
     if (!payment) return -1;
 
     const today = getTodayIsoString();
-    return calculateRemainingDays(today, payment.dueDate);
-  }
+    return calculateRemainingDays(today, payment.dueDate);}
 
   /**
    * Mark*/
@@ -213,11 +190,7 @@ export class FixedExpenseService {
     for (const payment of unpaid) {
       if (payment.dueDate < today && payment.status !== FixedExpensePaymentStatus.OVERDUE) {
         fixedExpenseRepository.update(payment.id, {
-          status: FixedExpensePaymentStatus.OVERDUE,
-        });
-      }
-    }
-  }
-}
+          status: FixedExpensePaymentStatus.OVERDUE,});}}}}
 
 export const fixedExpenseService = new FixedExpenseService();
+

@@ -1,13 +1,13 @@
-/**
+﻿/**
  * Category Service
  * 
  * Manages spending categories (Daily, Usage-based, Fixed)
  */
 
-import { SpendingCategory, SpendingCategoryType } from '../models/index';
-import { categoryRepository } from '../repositories/category.repository';
-import { transactionRepository } from '../repositories/transaction.repository';
-import { AppError } from '../errors/app-error';
+import { SpendingCategory, SpendingCategoryType} from '../models/index';
+import { categoryRepository} from '../repositories/category.repository';
+import { transactionRepository} from '../repositories/transaction.repository';
+import { AppError} from '../errors/app-error';
 
 export class CategoryService {
   /**
@@ -21,24 +21,19 @@ export class CategoryService {
     protected?;
     expectedAmountCents?;
     dueDate?;
-    recurring?;
-  }): SpendingCategory {
+    recurring?;}): SpendingCategory {
     // Validate required fields by type
     if (data.type === SpendingCategoryType.DAILY_TIME_BASED) {
       if (!data.preferredDailyAmountCents || data.preferredDailyAmountCents <= 0) {
         throw new AppError({
           code: 'INVALID_CATEGORY_DATA',
           message: 'Daily categories must have preferredDailyAmountCents > 0',
-          statusCode});
-      }
-    } else if (data.type === SpendingCategoryType.FIXED_ONE_TIME) {
+          statusCode});}} else if (data.type === SpendingCategoryType.FIXED_ONE_TIME) {
       if (!data.expectedAmountCents || !data.dueDate) {
         throw new AppError({
           code: 'INVALID_CATEGORY_DATA',
           message: 'Fixed categories must have expectedAmountCents and dueDate',
-          statusCode});
-      }
-    }
+          statusCode});}}
 
     // Calculate next displayOrder based on existing categories
     const allCategories = categoryRepository.findAll();
@@ -49,22 +44,19 @@ export class CategoryService {
     return categoryRepository.create({
       ...data,
       active,
-      displayOrder});
-  }
+      displayOrder});}
 
   /**
    * Get all categories
    */
   getAll()] {
-    return categoryRepository.findAll();
-  }
+    return categoryRepository.findAll();}
 
   /**
    * Get active categories
    */
   getActive()] {
-    return categoryRepository.findActive();
-  }
+    return categoryRepository.findActive();}
 
   /**
    * Get category by ID
@@ -75,25 +67,21 @@ export class CategoryService {
       throw new AppError({
         code: 'CATEGORY_NOT_FOUND',
         message: `Category not found: ${id}`,
-        statusCode});
-    }
-    return category;
-  }
+        statusCode});}
+    return category;}
 
   /**
    * Get categories by type
    */
   getByType(type)] {
-    return categoryRepository.findByType(type);
-  }
+    return categoryRepository.findByType(type);}
 
   /**
    * Update category
    */
   update(
     id,
-    data, 'id' | 'createdAt'>>
-  ): SpendingCategory {
+    data, 'id' | 'createdAt'>>): SpendingCategory {
     const category = this.getById(id);
 
     // Validate updates by type
@@ -102,20 +90,16 @@ export class CategoryService {
         throw new AppError({
           code: 'INVALID_CATEGORY_DATA',
           message: 'Daily categories must have preferredDailyAmountCents > 0',
-          statusCode});
-      }
-    }
+          statusCode});}}
 
-    return categoryRepository.update(id, data);
-  }
+    return categoryRepository.update(id, data);}
 
   /**
    * Deactivate category (soft delete)
    */
   deactivate(id): SpendingCategory {
     this.getById(id);
-    return categoryRepository.deactivate(id);
-  }
+    return categoryRepository.deactivate(id);}
 
   /**
    * Delete category (hard delete)
@@ -131,20 +115,16 @@ export class CategoryService {
         code: 'CATEGORY_HAS_TRANSACTIONS',
         message: `Cannot delete category with ${transactions.length} transactions. Deactivate instead.`,
         statusCode,
-        details: { transactionCount: transactions.length },
-      });
-    }
+        details: { transactionCount: transactions.length},});}
 
-    categoryRepository.delete(id);
-  }
+    categoryRepository.delete(id);}
 
   /**
    * Get category spending total
    */
   getSpendingTotal(categoryId): number {
     const transactions = transactionRepository.findByCategory(categoryId);
-    return transactions.reduce((sum, t) => sum + t.amountCents, 0);
-  }
+    return transactions.reduce((sum, t) => sum + t.amountCents, 0);}
 
   /**
    * Get category remaining allocation
@@ -152,8 +132,7 @@ export class CategoryService {
   getRemainingAllocation(categoryId): number {
     const category = this.getById(categoryId);
     const spent = this.getSpendingTotal(categoryId);
-    return Math.max(0, category.allocatedAmountCents - spent);
-  }
+    return Math.max(0, category.allocatedAmountCents - spent);}
 
   /**
    * Get category utilisation percentage
@@ -163,8 +142,7 @@ export class CategoryService {
     const spent = this.getSpendingTotal(categoryId);
 
     if (category.allocatedAmountCents === 0) return 0;
-    return (spent / category.allocatedAmountCents) * 100;
-  }
+    return (spent / category.allocatedAmountCents) * 100;}
 
   /**
    * Reorder categories by ID array
@@ -176,12 +154,10 @@ export class CategoryService {
     // Update display order for each category
     categoryIds.forEach((id, index) => {
       categoryRepository.update(id, {
-        displayOrder});
-    });
+        displayOrder});});
 
     // Return categories in new order
-    return categoryIds.map(id => this.getById(id));
-  }
-}
+    return categoryIds.map(id => this.getById(id));}}
 
 export const categoryService = new CategoryService();
+

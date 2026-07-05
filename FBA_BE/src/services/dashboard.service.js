@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Dashboard Service
  * 
  * Provides aggregated data for dashboard display
@@ -8,15 +8,14 @@ import {
   DashboardSummary,
   CategoryUtilisation,
   SpendingTrend,
-  PlannedVsActual,
-} from '../models/index';
-import { SpendingCategoryType } from '../models/index';
-import { financialProfileService } from './financial-profile.service';
-import { categoryService } from './category.service';
-import { transactionService } from './transaction.service';
-import { financialForecastService } from './financial-forecast.service';
-import { getTodayIsoString, getDateNDaysAgo } from '../utils/date.utils';
-import { centsAsPercentage } from '../utils/money.utils';
+  PlannedVsActual,} from '../models/index';
+import { SpendingCategoryType} from '../models/index';
+import { financialProfileService} from './financial-profile.service';
+import { categoryService} from './category.service';
+import { transactionService} from './transaction.service';
+import { financialForecastService} from './financial-forecast.service';
+import { getTodayIsoString, getDateNDaysAgo} from '../utils/date.utils';
+import { centsAsPercentage} from '../utils/money.utils';
 
 export class DashboardService {
   /**
@@ -38,9 +37,7 @@ export class DashboardService {
       recommendedSpendingTodayCents: forecast.recommendedTotalSpendingTodayCents,
       projectedBalanceOnPaydayCents: forecast.projectedBalanceOnPaydayCents,
       totalCategories: categoryService.getActive().length,
-      activeTransactionsThisMonth: allTransactions.length,
-    };
-  }
+      activeTransactionsThisMonth: allTransactions.length,};}
 
   /**
    * Get category utilisation data
@@ -56,14 +53,10 @@ export class DashboardService {
       // Determine status based on utilisation
       let status: 'SAFE' | 'CAUTION' | 'AT_RISK' | 'EXCEEDED';
       if (utilisationPercent > 100) {
-        status = 'EXCEEDED';
-      } else if (utilisationPercent >= 80) {
-        status = 'AT_RISK';
-      } else if (utilisationPercent >= 50) {
-        status = 'CAUTION';
-      } else {
-        status = 'SAFE';
-      }
+        status = 'EXCEEDED';} else if (utilisationPercent >= 80) {
+        status = 'AT_RISK';} else if (utilisationPercent >= 50) {
+        status = 'CAUTION';} else {
+        status = 'SAFE';}
 
       return {
         categoryId: category.id,
@@ -72,9 +65,7 @@ export class DashboardService {
         allocatedAmountCents: category.allocatedAmountCents,
         spentAmountCents,
         remainingAmountCents,
-        utilisationPercentage};
-    });
-  }
+        utilisationPercentage};});}
 
   /**
    * Get spending trend (last 30 days)
@@ -88,8 +79,7 @@ export class DashboardService {
     for (let i = days - 1; i >= 0; i--) {
       const dateStr = getDateNDaysAgo(i);
       const dayTransactions = transactions.filter(
-        t => t.transactionDate === dateStr
-      );
+        t => t.transactionDate === dateStr);
 
       const byCategory= {};
       let totalSpent = 0;
@@ -99,18 +89,13 @@ export class DashboardService {
           const category = categories.find(c => c.id === transaction.categoryId);
           if (category) {
             byCategory[category.name] = (byCategory[category.name] || 0) + transaction.amountCents;
-            totalSpent += transaction.amountCents;
-          }
-        }
-      }
+            totalSpent += transaction.amountCents;}}}
 
       trends.push({
         date,
-        totalSpentCents});
-    }
+        totalSpentCents});}
 
-    return trends;
-  }
+    return trends;}
 
   /**
    * Get planned vs actual spending
@@ -132,11 +117,10 @@ export class DashboardService {
       const actualSpent = transactionService.getCategorySpendingByDateRange(
         category.id,
         startOfCycle,
-        today
-      );
+        today);
 
-      // Calculate planned spending (preferred daily × days so far)
-      const { calculateRemainingDays } = require('../utils/date.utils');
+      // Calculate planned spending (preferred daily Ã— days so far)
+      const { calculateRemainingDays} = require('../utils/date.utils');
       const daysSinceStart = calculateRemainingDays(startOfCycle, today);
       const plannedSpent = (category.preferredDailyAmountCents || 0) * daysSinceStart;
 
@@ -149,11 +133,9 @@ export class DashboardService {
         plannedAmountCents,
         actualAmountCents,
         varianceCents,
-        variancePercentage});
-    }
+        variancePercentage});}
 
-    return result;
-  }
+    return result;}
 
   /**
    * Get projected balance for remaining days
@@ -161,7 +143,7 @@ export class DashboardService {
   getProjectedBalances(): Array<{ date; balanceCents}> {
     const profile = financialProfileService.getProfile();
     const forecast = financialForecastService.calculateForecast(profile);
-    const { getDateNDaysFromNow } = require('../utils/date.utils');
+    const { getDateNDaysFromNow} = require('../utils/date.utils');
 
     const projections: Array<{ date; balanceCents}> = [];
     let currentBalance = profile.currentBalanceCents;
@@ -179,18 +161,14 @@ export class DashboardService {
       const dateStr = getDateNDaysFromNow(i);
       projections.push({
         date,
-        balanceCents: Math.max(0, currentBalance - dailyAverage * i),
-      });
-    }
+        balanceCents: Math.max(0, currentBalance - dailyAverage * i),});}
 
     // Add final balance with salary
     if (projections.length > 0) {
       projections[projections.length - 1].balanceCents +=
-        profile.expectedSalaryCents;
-    }
+        profile.expectedSalaryCents;}
 
-    return projections;
-  }
-}
+    return projections;}}
 
 export const dashboardService = new DashboardService();
+

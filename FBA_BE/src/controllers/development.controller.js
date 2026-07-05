@@ -1,13 +1,13 @@
-/**
+﻿/**
  * Development Controller
  * 
  * Only available outside production
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { clearAllData, seedData } from '../storage/seed-data';
-import { store } from '../storage/in-memory.store';
-import { successResponse } from '../utils/response.utils';
+import { Request, Response, NextFunction} from 'express';
+import { clearAllData, seedData} from '../storage/seed-data';
+import { store} from '../storage/in-memory.store';
+import { successResponse} from '../utils/response.utils';
 
 export class DevelopmentController {
   /**
@@ -17,11 +17,8 @@ export class DevelopmentController {
   static async reset(_req, res, next): Promise<void> {
     try {
       clearAllData();
-      res.json(successResponse({ cleared}, 'All data cleared'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse({ cleared}, 'All data cleared'));} catch (err) {
+      next(err);}}
 
   /**
    * POST /api/dev/seed
@@ -35,13 +32,7 @@ export class DevelopmentController {
         successResponse(
           {
             seeded,
-            message: 'Example scenario loaded, 5 categories',
-          },
-          'Seed data loaded'
-        )
-      );
-    } catch (err) {
-      next(err);
-    }
-  }
-}
+            message: 'Example scenario loaded, 5 categories',},
+          'Seed data loaded'));} catch (err) {
+      next(err);}}}
+

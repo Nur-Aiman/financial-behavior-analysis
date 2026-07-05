@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Seed Data for Development and Testing
  * 
  * Implements the example scenario:
@@ -7,7 +7,7 @@
  */
 
 import { v4} from 'uuid';
-import { store } from './in-memory.store';
+import { store} from './in-memory.store';
 import {
   FinancialProfile,
   SpendingCategory,
@@ -16,8 +16,7 @@ import {
   TransactionType,
   TransactionSource,
   FixedExpensePayment,
-  FixedExpensePaymentStatus,
-} from '../models/index';
+  FixedExpensePaymentStatus,} from '../models/index';
 
 export function seedData(): void {
   store.clear();
@@ -44,8 +43,7 @@ export function seedData(): void {
     salaryCycleStartDate,
     nextPayday,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addProfile(profile);
 
   // 2. Create Categories - All Husby spending items from sheet
@@ -61,8 +59,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(foodCategory);
 
   // PERSONAL CARE= uuidv4();
@@ -75,8 +72,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(shampooCategory);
 
   // PERSONAL CARE= uuidv4();
@@ -89,8 +85,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(soapCategory);
 
   // USAGE-BASED: Petrol (Husby)
@@ -104,8 +99,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(petrolCategory);
 
   // USAGE-BASED: Parking fee (Husby)
@@ -118,8 +112,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(parkingCategory);
 
   // FIXED: Phone bill (Husby)
@@ -135,8 +128,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(phoneCategory);
 
   // FIXED= uuidv4();
@@ -151,8 +143,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(electricityCategory);
 
   // FIXED= uuidv4();
@@ -167,8 +158,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(waterCategory);
 
   // FIXED: Toll (Husby)
@@ -184,8 +174,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(tollCategory);
 
   // FIXED= uuidv4();
@@ -200,8 +189,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(roadTaxCategory);
 
   // FIXED: Haircut (Husby)
@@ -217,8 +205,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(haircutCategory);
 
   // FIXED: Medical card (Husby)
@@ -234,8 +221,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(medicalCategory);
 
   // FIXED: Religious class (Quran)
@@ -251,8 +237,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(religiousCategory);
 
   // FIXED: Parents pocket money (Husby)
@@ -268,8 +253,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(parentsCategory);
 
   // FIXED, PCB (Husby)
@@ -285,8 +269,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(epfCategory);
 
   // EMERGENCY= uuidv4();
@@ -298,8 +281,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(carServiceCategory);
 
   // EMERGENCY= uuidv4();
@@ -311,8 +293,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(tyreCategory);
 
   // EMERGENCY= uuidv4();
@@ -324,8 +305,7 @@ export function seedData(): void {
     active,
     displayOrder,
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addCategory(batteryCategory);
 
   // 3. Create Transactions (Food spending)
@@ -342,8 +322,7 @@ export function seedData(): void {
     merchant: 'Various restaurants',
     description: 'Food expenses earlier in cycle',
     createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
+    updatedAt: new Date().toISOString(),};
   store.addTransaction(foodTransaction);
 
   // 4. Create Fixed Expense Payments (unpaid)
@@ -357,10 +336,9 @@ export function seedData(): void {
     { categoryId: medicalCategory.id, category},
     { categoryId: religiousCategory.id, category},
     { categoryId: parentsCategory.id, category},
-    { categoryId: epfCategory.id, category},
-  ];
+    { categoryId: epfCategory.id, category},];
 
-  paymentIds.forEach(({ categoryId, category }) => {
+  paymentIds.forEach(({ categoryId, category}) => {
     const paymentId = uuidv4();
     const payment= {
       id,
@@ -369,22 +347,19 @@ export function seedData(): void {
       dueDate: category.dueDate || todayStr,
       status: FixedExpensePaymentStatus.UNPAID,
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    store.addFixedExpensePayment(payment);
-  });
+      updatedAt: new Date().toISOString(),};
+    store.addFixedExpensePayment(payment);});
 
-  console.log('✓ Seed data loaded:');
+  console.log('âœ“ Seed data loaded:');
   console.log(`  - Financial Profile (RM1652 balance, ${todayStr} to ${paydayStr})`);
   console.log('  - 19 Husby spending categories');
   console.log('  - 1 Food transaction (RM200 spent)');
-  console.log('  - 10 Unpaid fixed expenses (~RM2,087.67 total)');
-}
+  console.log('  - 10 Unpaid fixed expenses (~RM2,087.67 total)');}
 
 /**
  * Clear all data
  */
 export function clearAllData(): void {
   store.clear();
-  console.log('✓ All data cleared');
-}
+  console.log('âœ“ All data cleared');}
+

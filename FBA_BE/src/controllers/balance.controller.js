@@ -1,12 +1,12 @@
-/**
+﻿/**
  * Balance Controller
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { balanceService } from '../services/balance.service';
-import { updateBalanceSchema } from '../validators/schemas';
-import { successResponse } from '../utils/response.utils';
-import { formatCentsAsRinggit } from '../utils/money.utils';
+import { Request, Response, NextFunction} from 'express';
+import { balanceService} from '../services/balance.service';
+import { updateBalanceSchema} from '../validators/schemas';
+import { successResponse} from '../utils/response.utils';
+import { formatCentsAsRinggit} from '../utils/money.utils';
 
 export class BalanceController {
   /**
@@ -20,15 +20,9 @@ export class BalanceController {
         successResponse(
           {
             currentBalanceCents,
-            currentBalance: formatCentsAsRinggit(currentBalanceCents),
-          },
-          'Balance retrieved'
-        )
-      );
-    } catch (err) {
-      next(err);
-    }
-  }
+            currentBalance: formatCentsAsRinggit(currentBalanceCents),},
+          'Balance retrieved'));} catch (err) {
+      next(err);}}
 
   /**
    * PUT /api/balance
@@ -42,15 +36,9 @@ export class BalanceController {
         successResponse(
           {
             adjustment,
-            newBalance: formatCentsAsRinggit(adjustment.newBalanceCents),
-          },
-          'Balance updated successfully'
-        )
-      );
-    } catch (err) {
-      next(err);
-    }
-  }
+            newBalance: formatCentsAsRinggit(adjustment.newBalanceCents),},
+          'Balance updated successfully'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/balance/history
@@ -63,11 +51,7 @@ export class BalanceController {
         ...adj,
         previousBalance: formatCentsAsRinggit(adj.previousBalanceCents),
         newBalance: formatCentsAsRinggit(adj.newBalanceCents),
-        adjustmentAmount: formatCentsAsRinggit(adj.adjustmentAmountCents),
-      }));
-      res.json(successResponse(enriched, 'Adjustment history retrieved'));
-    } catch (err) {
-      next(err);
-    }
-  }
-}
+        adjustmentAmount: formatCentsAsRinggit(adj.adjustmentAmountCents),}));
+      res.json(successResponse(enriched, 'Adjustment history retrieved'));} catch (err) {
+      next(err);}}}
+

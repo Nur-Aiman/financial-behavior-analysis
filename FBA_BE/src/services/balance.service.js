@@ -1,17 +1,17 @@
-/**
+﻿/**
  * Balance Service
  * 
  * Manages account balance and balance adjustments
  */
 
-import { BalanceAdjustment, TransactionType, TransactionSource } from '../models/index';
-import { financialProfileService } from './financial-profile.service';
-import { financialProfileRepository } from '../repositories/financial-profile.repository';
-import { balanceAdjustmentRepository } from '../repositories/balance-adjustment.repository';
-import { transactionRepository } from '../repositories/transaction.repository';
-import { AppError } from '../errors/app-error';
-import { getTodayIsoString } from '../utils/date.utils';
-import { addCents } from '../utils/money.utils';
+import { BalanceAdjustment, TransactionType, TransactionSource} from '../models/index';
+import { financialProfileService} from './financial-profile.service';
+import { financialProfileRepository} from '../repositories/financial-profile.repository';
+import { balanceAdjustmentRepository} from '../repositories/balance-adjustment.repository';
+import { transactionRepository} from '../repositories/transaction.repository';
+import { AppError} from '../errors/app-error';
+import { getTodayIsoString} from '../utils/date.utils';
+import { addCents} from '../utils/money.utils';
 
 export class BalanceService {
   /**
@@ -19,15 +19,13 @@ export class BalanceService {
    */
   getCurrentBalance(): number {
     const profile = financialProfileService.getProfile();
-    return profile.currentBalanceCents;
-  }
+    return profile.currentBalanceCents;}
 
   /**
    * Get balance adjustment history
    */
   getAdjustmentHistory()] {
-    return balanceAdjustmentRepository.getHistory();
-  }
+    return balanceAdjustmentRepository.getHistory();}
 
   /**
    * Update balance with reason
@@ -37,15 +35,13 @@ export class BalanceService {
       throw new AppError({
         code: 'INVALID_REQUEST_DATA',
         message: 'Reason is required for balance adjustment',
-        statusCode});
-    }
+        statusCode});}
 
     if (newBalanceCents < 0) {
       throw new AppError({
         code: 'INVALID_BALANCE_AMOUNT',
         message: 'Balance cannot be negative',
-        statusCode});
-    }
+        statusCode});}
 
     const profile = financialProfileService.getProfile();
     const previousBalance = profile.currentBalanceCents;
@@ -59,8 +55,7 @@ export class BalanceService {
     const adjustment = await balanceAdjustmentRepository.create({
       previousBalanceCents,
       adjustmentAmountCents,
-      createdAt: getTodayIsoString(),
-    });
+      createdAt: getTodayIsoString(),});
 
     // Create balance adjustment transaction for tracking
     await transactionRepository.create({
@@ -70,8 +65,7 @@ export class BalanceService {
       transactionDate: getTodayIsoString(),
       description});
 
-    return adjustment;
-  }
+    return adjustment;}
 
   /**
    * Add income
@@ -81,8 +75,7 @@ export class BalanceService {
       throw new AppError({
         code: 'INVALID_BALANCE_AMOUNT',
         message: 'Income amount must be positive',
-        statusCode});
-    }
+        statusCode});}
 
     const profile = financialProfileService.getProfile();
     const newBalance = addCents(profile.currentBalanceCents, amountCents);
@@ -96,9 +89,7 @@ export class BalanceService {
       source: TransactionSource.MANUAL,
       amountCents,
       transactionDate: getTodayIsoString(),
-      description: description || 'Income',
-    });
-  }
+      description: description || 'Income',});}
 
   /**
    * Deduct from balance
@@ -108,8 +99,7 @@ export class BalanceService {
       throw new AppError({
         code: 'INVALID_BALANCE_AMOUNT',
         message: 'Deduction amount must be positive',
-        statusCode});
-    }
+        statusCode});}
 
     const profile = financialProfileService.getProfile();
 
@@ -120,15 +110,12 @@ export class BalanceService {
         statusCode,
         details: {
           available: profile.currentBalanceCents,
-          required},
-      });
-    }
+          required},});}
 
     const newBalance = profile.currentBalanceCents - amountCents;
 
     await financialProfileRepository.update(profile.id, {
-      currentBalanceCents});
-  }
-}
+      currentBalanceCents});}}
 
 export const balanceService = new BalanceService();
+

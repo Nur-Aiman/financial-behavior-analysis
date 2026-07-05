@@ -1,14 +1,14 @@
-/**
+﻿/**
  * Financial Profile Repository
  * 
  * Interface for accessing financial profile data.
  * Currently uses in-memory storage, can be replaced with database without changing services.
  */
 
-import { FinancialProfile } from '../models/index';
-import { store } from '../storage/in-memory.store';
-import { generateId } from '../utils/id.utils';
-import { getDatabase } from '../database/connection';
+import { FinancialProfile} from '../models/index';
+import { store} from '../storage/in-memory.store';
+import { generateId} from '../utils/id.utils';
+import { getDatabase} from '../database/connection';
 
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
 
@@ -40,36 +40,29 @@ export class FinancialProfileRepository {
           created_at,
           updated_at};
         await db('financial_profiles').insert(dbData);
-        console.log(`✅ Financial profile saved to database: ${profile.id}`);
-      } catch (err) {
-        console.error(`❌ Error persisting financial profile to database: ${err.message}`);
-      }
-    }
+        console.log(`âœ… Financial profile saved to database: ${profile.id}`);} catch (err) {
+        console.error(`âŒ Error persisting financial profile to database: ${err.message}`);}}
 
-    return profile;
-  }
+    return profile;}
 
   /**
    * Find profile by ID
    */
   findById(id): FinancialProfile | null {
-    return store.getProfile(id);
-  }
+    return store.getProfile(id);}
 
   /**
    * Find all profiles (should only be one in v1)
    */
   findAll()] {
-    return store.getAllProfiles();
-  }
+    return store.getAllProfiles();}
 
   /**
    * Get the active profile (only one per app in v1)
    */
   getActive(): FinancialProfile | null {
     const profiles = this.findAll();
-    return profiles.length > 0 ? profiles[0] ;
-  }
+    return profiles.length > 0 ? profiles[0] ;}
 
   /**
    * Update profile
@@ -77,8 +70,7 @@ export class FinancialProfileRepository {
   async update(id, data, 'id' | 'createdAt'>>): Promise<FinancialProfile> {
     const existing = this.findById(id);
     if (!existing) {
-      throw new Error(`Profile not found: ${id}`);
-    }
+      throw new Error(`Profile not found: ${id}`);}
 
     const now = new Date().toISOString();
     store.updateProfile(id, {
@@ -100,14 +92,10 @@ export class FinancialProfileRepository {
         if (data.nextPayday !== undefined) dbData.next_payday = data.nextPayday;
 
         await db('financial_profiles').where('id', id).update(dbData);
-        console.log(`✅ Financial profile updated in database: ${id}`);
-      } catch (err) {
-        console.error(`❌ Error persisting financial profile update to database: ${err.message}`);
-      }
-    }
+        console.log(`âœ… Financial profile updated in database: ${id}`);} catch (err) {
+        console.error(`âŒ Error persisting financial profile update to database: ${err.message}`);}}
 
-    return this.findById(id)!;
-  }
+    return this.findById(id)!;}
 
   /**
    * Delete profile
@@ -120,20 +108,15 @@ export class FinancialProfileRepository {
       try {
         const db = getDatabase();
         await db('financial_profiles').where('id', id).del();
-        console.log(`✅ Financial profile deleted from database: ${id}`);
-      } catch (err) {
-        console.error(`❌ Error persisting financial profile deletion to database: ${err.message}`);
-      }
-    }
-  }
+        console.log(`âœ… Financial profile deleted from database: ${id}`);} catch (err) {
+        console.error(`âŒ Error persisting financial profile deletion to database: ${err.message}`);}}}
 
   /**
    * Clear all profiles
    */
   clear(): void {
     const profiles = this.findAll();
-    profiles.forEach(p => this.delete(p.id));
-  }
-}
+    profiles.forEach(p => this.delete(p.id));}}
 
 export const financialProfileRepository = new FinancialProfileRepository();
+

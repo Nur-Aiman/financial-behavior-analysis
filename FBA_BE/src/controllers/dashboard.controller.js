@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Dashboard Controller
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { dashboardService } from '../services/dashboard.service';
-import { successResponse } from '../utils/response.utils';
-import { formatCentsAsRinggit } from '../utils/money.utils';
+import { Request, Response, NextFunction} from 'express';
+import { dashboardService} from '../services/dashboard.service';
+import { successResponse} from '../utils/response.utils';
+import { formatCentsAsRinggit} from '../utils/money.utils';
 
 export class DashboardController {
   /**
@@ -24,14 +24,10 @@ export class DashboardController {
         safelyAvailableBalance: formatCentsAsRinggit(summary.safelyAvailableBalanceCents),
         recommendedSpendingToday: formatCentsAsRinggit(summary.recommendedSpendingTodayCents),
         projectedBalanceOnPayday: formatCentsAsRinggit(summary.projectedBalanceOnPaydayCents),
-        expectedSalary: formatCentsAsRinggit(summary.expectedSalaryCents),
-      };
+        expectedSalary: formatCentsAsRinggit(summary.expectedSalaryCents),};
 
-      res.json(successResponse(enriched, 'Dashboard summary retrieved'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(enriched, 'Dashboard summary retrieved'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/dashboard/category-utilisation
@@ -45,14 +41,10 @@ export class DashboardController {
         ...u,
         allocatedAmount: formatCentsAsRinggit(u.allocatedAmountCents),
         spentAmount: formatCentsAsRinggit(u.spentAmountCents),
-        remainingAmount: formatCentsAsRinggit(u.remainingAmountCents),
-      }));
+        remainingAmount: formatCentsAsRinggit(u.remainingAmountCents),}));
 
-      res.json(successResponse(enriched, 'Category utilisation retrieved'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(enriched, 'Category utilisation retrieved'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/dashboard/spending-trend
@@ -68,17 +60,11 @@ export class DashboardController {
         byCategory: Object.entries(t.byCategory).reduce(
           (acc, [key, value]) => ({
             ...acc,
-            [key]: formatCentsAsRinggit(value),
-          }),
-          {}
-        ),
-      }));
+            [key]: formatCentsAsRinggit(value),}),
+          {}),}));
 
-      res.json(successResponse(enriched, 'Spending trend retrieved'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(enriched, 'Spending trend retrieved'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/dashboard/planned-vs-actual
@@ -92,14 +78,10 @@ export class DashboardController {
         ...d,
         plannedAmount: formatCentsAsRinggit(d.plannedAmountCents),
         actualAmount: formatCentsAsRinggit(d.actualAmountCents),
-        variance: formatCentsAsRinggit(d.varianceCents),
-      }));
+        variance: formatCentsAsRinggit(d.varianceCents),}));
 
-      res.json(successResponse(enriched, 'Planned vs actual retrieved'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(enriched, 'Planned vs actual retrieved'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/dashboard/projected-balances
@@ -111,12 +93,8 @@ export class DashboardController {
 
       const enriched = projections.map(p => ({
         ...p,
-        balance: formatCentsAsRinggit(p.balanceCents),
-      }));
+        balance: formatCentsAsRinggit(p.balanceCents),}));
 
-      res.json(successResponse(enriched, 'Projected balances retrieved'));
-    } catch (err) {
-      next(err);
-    }
-  }
-}
+      res.json(successResponse(enriched, 'Projected balances retrieved'));} catch (err) {
+      next(err);}}}
+

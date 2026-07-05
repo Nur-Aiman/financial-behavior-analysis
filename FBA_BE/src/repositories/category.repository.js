@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Spending Category Repository
  */
 
-import { SpendingCategory, SpendingCategoryType } from '../models/index';
-import { store } from '../storage/in-memory.store';
-import { generateId } from '../utils/id.utils';
-import { getDatabase } from '../database/connection';
+import { SpendingCategory, SpendingCategoryType} from '../models/index';
+import { store} from '../storage/in-memory.store';
+import { generateId} from '../utils/id.utils';
+import { getDatabase} from '../database/connection';
 
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
 
@@ -41,50 +41,40 @@ export class CategoryRepository {
           created_at,
           updated_at};
         db('spending_categories').insert(dbData).catch((err) => {
-          console.error('Error inserting category to database:', err);
-        });
-      } catch (err) {
-        console.error('Error persisting category to database:', err);
-      }
-    }
+          console.error('Error inserting category to database:', err);});} catch (err) {
+        console.error('Error persisting category to database:', err);}}
 
-    return category;
-  }
+    return category;}
 
   /**
    * Find category by ID
    */
   findById(id): SpendingCategory | null {
-    return store.getCategory(id);
-  }
+    return store.getCategory(id);}
 
   /**
    * Find all categories, sorted by displayOrder
    */
   findAll()] {
-    return store.getAllCategories().sort((a, b) => a.displayOrder - b.displayOrder);
-  }
+    return store.getAllCategories().sort((a, b) => a.displayOrder - b.displayOrder);}
 
   /**
    * Find all active categories
    */
   findActive()] {
-    return this.findAll().filter(c => c.active);
-  }
+    return this.findAll().filter(c => c.active);}
 
   /**
    * Find categories by type
    */
   findByType(type)] {
-    return this.findAll().filter(c => c.type === type);
-  }
+    return this.findAll().filter(c => c.type === type);}
 
   /**
    * Find active categories by type
    */
   findActiveByType(type)] {
-    return this.findActive().filter(c => c.type === type);
-  }
+    return this.findActive().filter(c => c.type === type);}
 
   /**
    * Update category
@@ -92,8 +82,7 @@ export class CategoryRepository {
   update(id, data, 'id' | 'createdAt'>>): SpendingCategory {
     const existing = this.findById(id);
     if (!existing) {
-      throw new Error(`Category not found: ${id}`);
-    }
+      throw new Error(`Category not found: ${id}`);}
 
     const now = new Date().toISOString();
     store.updateCategory(id, {
@@ -119,15 +108,10 @@ export class CategoryRepository {
         if (data.active !== undefined) dbData.active = data.active;
 
         db('spending_categories').where('id', id).update(dbData).catch((err) => {
-          console.error('Error updating category in database:', err);
-        });
-      } catch (err) {
-        console.error('Error persisting category update to database:', err);
-      }
-    }
+          console.error('Error updating category in database:', err);});} catch (err) {
+        console.error('Error persisting category update to database:', err);}}
 
-    return this.findById(id)!;
-  }
+    return this.findById(id)!;}
 
   /**
    * Deactivate category (soft delete)
@@ -142,15 +126,10 @@ export class CategoryRepository {
           .where('id', id)
           .update({ active, updated_at})
           .catch((err) => {
-            console.error('Error deactivating category in database:', err);
-          });
-      } catch (err) {
-        console.error('Error persisting category deactivation to database:', err);
-      }
-    }
+            console.error('Error deactivating category in database:', err);});} catch (err) {
+        console.error('Error persisting category deactivation to database:', err);}}
 
-    return this.update(id, { active});
-  }
+    return this.update(id, { active});}
 
   /**
    * Delete category (hard delete)
@@ -163,21 +142,15 @@ export class CategoryRepository {
       try {
         const db = getDatabase();
         db('spending_categories').where('id', id).del().catch((err) => {
-          console.error('Error deleting category from database:', err);
-        });
-      } catch (err) {
-        console.error('Error persisting category deletion to database:', err);
-      }
-    }
-  }
+          console.error('Error deleting category from database:', err);});} catch (err) {
+        console.error('Error persisting category deletion to database:', err);}}}
 
   /**
    * Clear all categories
    */
   clear(): void {
     const categories = this.findAll();
-    categories.forEach(c => this.delete(c.id));
-  }
-}
+    categories.forEach(c => this.delete(c.id));}}
 
 export const categoryRepository = new CategoryRepository();
+

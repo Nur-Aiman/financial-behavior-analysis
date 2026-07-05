@@ -1,4 +1,4 @@
-/**
+﻿/**
  * API Response Utilities
  * 
  * Provides consistent response formatting across all endpoints
@@ -7,17 +7,14 @@
 
   success;
   data;
-  message?;
-}
+  message?;}
 
 
   success;
   error: {
     code;
     message;
-    details?;
-  };
-}
+    details?;};}
 
 /**
  * Create a success response
@@ -26,8 +23,7 @@ export function successResponse<T>(
   data,
   message?): SuccessResponse<T> {
   return {
-    success};
-}
+    success};}
 
 /**
  * Create an error response
@@ -41,10 +37,7 @@ export function errorResponse(
     error: {
       code,
       message,
-      details,
-    },
-  };
-}
+      details,},};}
 
 /**
  * Create a paginated response
@@ -56,15 +49,12 @@ export function errorResponse(
     total;
     page;
     pageSize;
-    totalPages;
-  };
-}
+    totalPages;};}
 
 export function paginatedResponse<T>(
   data,
   page= 1,
-  pageSize= 20
-): PaginatedResponse<T> {
+  pageSize= 20): PaginatedResponse<T> {
   const total = data.length;
   const totalPages = Math.ceil(total / pageSize);
 
@@ -75,7 +65,5 @@ export function paginatedResponse<T>(
       total,
       page,
       pageSize,
-      totalPages,
-    },
-  };
-}
+      totalPages,},};}
+

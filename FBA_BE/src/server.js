@@ -1,13 +1,13 @@
-/**
+﻿/**
  * Server Entry Point
  * Handles auto-migrations on startup and database initialization
  */
 
 import 'dotenv/config';
 import app from './app';
-import { seedData } from './storage/seed-data';
-import { store } from './storage/in-memory.store';
-import { dateToIsoString } from './utils/date.utils';
+import { seedData} from './storage/seed-data';
+import { store} from './storage/in-memory.store';
+import { dateToIsoString} from './utils/date.utils';
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
@@ -16,11 +16,10 @@ const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
 async function runMigrations() {
   if (!USE_REAL_DB) {
     console.log('Skipping migrations - using in-memory database');
-    return;
-  }
+    return;}
 
   try {
-    console.log('🔧 Running database migrations...');
+    console.log('ðŸ”§ Running database migrations...');
     console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`   DATABASE_URL set: ${!!process.env.DATABASE_URL}`);
     
@@ -34,31 +33,26 @@ async function runMigrations() {
     // Test connection first
     console.log('   Testing database connection...');
     await db.raw('SELECT 1');
-    console.log('   ✅ Database connection successful');
+    console.log('   âœ… Database connection successful');
 
     // Run migrations
     const [batchNo, logs] = await db.migrate.latest();
-    console.log(`✅ Migrations completed. Batch: ${batchNo}, Changes: ${logs.length}`);
+    console.log(`âœ… Migrations completed. Batch: ${batchNo}, Changes: ${logs.length}`);
     if (logs.length > 0) {
-      logs.forEach((log) => console.log(`  - ${log}`));
-    } else {
-      console.log('   No new migrations to run');
-    }
+      logs.forEach((log) => console.log(`  - ${log}`));} else {
+      console.log('   No new migrations to run');}
     
-    await db.destroy();
-  } catch (error) {
-    console.error('❌ Migration error:', error.message);
+    await db.destroy();} catch (error) {
+    console.error('âŒ Migration error:', error.message);
     console.error('Stack:', error.stack);
     // Don't fail startup, but log the error clearly
-    console.warn('⚠️  Migrations failed - database tables may not be created!');
-  }
-}
+    console.warn('âš ï¸  Migrations failed - database tables may not be created!');}}
 
 // Initialize database
 async function initializeDatabase() {
   if (USE_REAL_DB) {
     try {
-      console.log('📦 Loading data from PostgreSQL...');
+      console.log('ðŸ“¦ Loading data from PostgreSQL...');
       const knex = require('knex');
       const knexfile = require('../config/knexfile');
       const env = process.env.NODE_ENV || 'development';
@@ -73,19 +67,17 @@ async function initializeDatabase() {
           name: cat.name,
           type: cat.type,
           allocatedAmountCents: parseInt(cat.allocated_amount_cents),
-          preferredDailyAmountCents: cat.preferred_daily_amount_cents ? parseInt(cat.preferred_daily_amount_cents) ,
-          expectedAmountCents: cat.expected_amount_cents ? parseInt(cat.expected_amount_cents) ,
+          preferredDailyAmountCents: cat.preferred_daily_amount_cents ? parseInt(cat.preferred_daily_amount_cents),
+          expectedAmountCents: cat.expected_amount_cents ? parseInt(cat.expected_amount_cents),
           dueDate: cat.due_date,
           recurring: cat.recurring,
           protected: cat.protected,
           displayOrder: cat.display_order,
           active: cat.active,
           createdAt: cat.created_at,
-          updatedAt: cat.updated_at,
-        });
-      });
+          updatedAt: cat.updated_at,});});
       
-      console.log(`✅ Loaded ${categories.length} categories from PostgreSQL`);
+      console.log(`âœ… Loaded ${categories.length} categories from PostgreSQL`);
       
       // Load financial profile from PostgreSQL
       const profiles = await db.select('*').from('financial_profiles').limit(1);
@@ -95,10 +87,8 @@ async function initializeDatabase() {
         const convertToIsoDate = (dateValue) => {
           if (!dateValue) return dateToIsoString(new Date()); // fallback to today if null
           if (typeof dateValue === 'string') {
-            return dateValue.includes('T') ? dateValue.split('T')[0] ;
-          }
-          return dateToIsoString(new Date(dateValue));
-        };
+            return dateValue.includes('T') ? dateValue.split('T')[0] ;}
+          return dateToIsoString(new Date(dateValue));};
         
         store.addProfile({
           id: profile.id,
@@ -109,10 +99,8 @@ async function initializeDatabase() {
           salaryCycleStartDate: convertToIsoDate(profile.salary_cycle_start_date),
           nextPayday: convertToIsoDate(profile.next_payday),
           createdAt: profile.created_at,
-          updatedAt: profile.updated_at,
-        });
-        console.log(`✅ Loaded financial profile from PostgreSQL`);
-      }
+          updatedAt: profile.updated_at,});
+        console.log(`âœ… Loaded financial profile from PostgreSQL`);}
       
       // Load transactions from PostgreSQL
       const transactions = await db.select('*').from('transactions').orderBy('created_at', 'desc');
@@ -134,10 +122,8 @@ async function initializeDatabase() {
           source: tx.source,
           linkedFixedExpensePaymentId: tx.linked_fixed_expense_payment_id,
           createdAt: tx.created_at,
-          updatedAt: tx.updated_at,
-        });
-      });
-      console.log(`✅ Loaded ${transactions.length} transactions from PostgreSQL`);
+          updatedAt: tx.updated_at,});});
+      console.log(`âœ… Loaded ${transactions.length} transactions from PostgreSQL`);
       
       // Load balance adjustments from PostgreSQL
       const adjustments = await db.select('*').from('balance_adjustments').orderBy('created_at', 'desc');
@@ -148,10 +134,8 @@ async function initializeDatabase() {
           newBalanceCents: parseInt(adj.new_balance_cents),
           adjustmentAmountCents: parseInt(adj.adjustment_amount_cents),
           reason: adj.reason,
-          createdAt: adj.created_at,
-        });
-      });
-      console.log(`✅ Loaded ${adjustments.length} balance adjustments from PostgreSQL`);
+          createdAt: adj.created_at,});});
+      console.log(`âœ… Loaded ${adjustments.length} balance adjustments from PostgreSQL`);
       
       // Load fixed expense payments from PostgreSQL
       const fixedExpenses = await db.select('*').from('fixed_expense_payments').orderBy('created_at', 'desc');
@@ -171,29 +155,22 @@ async function initializeDatabase() {
           id: fp.id,
           categoryId: fp.category_id,
           expectedAmountCents: parseInt(fp.expected_amount_cents),
-          actualAmountCents: fp.actual_amount_cents ? parseInt(fp.actual_amount_cents) ,
+          actualAmountCents: fp.actual_amount_cents ? parseInt(fp.actual_amount_cents),
           dueDate,
           paymentDate,
           status: fp.status,
           transactionId: fp.transaction_id,
           createdAt: fp.created_at,
-          updatedAt: fp.updated_at,
-        });
-      });
-      console.log(`✅ Loaded ${fixedExpenses.length} fixed expense payments from PostgreSQL`);
+          updatedAt: fp.updated_at,});});
+      console.log(`âœ… Loaded ${fixedExpenses.length} fixed expense payments from PostgreSQL`);
       
-      await db.destroy();
-    } catch (err) {
-      console.error('❌ Error loading from PostgreSQL:', err.message);
-      console.log('Falling back to in-memory storage');
-    }
-  } else {
+      await db.destroy();} catch (err) {
+      console.error('âŒ Error loading from PostgreSQL:', err.message);
+      console.log('Falling back to in-memory storage');}} else {
     console.log('Loading seed data for in-memory storage...');
-    seedData();
-  }
+    seedData();}
   
-  console.log('Seed data loaded successfully');
-}
+  console.log('Seed data loaded successfully');}
 
 // Initialize and start server
 let server;
@@ -208,46 +185,36 @@ let server;
 
     // Start server
     server = app.listen(PORT, () => {
-      console.log(`\n✅ Server running on http://localhost:${PORT}`);
-      console.log(`📊 API Base URL: http://localhost:${PORT}/api`);
-      console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
+      console.log(`\nâœ… Server running on http://localhost:${PORT}`);
+      console.log(`ðŸ“Š API Base URL: http://localhost:${PORT}/api`);
+      console.log(`ðŸ¥ Health Check: http://localhost:${PORT}/health`);
       if (!USE_REAL_DB) {
-        console.log('💾 Using in-memory storage (data will reset on restart)');
-        console.log(`🔧 Dev endpoints available at http://localhost:${PORT}/api/dev`);
-      }
-      console.log('');
-    });
+        console.log('ðŸ’¾ Using in-memory storage (data will reset on restart)');
+        console.log(`ðŸ”§ Dev endpoints available at http://localhost:${PORT}/api/dev`);}
+      console.log('');});
 
     // Graceful shutdown
     process.on('SIGTERM', () => {
       console.log('\nSIGTERM received, shutting down gracefully...');
       server.close(() => {
         console.log('Server closed');
-        process.exit(0);
-      });
-    });
+        process.exit(0);});});
 
     process.on('SIGINT', () => {
       console.log('\nSIGINT received, shutting down gracefully...');
       server.close(() => {
         console.log('Server closed');
-        process.exit(0);
-      });
-    });
+        process.exit(0);});});
 
     process.on('uncaughtException', (error) => {
       console.error('Uncaught Exception:', error);
-      process.exit(1);
-    });
+      process.exit(1);});
 
     process.on('unhandledRejection', (reason, promise) => {
       console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-      process.exit(1);
-    });
-  } catch (err) {
+      process.exit(1);});} catch (err) {
     console.error('Failed to start server:', err);
-    process.exit(1);
-  }
-})();
+    process.exit(1);}})();
 
 export default server;
+

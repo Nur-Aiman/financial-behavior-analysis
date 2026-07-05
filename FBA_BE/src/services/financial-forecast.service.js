@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Financial Forecast Service
  * 
  * Core forecasting engine that calculates:
@@ -23,16 +23,14 @@ import {
   DailyForecast,
   Warning,
   WarningLevel,
-  ForecastStatus,
-} from '../models/index';
-import { categoryRepository } from '../repositories/category.repository';
-import { transactionRepository } from '../repositories/transaction.repository';
-import { fixedExpenseRepository } from '../repositories/fixed-expense.repository';
+  ForecastStatus,} from '../models/index';
+import { categoryRepository} from '../repositories/category.repository';
+import { transactionRepository} from '../repositories/transaction.repository';
+import { fixedExpenseRepository} from '../repositories/fixed-expense.repository';
 import {
   calculateRemainingDays,
   getTodayIsoString,
-  formatDateForDisplay,
-} from '../utils/date.utils';
+  formatDateForDisplay,} from '../utils/date.utils';
 import {
   divideCents,
   addCents,
@@ -40,9 +38,8 @@ import {
   multiplyCents,
   centsAsPercentage,
   ensureNonNegative,
-  formatCentsAsRinggit,
-} from '../utils/money.utils';
-import { AppError } from '../errors/app-error';
+  formatCentsAsRinggit,} from '../utils/money.utils';
+import { AppError} from '../errors/app-error';
 
 export class FinancialForecastService {
   /**
@@ -57,15 +54,13 @@ export class FinancialForecastService {
       throw new AppError({
         code: 'PROFILE_NOT_FOUND',
         message: 'No financial profile configured',
-        statusCode});
-    }
+        statusCode});}
 
     if (!profile.nextPayday) {
       throw new AppError({
         code: 'PAYDAY_NOT_SET',
         message: 'Payday not configured',
-        statusCode});
-    }
+        statusCode});}
 
     const remainingDays = calculateRemainingDays(today, profile.nextPayday);
 
@@ -73,11 +68,9 @@ export class FinancialForecastService {
       warnings.push(this.createWarning(
         'CRITICAL',
         'PAYDAY_PASSED',
-        `Payday (${formatDateForDisplay(profile.nextPayday)}) has already passed. Please configure your next salary cycle.`
-      ));
+        `Payday (${formatDateForDisplay(profile.nextPayday)}) has already passed. Please configure your next salary cycle.`));
       // Return minimal forecast
-      return this.createFailureForecast(today, profile, warnings);
-    }
+      return this.createFailureForecast(today, profile, warnings);}
 
     // Step 2= categoryRepository.findActive();
     const allTransactions = transactionRepository.findAll();
@@ -91,13 +84,11 @@ export class FinancialForecastService {
     // Step 5: Calculate protected usage-based allocations
     const protectedUsageAllocationCents = this.calculateProtectedUsageAllocation(
       allCategories,
-      categorySpending
-    );
+      categorySpending);
 
     // Step 6= subtractCents(
       subtractCents(profile.currentBalanceCents, reservedFixedExpensesCents),
-      protectedUsageAllocationCents
-    );
+      protectedUsageAllocationCents);
 
     dailySpendingPoolCents = ensureNonNegative(dailySpendingPoolCents);
 
@@ -106,39 +97,30 @@ export class FinancialForecastService {
       warnings.push(this.createWarning(
         'CRITICAL',
         'INSUFFICIENT_BALANCE',
-        `Current balance (${formatCentsAsRinggit(profile.currentBalanceCents)}) is less than reserved fixed expenses (${formatCentsAsRinggit(reservedFixedExpensesCents)})`
-      ));
-    }
+        `Current balance (${formatCentsAsRinggit(profile.currentBalanceCents)}) is less than reserved fixed expenses (${formatCentsAsRinggit(reservedFixedExpensesCents)})`));}
 
     if (
       profile.currentBalanceCents <
-      addCents(reservedFixedExpensesCents, protectedUsageAllocationCents)
-    ) {
+      addCents(reservedFixedExpensesCents, protectedUsageAllocationCents)) {
       warnings.push(this.createWarning(
         'CRITICAL',
         'INSUFFICIENT_FOR_COMMITMENTS',
-        'Current balance is insufficient to cover all commitments'
-      ));
-    }
+        'Current balance is insufficient to cover all commitments'));}
 
     if (dailySpendingPoolCents <= 0) {
       warnings.push(this.createWarning(
         'CRITICAL',
         'NO_SAFE_SPENDING_AVAILABLE',
-        'No safe amount available for spending today'
-      ));
-    }
+        'No safe amount available for spending today'));}
 
     // Step 7= categoryRepository.findActiveByType(
-      SpendingCategoryType.DAILY_TIME_BASED
-    );
+      SpendingCategoryType.DAILY_TIME_BASED);
     const dailyForecasts = this.calculateDailyForecasts(
       dailyCategories,
       categorySpending,
       dailySpendingPoolCents,
       remainingDays,
-      today
-    );
+      today);
 
     // Step 8: Generate category-level warnings
     for (const category of allCategories) {
@@ -150,17 +132,12 @@ export class FinancialForecastService {
           'WARNING',
           'ALLOCATION_EXCEEDED',
           `${category.name} allocation exceeded`,
-          { categoryId: category.id, spent, allocated: category.allocatedAmountCents }
-        ));
-      } else if (utilisationPercent >= 80) {
+          { categoryId: category.id, spent, allocated: category.allocatedAmountCents}));} else if (utilisationPercent >= 80) {
         warnings.push(this.createWarning(
           'WARNING',
           'ALLOCATION_AT_80_PERCENT',
           `${category.name} allocation is at 80% utilisation`,
-          { categoryId: category.id, utilisationPercent }
-        ));
-      }
-    }
+          { categoryId: category.id, utilisationPercent}));}}
 
     // Step 9: Generate fixed expense warnings
     for (const payment of allFixedPayments) {
@@ -173,40 +150,30 @@ export class FinancialForecastService {
             'WARNING',
             'BILL_OVERDUE',
             `${category?.name || 'Bill'} due on ${formatDateForDisplay(payment.dueDate)} is overdue`,
-            { categoryId: payment.categoryId }
-          ));
-        } else if (daysUntilDue <= 3) {
+            { categoryId: payment.categoryId}));} else if (daysUntilDue <= 3) {
           const category = categoryRepository.findById(payment.categoryId);
           warnings.push(this.createWarning(
             'INFO',
             'BILL_APPROACHING',
             `${category?.name || 'Bill'} is due on ${formatDateForDisplay(payment.dueDate)} (${daysUntilDue} days)`,
-            { categoryId: payment.categoryId, daysUntilDue }
-          ));
-        }
-      }
-    }
+            { categoryId: payment.categoryId, daysUntilDue}));}}}
 
     // Step 10= dailyForecasts.reduce(
       (sum, forecast) => addCents(sum, forecast.recommendedDailyAmountCents),
-      0
-    );
+      0);
 
     // Step 11= this.calculateProjectedBalance(
       profile,
       dailyForecasts,
       reservedFixedExpensesCents,
-      remainingDays
-    );
+      remainingDays);
 
     if (projectedBalanceOnPaydayCents < 0) {
       warnings.push(this.createWarning(
         'CRITICAL',
         'PROJECTED_NEGATIVE_BALANCE',
         `Projected balance on payday (${formatCentsAsRinggit(projectedBalanceOnPaydayCents)}) will be negative`,
-        { projectedBalance}
-      ));
-    }
+        { projectedBalance}));}
 
     return {
       forecastDate,
@@ -216,8 +183,7 @@ export class FinancialForecastService {
       reservedFixedExpensesCents,
       protectedUsageAllocationCents,
       dailySpendingPoolCents,
-      safelyAvailableBalanceCents};
-  }
+      safelyAvailableBalanceCents};}
 
   /**
    * Calculate spending by category
@@ -228,12 +194,9 @@ export class FinancialForecastService {
     for (const transaction of transactions) {
       if (transaction.type === TransactionType.EXPENSE && transaction.categoryId) {
         spending[transaction.categoryId] = (spending[transaction.categoryId] || 0) +
-          transaction.amountCents;
-      }
-    }
+          transaction.amountCents;}}
 
-    return spending;
-  }
+    return spending;}
 
   /**
    * Calculate reserved fixed expenses (unpaid only)
@@ -243,12 +206,9 @@ export class FinancialForecastService {
 
     for (const payment of payments) {
       if (payment.status === FixedExpensePaymentStatus.UNPAID) {
-        total = addCents(total, payment.expectedAmountCents);
-      }
-    }
+        total = addCents(total, payment.expectedAmountCents);}}
 
-    return total;
-  }
+    return total;}
 
   /**
    * Calculate protected usage-based allocations
@@ -262,16 +222,12 @@ export class FinancialForecastService {
       if (
         category.type === SpendingCategoryType.USAGE_BASED &&
         category.protected === true &&
-        category.active
-      ) {
+        category.active) {
         const spent = categorySpending[category.id] || 0;
         const remaining = subtractCents(category.allocatedAmountCents, spent);
-        total = addCents(total, ensureNonNegative(remaining));
-      }
-    }
+        total = addCents(total, ensureNonNegative(remaining));}}
 
-    return total;
-  }
+    return total;}
 
   /**
    * Calculate daily forecasts for all daily categories
@@ -285,8 +241,7 @@ export class FinancialForecastService {
     const forecasts= [];
 
     if (dailyCategories.length === 0) {
-      return forecasts;
-    }
+      return forecasts;}
 
     // Calculate total remaining daily allocations
     let totalRemainingDailyAllocations = 0;
@@ -295,9 +250,7 @@ export class FinancialForecastService {
       const remaining = subtractCents(category.allocatedAmountCents, spent);
       totalRemainingDailyAllocations = addCents(
         totalRemainingDailyAllocations,
-        ensureNonNegative(remaining)
-      );
-    }
+        ensureNonNegative(remaining));}
 
     // Calculate forecast for each daily category
     for (const category of dailyCategories) {
@@ -313,8 +266,7 @@ export class FinancialForecastService {
 
       // Available pool for this category
       const categoryAvailablePool = Math.floor(
-        dailySpendingPoolCents * categoryWeight
-      );
+        dailySpendingPoolCents * categoryWeight);
       const maxSafeDailyAmount =
         remainingDays > 0 ? divideCents(categoryAvailablePool, remainingDays) ;
 
@@ -324,24 +276,19 @@ export class FinancialForecastService {
 
       if (categoryRemaining <= 0) {
         recommendedAmount = 0;
-        status = 'EXCEEDED';
-      } else if (categoryRemaining < preferredAmount) {
+        status = 'EXCEEDED';} else if (categoryRemaining < preferredAmount) {
         recommendedAmount =
           remainingDays > 0 ? divideCents(categoryRemaining, remainingDays) ;
-        status = 'CAUTION';
-      } else {
+        status = 'CAUTION';} else {
         const preferredRemaining = multiplyCents(preferredAmount, remainingDays);
 
         if (preferredRemaining > categoryAvailablePool) {
           recommendedAmount = maxSafeDailyAmount;
           const reduction = subtractCents(preferredAmount, recommendedAmount);
           status =
-            reduction > multiplyCents(preferredAmount, 0.5) ? 'AT_RISK' : 'CAUTION';
-        } else {
+            reduction > multiplyCents(preferredAmount, 0.5) ? 'AT_RISK' : 'CAUTION';} else {
           recommendedAmount = preferredAmount;
-          status = 'SAFE';
-        }
-      }
+          status = 'SAFE';}}
 
       // Calculate today's actual spending
       const todayTransactions = transactionRepository
@@ -350,8 +297,7 @@ export class FinancialForecastService {
 
       const actualSpentToday = todayTransactions.reduce(
         (sum, t) => addCents(sum, t.amountCents),
-        0
-      );
+        0);
 
       // Generate explanation
       const explanation = this.generateExplanation(
@@ -360,8 +306,7 @@ export class FinancialForecastService {
         preferredAmount,
         categoryRemaining,
         remainingDays,
-        status
-      );
+        status);
 
       forecasts.push({
         categoryId: category.id,
@@ -370,11 +315,9 @@ export class FinancialForecastService {
         preferredDailyAmountCents,
         recommendedDailyAmountCents,
         actualSpentTodayCents,
-        remainingCategoryAllocationCents});
-    }
+        remainingCategoryAllocationCents});}
 
-    return forecasts;
-  }
+    return forecasts;}
 
   /**
    * Calculate projected balance on payday
@@ -393,20 +336,16 @@ export class FinancialForecastService {
     for (const forecast of dailyForecasts) {
       const projectedSpending = multiplyCents(
         forecast.recommendedDailyAmountCents,
-        remainingDays
-      );
+        remainingDays);
       const deduction = Math.min(
         projectedSpending,
-        forecast.remainingCategoryAllocationCents
-      );
-      projected = subtractCents(projected, deduction);
-    }
+        forecast.remainingCategoryAllocationCents);
+      projected = subtractCents(projected, deduction);}
 
     // Add salary
     projected = addCents(projected, profile.expectedSalaryCents);
 
-    return projected;
-  }
+    return projected;}
 
   /**
    * Generate explanation for a daily forecast
@@ -419,26 +358,21 @@ export class FinancialForecastService {
     remainingDays,
     status): string {
     if (recommendedAmount <= 0) {
-      return `Your allocation for ${category.name} is fully used. No spending is recommended until next payday.`;
-    }
+      return `Your allocation for ${category.name} is fully used. No spending is recommended until next payday.`;}
 
     if (status === 'EXCEEDED') {
-      return `Your ${category.name} allocation has been exceeded. No further spending is recommended.`;
-    }
+      return `Your ${category.name} allocation has been exceeded. No further spending is recommended.`;}
 
     if (categoryRemaining < preferredAmount) {
       const spent = subtractCents(category.allocatedAmountCents, categoryRemaining);
       const percentUsed = centsAsPercentage(spent, category.allocatedAmountCents);
-      return `Your preferred ${category.name} budget is ${formatCentsAsRinggit(preferredAmount)} per day, but you've used ${percentUsed.toFixed(1)}% of your allocation. Your safe daily amount for the remaining ${remainingDays} days is ${formatCentsAsRinggit(recommendedAmount)}.`;
-    }
+      return `Your preferred ${category.name} budget is ${formatCentsAsRinggit(preferredAmount)} per day, but you've used ${percentUsed.toFixed(1)}% of your allocation. Your safe daily amount for the remaining ${remainingDays} days is ${formatCentsAsRinggit(recommendedAmount)}.`;}
 
     if (recommendedAmount < preferredAmount) {
       const shortfall = subtractCents(preferredAmount, recommendedAmount);
-      return `Your preferred daily ${category.name} budget is ${formatCentsAsRinggit(preferredAmount)}. However, considering your current available balance and reserved expenses, your maximum safe spending today is ${formatCentsAsRinggit(recommendedAmount)} (${formatCentsAsRinggit(shortfall)} less than preferred).`;
-    }
+      return `Your preferred daily ${category.name} budget is ${formatCentsAsRinggit(preferredAmount)}. However, considering your current available balance and reserved expenses, your maximum safe spending today is ${formatCentsAsRinggit(recommendedAmount)} (${formatCentsAsRinggit(shortfall)} less than preferred).`;}
 
-    return `Your preferred daily ${category.name} budget of ${formatCentsAsRinggit(preferredAmount)} is fully supported by your current balance over ${remainingDays} remaining days until payday.`;
-  }
+    return `Your preferred daily ${category.name} budget of ${formatCentsAsRinggit(preferredAmount)} is fully supported by your current balance over ${remainingDays} remaining days until payday.`;}
 
   /**
    * Create warning object
@@ -452,9 +386,7 @@ export class FinancialForecastService {
       level,
       code,
       message,
-      details,
-    };
-  }
+      details,};}
 
   /**
    * Create failure forecast when payday has passed
@@ -474,8 +406,7 @@ export class FinancialForecastService {
       safelyAvailableBalanceCents,
       recommendedTotalSpendingTodayCents,
       projectedBalanceOnPaydayCents: profile.currentBalanceCents,
-      dailyForecasts};
-  }
-}
+      dailyForecasts};}}
 
 export const financialForecastService = new FinancialForecastService();
+

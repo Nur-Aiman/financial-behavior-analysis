@@ -1,12 +1,12 @@
-/**
+﻿/**
  * Transaction Repository
  */
 
-import { Transaction, TransactionType } from '../models/index';
-import { store } from '../storage/in-memory.store';
-import { generateId } from '../utils/id.utils';
-import { isDateInRange } from '../utils/date.utils';
-import { getDatabase } from '../database/connection';
+import { Transaction, TransactionType} from '../models/index';
+import { store} from '../storage/in-memory.store';
+import { generateId} from '../utils/id.utils';
+import { isDateInRange} from '../utils/date.utils';
+import { getDatabase} from '../database/connection';
 
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
 
@@ -41,58 +41,47 @@ export class TransactionRepository {
           created_at,
           updated_at};
         await db('transactions').insert(dbData);
-        console.log(`✅ Transaction saved to database: ${transaction.id}`);
-      } catch (err) {
-        console.error('❌ Error persisting transaction to database:', err.message);
-      }
-    }
+        console.log(`âœ… Transaction saved to database: ${transaction.id}`);} catch (err) {
+        console.error('âŒ Error persisting transaction to database:', err.message);}}
 
-    return transaction;
-  }
+    return transaction;}
 
   /**
    * Find transaction by ID
    */
   findById(id): Transaction | null {
-    return store.getTransaction(id);
-  }
+    return store.getTransaction(id);}
 
   /**
    * Find all transactions
    */
   findAll()] {
-    return store.getAllTransactions();
-  }
+    return store.getAllTransactions();}
 
   /**
    * Find transactions by category
    */
   findByCategory(categoryId)] {
-    return this.findAll().filter(t => t.categoryId === categoryId);
-  }
+    return this.findAll().filter(t => t.categoryId === categoryId);}
 
   /**
    * Find transactions by type
    */
   findByType(type)] {
-    return this.findAll().filter(t => t.type === type);
-  }
+    return this.findAll().filter(t => t.type === type);}
 
   /**
    * Find transactions on a specific date
    */
   findByDate(dateStr)] {
-    return this.findAll().filter(t => t.transactionDate === dateStr);
-  }
+    return this.findAll().filter(t => t.transactionDate === dateStr);}
 
   /**
    * Find transactions within a date range
    */
   findByDateRange(startDateStr, endDateStr)] {
     return this.findAll().filter(t =>
-      isDateInRange(t.transactionDate, startDateStr, endDateStr)
-    );
-  }
+      isDateInRange(t.transactionDate, startDateStr, endDateStr));}
 
   /**
    * Find transactions by category and date range
@@ -102,17 +91,14 @@ export class TransactionRepository {
     startDateStr,
     endDateStr)] {
     return this.findByCategory(categoryId).filter(t =>
-      isDateInRange(t.transactionDate, startDateStr, endDateStr)
-    );
-  }
+      isDateInRange(t.transactionDate, startDateStr, endDateStr));}
 
   /**
    * Find transaction linked to fixed expense payment
    */
   findByFixedExpensePaymentId(paymentId): Transaction | null {
     const transactions = this.findAll();
-    return transactions.find(t => t.linkedFixedExpensePaymentId === paymentId) || null;
-  }
+    return transactions.find(t => t.linkedFixedExpensePaymentId === paymentId) || null;}
 
   /**
    * Update transaction
@@ -120,8 +106,7 @@ export class TransactionRepository {
   async update(id, data, 'id' | 'createdAt'>>): Promise<Transaction> {
     const existing = this.findById(id);
     if (!existing) {
-      throw new Error(`Transaction not found: ${id}`);
-    }
+      throw new Error(`Transaction not found: ${id}`);}
 
     const now = new Date().toISOString();
     store.updateTransaction(id, {
@@ -146,14 +131,10 @@ export class TransactionRepository {
         if (data.linkedFixedExpensePaymentId !== undefined) dbData.linked_fixed_expense_payment_id = data.linkedFixedExpensePaymentId || null;
 
         await db('transactions').where('id', id).update(dbData);
-        console.log(`✅ Transaction updated in database: ${id}`);
-      } catch (err) {
-        console.error(`❌ Error persisting transaction update to database: ${err.message}`);
-      }
-    }
+        console.log(`âœ… Transaction updated in database: ${id}`);} catch (err) {
+        console.error(`âŒ Error persisting transaction update to database: ${err.message}`);}}
 
-    return this.findById(id)!;
-  }
+    return this.findById(id)!;}
 
   /**
    * Delete transaction
@@ -166,20 +147,15 @@ export class TransactionRepository {
       try {
         const db = getDatabase();
         await db('transactions').where('id', id).del();
-        console.log(`✅ Transaction deleted from database: ${id}`);
-      } catch (err) {
-        console.error(`❌ Error persisting transaction deletion to database: ${err.message}`);
-      }
-    }
-  }
+        console.log(`âœ… Transaction deleted from database: ${id}`);} catch (err) {
+        console.error(`âŒ Error persisting transaction deletion to database: ${err.message}`);}}}
 
   /**
    * Clear all transactions
    */
   clear(): void {
     const transactions = this.findAll();
-    transactions.forEach(t => this.delete(t.id));
-  }
-}
+    transactions.forEach(t => this.delete(t.id));}}
 
 export const transactionRepository = new TransactionRepository();
+

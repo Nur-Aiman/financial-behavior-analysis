@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Enums and Models for Financial Behavior Analysis
  * All currency values are stored(e.g., 100000 = RM1000.00)
  */
@@ -6,26 +6,22 @@
 export enum SpendingCategoryType {
   DAILY_TIME_BASED = 'DAILY_TIME_BASED',
   USAGE_BASED = 'USAGE_BASED',
-  FIXED_ONE_TIME = 'FIXED_ONE_TIME',
-}
+  FIXED_ONE_TIME = 'FIXED_ONE_TIME',}
 
 export enum TransactionType {
   EXPENSE = 'EXPENSE',
   INCOME = 'INCOME',
-  BALANCE_ADJUSTMENT = 'BALANCE_ADJUSTMENT',
-}
+  BALANCE_ADJUSTMENT = 'BALANCE_ADJUSTMENT',}
 
 export enum TransactionSource {
   MANUAL = 'MANUAL',
   FIXED_EXPENSE_PAYMENT = 'FIXED_EXPENSE_PAYMENT',
-  SYSTEM_ADJUSTMENT = 'SYSTEM_ADJUSTMENT',
-}
+  SYSTEM_ADJUSTMENT = 'SYSTEM_ADJUSTMENT',}
 
 export enum FixedExpensePaymentStatus {
   UNPAID = 'UNPAID',
   PAID = 'PAID',
-  OVERDUE = 'OVERDUE',
-}
+  OVERDUE = 'OVERDUE',}
 
 
 
@@ -43,8 +39,7 @@ export enum FixedExpensePaymentStatus {
   salaryCycleStartDate; // ISO date string: YYYY-MM-DD
   nextPayday; // ISO date string: YYYY-MM-DD
   createdAt;
-  updatedAt;
-}
+  updatedAt;}
 
 /**
  * SpendingCategory
@@ -63,8 +58,7 @@ export enum FixedExpensePaymentStatus {
   active;
   displayOrder; // Controls sort order in UI
   createdAt;
-  updatedAt;
-}
+  updatedAt;}
 
 /**
  * Transaction: Record of actual money movement
@@ -81,8 +75,7 @@ export enum FixedExpensePaymentStatus {
   notes?;
   linkedFixedExpensePaymentId?; // Link to fixed expense payment
   createdAt;
-  updatedAt;
-}
+  updatedAt;}
 
 /**
  * FixedExpensePayment: Tracks bill payments
@@ -97,8 +90,7 @@ export enum FixedExpensePaymentStatus {
   status;
   transactionId?; // Link to created transaction
   createdAt;
-  updatedAt;
-}
+  updatedAt;}
 
 /**
  * BalanceAdjustment: Track manual balance corrections
@@ -109,8 +101,7 @@ export enum FixedExpensePaymentStatus {
   newBalanceCents;
   adjustmentAmountCents;
   reason;
-  createdAt;
-}
+  createdAt;}
 
 /**
  * DailyForecast: Forecast for a single daily category
@@ -125,8 +116,7 @@ export enum FixedExpensePaymentStatus {
   actualSpentTodayCents;
   remainingCategoryAllocationCents;
   explanation;
-  status;
-}
+  status;}
 
 /**
  * Comprehensive forecast summary
@@ -143,8 +133,7 @@ export enum FixedExpensePaymentStatus {
   recommendedTotalSpendingTodayCents;
   projectedBalanceOnPaydayCents;
   dailyForecasts;
-  warnings;
-}
+  warnings;}
 
 /**
  * Warning: Financial alerts for user
@@ -153,8 +142,7 @@ export enum FixedExpensePaymentStatus {
   level;
   code;
   message;
-  details?;
-}
+  details?;}
 
 /**
  * Dashboard Summary
@@ -170,8 +158,7 @@ export enum FixedExpensePaymentStatus {
   recommendedSpendingTodayCents;
   projectedBalanceOnPaydayCents;
   totalCategories;
-  activeTransactionsThisMonth;
-}
+  activeTransactionsThisMonth;}
 
 /**
  * Category Utilisation
@@ -184,8 +171,7 @@ export enum FixedExpensePaymentStatus {
   spentAmountCents;
   remainingAmountCents;
   utilisationPercentage;
-  status;
-}
+  status;}
 
 /**
  * Spending trend
@@ -193,8 +179,7 @@ export enum FixedExpensePaymentStatus {
 
   date;
   totalSpentCents;
-  byCategory;
-}
+  byCategory;}
 
 /**
  * Planned vs Actual
@@ -205,5 +190,5 @@ export enum FixedExpensePaymentStatus {
   plannedAmountCents;
   actualAmountCents;
   varianceCents;
-  variancePercentage;
-}
+  variancePercentage;}
+

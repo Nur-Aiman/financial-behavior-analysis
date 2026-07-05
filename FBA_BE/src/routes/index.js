@@ -1,16 +1,16 @@
-/**
+﻿/**
  * Main Routes Index
  */
 
-import { Router } from 'express';
-import { financialProfileRoutes } from './financial-profile.routes';
-import { balanceRoutes } from './balance.routes';
-import { categoryRoutes } from './category.routes';
-import { transactionRoutes } from './transaction.routes';
-import { fixedExpenseRoutes } from './fixed-expense.routes';
-import { forecastRoutes } from './forecast.routes';
-import { dashboardRoutes } from './dashboard.routes';
-import { developmentRoutes } from './development.routes';
+import { Router} from 'express';
+import { financialProfileRoutes} from './financial-profile.routes';
+import { balanceRoutes} from './balance.routes';
+import { categoryRoutes} from './category.routes';
+import { transactionRoutes} from './transaction.routes';
+import { fixedExpenseRoutes} from './fixed-expense.routes';
+import { forecastRoutes} from './forecast.routes';
+import { dashboardRoutes} from './dashboard.routes';
+import { developmentRoutes} from './development.routes';
 
 const router = Router();
 
@@ -24,3 +24,4 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/dev', developmentRoutes);
 
 export default router;
+

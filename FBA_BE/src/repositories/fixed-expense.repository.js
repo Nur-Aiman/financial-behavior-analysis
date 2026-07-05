@@ -1,12 +1,12 @@
-/**
+﻿/**
  * Fixed Expense Payment Repository
  */
 
-import { FixedExpensePayment, FixedExpensePaymentStatus } from '../models/index';
-import { store } from '../storage/in-memory.store';
-import { generateId } from '../utils/id.utils';
-import { isDateInPast } from '../utils/date.utils';
-import { getDatabase } from '../database/connection';
+import { FixedExpensePayment, FixedExpensePaymentStatus} from '../models/index';
+import { store} from '../storage/in-memory.store';
+import { generateId} from '../utils/id.utils';
+import { isDateInPast} from '../utils/date.utils';
+import { getDatabase} from '../database/connection';
 
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
 
@@ -39,72 +39,60 @@ export class FixedExpenseRepository {
           created_at,
           updated_at};
         await db('fixed_expense_payments').insert(dbData);
-        console.log(`✅ Fixed expense payment saved to database: ${payment.id}`);
-      } catch (err) {
-        console.error(`❌ Error persisting fixed expense payment to database: ${err.message}`);
-      }
-    }
+        console.log(`âœ… Fixed expense payment saved to database: ${payment.id}`);} catch (err) {
+        console.error(`âŒ Error persisting fixed expense payment to database: ${err.message}`);}}
 
-    return payment;
-  }
+    return payment;}
 
   /**
    * Find payment by ID
    */
   findById(id): FixedExpensePayment | null {
-    return store.getFixedExpensePayment(id);
-  }
+    return store.getFixedExpensePayment(id);}
 
   /**
    * Find all payments
    */
   findAll()] {
-    return store.getAllFixedExpensePayments();
-  }
+    return store.getAllFixedExpensePayments();}
 
   /**
    * Find payments for a category
    */
   findByCategory(categoryId)] {
-    return this.findAll().filter(p => p.categoryId === categoryId);
-  }
+    return this.findAll().filter(p => p.categoryId === categoryId);}
 
   /**
    * Find all unpaid payments
    */
   findUnpaid()] {
-    return this.findAll().filter(p => p.status === FixedExpensePaymentStatus.UNPAID);
-  }
+    return this.findAll().filter(p => p.status === FixedExpensePaymentStatus.UNPAID);}
 
   /**
    * Find all paid payments
    */
   findPaid()] {
-    return this.findAll().filter(p => p.status === FixedExpensePaymentStatus.PAID);
-  }
+    return this.findAll().filter(p => p.status === FixedExpensePaymentStatus.PAID);}
 
   /**
    * Find all overdue payments
    */
   findOverdue()] {
-    return this.findUnpaid().filter(p => isDateInPast(p.dueDate));
-  }
+    return this.findUnpaid().filter(p => isDateInPast(p.dueDate));}
 
   /**
    * Find unpaid payment for a category
    */
   findUnpaidByCategory(categoryId): FixedExpensePayment | null {
     const payments = this.findByCategory(categoryId);
-    return payments.find(p => p.status === FixedExpensePaymentStatus.UNPAID) || null;
-  }
+    return payments.find(p => p.status === FixedExpensePaymentStatus.UNPAID) || null;}
 
   /**
    * Find payment by transaction ID
    */
   findByTransactionId(transactionId): FixedExpensePayment | null {
     const payments = this.findAll();
-    return payments.find(p => p.transactionId === transactionId) || null;
-  }
+    return payments.find(p => p.transactionId === transactionId) || null;}
 
   /**
    * Update payment
@@ -112,8 +100,7 @@ export class FixedExpenseRepository {
   async update(id, data, 'id' | 'createdAt'>>): Promise<FixedExpensePayment> {
     const existing = this.findById(id);
     if (!existing) {
-      throw new Error(`Payment not found: ${id}`);
-    }
+      throw new Error(`Payment not found: ${id}`);}
 
     const now = new Date().toISOString();
     store.updateFixedExpensePayment(id, {
@@ -136,14 +123,10 @@ export class FixedExpenseRepository {
         if (data.transactionId !== undefined) dbData.transaction_id = data.transactionId || null;
 
         await db('fixed_expense_payments').where('id', id).update(dbData);
-        console.log(`✅ Fixed expense payment updated in database: ${id}`);
-      } catch (err) {
-        console.error(`❌ Error persisting fixed expense payment update to database: ${err.message}`);
-      }
-    }
+        console.log(`âœ… Fixed expense payment updated in database: ${id}`);} catch (err) {
+        console.error(`âŒ Error persisting fixed expense payment update to database: ${err.message}`);}}
 
-    return this.findById(id)!;
-  }
+    return this.findById(id)!;}
 
   /**
    * Delete payment
@@ -156,20 +139,15 @@ export class FixedExpenseRepository {
       try {
         const db = getDatabase();
         await db('fixed_expense_payments').where('id', id).del();
-        console.log(`✅ Fixed expense payment deleted from database: ${id}`);
-      } catch (err) {
-        console.error(`❌ Error persisting fixed expense payment deletion to database: ${err.message}`);
-      }
-    }
-  }
+        console.log(`âœ… Fixed expense payment deleted from database: ${id}`);} catch (err) {
+        console.error(`âŒ Error persisting fixed expense payment deletion to database: ${err.message}`);}}}
 
   /**
    * Clear all payments
    */
   clear(): void {
     const payments = this.findAll();
-    payments.forEach(p => this.delete(p.id));
-  }
-}
+    payments.forEach(p => this.delete(p.id));}}
 
 export const fixedExpenseRepository = new FixedExpenseRepository();
+

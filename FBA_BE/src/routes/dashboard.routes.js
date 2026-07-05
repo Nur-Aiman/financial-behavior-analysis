@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Dashboard Routes
  */
 
-import { Router } from 'express';
-import { DashboardController } from '../controllers/dashboard.controller';
+import { Router} from 'express';
+import { DashboardController} from '../controllers/dashboard.controller';
 
 export const dashboardRoutes = Router();
 
@@ -12,3 +12,4 @@ dashboardRoutes.get('/category-utilisation', DashboardController.getCategoryUtil
 dashboardRoutes.get('/spending-trend', DashboardController.getSpendingTrend);
 dashboardRoutes.get('/planned-vs-actual', DashboardController.getPlannedVsActual);
 dashboardRoutes.get('/projected-balances', DashboardController.getProjectedBalances);
+

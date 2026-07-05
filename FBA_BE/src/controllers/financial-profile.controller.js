@@ -1,11 +1,11 @@
-/**
+﻿/**
  * Financial Profile Controller
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { financialProfileService } from '../services/financial-profile.service';
-import { createFinancialProfileSchema, updateFinancialProfileSchema } from '../validators/schemas';
-import { successResponse } from '../utils/response.utils';
+import { Request, Response, NextFunction} from 'express';
+import { financialProfileService} from '../services/financial-profile.service';
+import { createFinancialProfileSchema, updateFinancialProfileSchema} from '../validators/schemas';
+import { successResponse} from '../utils/response.utils';
 
 export class FinancialProfileController {
   /**
@@ -16,11 +16,8 @@ export class FinancialProfileController {
     try {
       const data = createFinancialProfileSchema.parse(req.body);
       const profile = financialProfileService.create(data);
-      res.status(201).json(successResponse(profile, 'Profile created successfully'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.status(201).json(successResponse(profile, 'Profile created successfully'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/profile
@@ -29,11 +26,8 @@ export class FinancialProfileController {
   static async getProfile(_req, res, next): Promise<void> {
     try {
       const profile = financialProfileService.getProfile();
-      res.json(successResponse(profile, 'Profile retrieved successfully'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(profile, 'Profile retrieved successfully'));} catch (err) {
+      next(err);}}
 
   /**
    * PUT /api/profile
@@ -45,11 +39,8 @@ export class FinancialProfileController {
       // Zod allows nullable optional fields, but service doesn't accept null
       // This is safe because we only pass non-null values
       const profile = financialProfileService.updateProfile(data);
-      res.json(successResponse(profile, 'Profile updated successfully'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(profile, 'Profile updated successfully'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/profile/remaining-days
@@ -58,9 +49,6 @@ export class FinancialProfileController {
   static async getRemainingDays(_req, res, next): Promise<void> {
     try {
       const remainingDays = financialProfileService.getRemainingDays();
-      res.json(successResponse({ remainingDays }, 'Remaining days calculated'));
-    } catch (err) {
-      next(err);
-    }
-  }
-}
+      res.json(successResponse({ remainingDays}, 'Remaining days calculated'));} catch (err) {
+      next(err);}}}
+

@@ -1,10 +1,10 @@
-/**
+﻿/**
  * Validation Error Handler Middleware
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { ZodError } from 'zod';
-import { errorResponse } from '../utils/response.utils';
+import { Request, Response, NextFunction} from 'express';
+import { ZodError} from 'zod';
+import { errorResponse} from '../utils/response.utils';
 
 export const validationErrorHandler = (err, _req, res, next)=> {
   if (err instanceof ZodError) {
@@ -16,13 +16,8 @@ export const validationErrorHandler = (err, _req, res, next)=> {
           issues: err.issues.map(issue => ({
             path: issue.path.join('.'),
             code: issue.code,
-            message: issue.message,
-          })),
-        }
-      )
-    );
-    return;
-  }
+            message: issue.message,})),}));
+    return;}
 
-  next(err);
-};
+  next(err);};
+

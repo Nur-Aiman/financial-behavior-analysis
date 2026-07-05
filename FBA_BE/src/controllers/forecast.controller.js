@@ -1,12 +1,12 @@
-/**
+﻿/**
  * Forecast Controller
  */
 
-import { Request, Response, NextFunction } from 'express';
-import { financialProfileService } from '../services/financial-profile.service';
-import { financialForecastService } from '../services/financial-forecast.service';
-import { successResponse } from '../utils/response.utils';
-import { formatCentsAsRinggit } from '../utils/money.utils';
+import { Request, Response, NextFunction} from 'express';
+import { financialProfileService} from '../services/financial-profile.service';
+import { financialForecastService} from '../services/financial-forecast.service';
+import { successResponse} from '../utils/response.utils';
+import { formatCentsAsRinggit} from '../utils/money.utils';
 
 export class ForecastController {
   /**
@@ -32,15 +32,10 @@ export class ForecastController {
           preferredDailyAmount: formatCentsAsRinggit(df.preferredDailyAmountCents),
           recommendedDailyAmount: formatCentsAsRinggit(df.recommendedDailyAmountCents),
           actualSpentToday: formatCentsAsRinggit(df.actualSpentTodayCents),
-          remainingCategoryAllocation: formatCentsAsRinggit(df.remainingCategoryAllocationCents),
-        })),
-      };
+          remainingCategoryAllocation: formatCentsAsRinggit(df.remainingCategoryAllocationCents),})),};
 
-      res.json(successResponse(enriched, 'Today\'s forecast calculated'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(enriched, 'Today\'s forecast calculated'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/forecast/categories
@@ -56,14 +51,10 @@ export class ForecastController {
         preferredDailyAmount: formatCentsAsRinggit(df.preferredDailyAmountCents),
         recommendedDailyAmount: formatCentsAsRinggit(df.recommendedDailyAmountCents),
         actualSpentToday: formatCentsAsRinggit(df.actualSpentTodayCents),
-        remainingCategoryAllocation: formatCentsAsRinggit(df.remainingCategoryAllocationCents),
-      }));
+        remainingCategoryAllocation: formatCentsAsRinggit(df.remainingCategoryAllocationCents),}));
 
-      res.json(successResponse(enriched, 'Category forecasts retrieved'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(enriched, 'Category forecasts retrieved'));} catch (err) {
+      next(err);}}
 
   /**
    * GET /api/forecast/projected-balance
@@ -81,15 +72,10 @@ export class ForecastController {
         nextPayday: forecast.nextPayday,
         expectedSalary: formatCentsAsRinggit(profile.expectedSalaryCents),
         balanceAfterSalary: formatCentsAsRinggit(
-          forecast.projectedBalanceOnPaydayCents + profile.expectedSalaryCents
-        ),
-      };
+          forecast.projectedBalanceOnPaydayCents + profile.expectedSalaryCents),};
 
-      res.json(successResponse(enriched, 'Projected balance calculated'));
-    } catch (err) {
-      next(err);
-    }
-  }
+      res.json(successResponse(enriched, 'Projected balance calculated'));} catch (err) {
+      next(err);}}
 
   /**
    * POST /api/forecast/recalculate
@@ -100,9 +86,6 @@ export class ForecastController {
       const profile = financialProfileService.getProfile();
       const forecast = financialForecastService.calculateForecast(profile);
 
-      res.json(successResponse(forecast, 'Forecast recalculated'));
-    } catch (err) {
-      next(err);
-    }
-  }
-}
+      res.json(successResponse(forecast, 'Forecast recalculated'));} catch (err) {
+      next(err);}}}
+
