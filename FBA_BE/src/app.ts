@@ -11,7 +11,7 @@ export const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: process.env.CORS_ORIGIN || 'https://financial-behavior-analysis-fe.onrender.com',
   credentials: true,
   optionsSuccessStatus: 200,
 };
