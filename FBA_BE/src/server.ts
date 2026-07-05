@@ -19,20 +19,37 @@ async function runMigrations() {
   }
 
   try {
-    console.log('Running database migrations...');
+    console.log('🔧 Running database migrations...');
+    console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`   DATABASE_URL set: ${!!process.env.DATABASE_URL}`);
+    
     const knex = require('knex');
     const knexfile = require('../config/knexfile');
     const env = process.env.NODE_ENV || 'development';
+    
+    console.log(`   Knex config: Using '${env}' configuration`);
     const db = knex(knexfile[env]);
 
+    // Test connection first
+    console.log('   Testing database connection...');
+    await db.raw('SELECT 1');
+    console.log('   ✅ Database connection successful');
+
+    // Run migrations
     const [batchNo, logs] = await db.migrate.latest();
     console.log(`✅ Migrations completed. Batch: ${batchNo}, Changes: ${logs.length}`);
     if (logs.length > 0) {
       logs.forEach((log: string) => console.log(`  - ${log}`));
+    } else {
+      console.log('   No new migrations to run');
     }
+    
+    await db.destroy();
   } catch (error: any) {
-    console.warn('⚠️  Migration warning (may already be applied):', error.message);
-    // Don't fail the startup if migrations already ran
+    console.error('❌ Migration error:', error.message);
+    console.error('Stack:', error.stack);
+    // Don't fail startup, but log the error clearly
+    console.warn('⚠️  Migrations failed - database tables may not be created!');
   }
 }
 
@@ -40,10 +57,12 @@ async function runMigrations() {
 async function initializeDatabase() {
   if (USE_REAL_DB) {
     try {
-      console.log('Loading data from PostgreSQL...');
+      console.log('📦 Loading data from PostgreSQL...');
       const knex = require('knex');
       const knexfile = require('../config/knexfile');
-      const db = knex(knexfile.development);
+      const env = process.env.NODE_ENV || 'development';
+      console.log(`   Using environment: ${env}`);
+      const db = knex(knexfile[env]);
       
       // Load categories from PostgreSQL
       const categories = await db.select('*').from('spending_categories').orderBy('display_order', 'asc');
