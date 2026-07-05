@@ -4,11 +4,12 @@
   "description": "A full-stack application for analyzing financial behavior patterns",
   "main": "app.js",
   "scripts": {
-    "start": "node MT_BE/app.js",
+    "start": "node start.js",
+    "start:backend": "cd FBA_BE && npm start",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd FBA_BE && npm start",
     "client": "cd FBA_FE && npm start",
-    "build": "cd FBA_FE && npm run build"
+    "build": "cd FBA_BE && npm install && npm run build"
   },
   "keywords": ["financial", "analysis", "behavior"],
   "author": "",
