@@ -16,7 +16,7 @@ export class TransactionController {
   static async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const data = createTransactionSchema.parse(req.body);
-      const transaction = await transactionService.createTransaction(data);
+      const transaction = await transactionService.createTransaction(data as any);
       res.status(201).json(
         successResponse(
           {
