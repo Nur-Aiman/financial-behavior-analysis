@@ -4,8 +4,8 @@
 
 import express from 'express';
 import cors from 'cors';
-import routes from './routes.js';
-import { errorHandler, requestLogger, devRouteProtection} from './middleware.js';
+import routes from './routes/index.js';
+import { errorHandler, requestLogger, devRouteProtection } from './middleware/index.js';
 
 export const app = express();
 
