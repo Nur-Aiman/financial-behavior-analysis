@@ -32,17 +32,23 @@ import {
   Add as AddIcon,
   DragIndicator as DragIcon,
 } from '@mui/icons-material';
-import { useCategories } from '../hooks';
-import { SpendingCategory } from '../types';
+import { useCategories, useTransactions } from '../hooks';
+import { SpendingCategory, Transaction } from '../types';
 import { formatCurrency } from '../utils';
 import { categoryAPI } from '../api';
 
 function CategoriesPage(): React.ReactElement {
   const { categories, loading, error, createCategory, updateCategory, deactivateCategory, deleteCategory } = useCategories();
+  const { createTransaction } = useTransactions();
   const [openDialog, setOpenDialog] = useState(false);
+  const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<SpendingCategory>>({
     type: 'DAILY_TIME_BASED' as any,
+  });
+  const [transactionData, setTransactionData] = useState<Partial<Transaction>>({
+    type: 'EXPENSE' as any,
   });
   const [displayCategories, setDisplayCategories] = useState<SpendingCategory[]>([]);
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -173,6 +179,48 @@ function CategoriesPage(): React.ReactElement {
       await deleteCategory(id);
     } catch (err) {
       console.error('Error deleting category:', err);
+    }
+  };
+
+  const handleOpenTransactionDialog = (categoryId: string) => {
+    setSelectedCategoryId(categoryId);
+    setTransactionData({
+      type: 'EXPENSE' as any,
+      categoryId: categoryId,
+      transactionDate: new Date().toISOString().split('T')[0],
+    });
+    setOpenTransactionDialog(true);
+  };
+
+  const handleCloseTransactionDialog = () => {
+    setOpenTransactionDialog(false);
+    setSelectedCategoryId(null);
+    setTransactionData({ type: 'EXPENSE' as any });
+  };
+
+  const handleTransactionChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any) => {
+    const { name, value } = e.target;
+    setTransactionData(prev => ({
+      ...prev,
+      [name]: name === 'amountCents' ? parseInt(value) * 100 || 0 : value,
+    }));
+  };
+
+  const handleAddTransaction = async () => {
+    if (!selectedCategoryId || !transactionData.amountCents || !transactionData.merchant) {
+      alert('Please fill in amount and merchant fields');
+      return;
+    }
+
+    try {
+      await createTransaction({
+        ...transactionData,
+        categoryId: selectedCategoryId,
+      });
+      handleCloseTransactionDialog();
+    } catch (err) {
+      console.error('Error creating transaction:', err);
+      alert('Failed to add spending. Please try again.');
     }
   };
 
@@ -386,6 +434,14 @@ function CategoriesPage(): React.ReactElement {
                   <TableCell align="center">
                     <IconButton
                       size="small"
+                      onClick={() => handleOpenTransactionDialog(category.id)}
+                      color="primary"
+                      title="Add Spending"
+                    >
+                      <AddIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
                       onClick={() => handleOpenDialog(category)}
                     >
                       <EditIcon />
@@ -464,6 +520,15 @@ function CategoriesPage(): React.ReactElement {
               </Box>
 
               <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  fullWidth
+                  onClick={() => handleOpenTransactionDialog(category.id)}
+                  sx={{ fontSize: '0.875rem' }}
+                >
+                  Add Spending
+                </Button>
                 <Button
                   variant="outlined"
                   size="small"
@@ -600,6 +665,107 @@ function CategoriesPage(): React.ReactElement {
                   Save
                 </Button>
                 <Button variant="outlined" fullWidth onClick={handleCloseDialog}>
+                  Cancel
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      </Dialog>
+
+      {/* Dialog for adding transaction to category */}
+      <Dialog 
+        open={openTransactionDialog} 
+        onClose={handleCloseTransactionDialog} 
+        maxWidth="sm" 
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            '@media (max-width:600px)': {
+              m: 1,
+              maxWidth: 'calc(100% - 16px)',
+            },
+          },
+        }}
+      >
+        <Box sx={{ p: { xs: 2, sm: 3 } }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            {selectedCategoryId ? `Add Spending to ${categories.find(c => c.id === selectedCategoryId)?.name}` : 'Add Spending'}
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Amount (RM)"
+                name="amountCents"
+                type="number"
+                inputProps={{ step: '0.01', min: '0' }}
+                value={transactionData.amountCents ? transactionData.amountCents / 100 : ''}
+                onChange={handleTransactionChange}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Merchant/Shop"
+                name="merchant"
+                value={transactionData.merchant || ''}
+                onChange={handleTransactionChange}
+                placeholder="e.g., Shell Petrol Station, Tesco, etc."
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Date"
+                name="transactionDate"
+                type="date"
+                value={transactionData.transactionDate || new Date().toISOString().split('T')[0]}
+                onChange={handleTransactionChange}
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Description"
+                name="description"
+                value={transactionData.description || ''}
+                onChange={handleTransactionChange}
+                placeholder="Optional description"
+                multiline
+                rows={2}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Notes"
+                name="notes"
+                value={transactionData.notes || ''}
+                onChange={handleTransactionChange}
+                placeholder="Optional notes"
+                multiline
+                rows={2}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button 
+                  variant="contained" 
+                  fullWidth 
+                  onClick={handleAddTransaction}
+                  color="success"
+                >
+                  Add Spending
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  fullWidth 
+                  onClick={handleCloseTransactionDialog}
+                >
                   Cancel
                 </Button>
               </Box>
