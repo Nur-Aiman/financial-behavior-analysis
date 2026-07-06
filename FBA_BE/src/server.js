@@ -117,8 +117,10 @@ async function initializeDatabase() {
           currentBalanceCents: parseInt(profile.current_balance_cents),
           salaryCycleStartDate: convertToIsoDate(profile.salary_cycle_start_date),
           nextPayday: convertToIsoDate(profile.next_payday),
+          useCalculatedBalance: profile.use_calculated_balance || false,
           createdAt: profile.created_at,
-          updatedAt: profile.updated_at,});
+          updatedAt: profile.updated_at,
+        });
         console.log(`âœ… Loaded financial profile from PostgreSQL`);}
       
       // Load transactions from PostgreSQL

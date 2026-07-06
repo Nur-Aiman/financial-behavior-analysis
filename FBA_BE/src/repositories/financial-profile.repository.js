@@ -30,6 +30,7 @@ export const financialProfileRepository = {
           current_balance_cents: profile.currentBalanceCents,
           salary_cycle_start_date: profile.salaryCycleStartDate,
           next_payday: profile.nextPayday,
+          use_calculated_balance: profile.useCalculatedBalance || false,
           created_at: now,
           updated_at: now,
         };
@@ -73,6 +74,7 @@ export const financialProfileRepository = {
         if (data.currentBalanceCents !== undefined) dbData.current_balance_cents = data.currentBalanceCents;
         if (data.salaryCycleStartDate !== undefined) dbData.salary_cycle_start_date = data.salaryCycleStartDate;
         if (data.nextPayday !== undefined) dbData.next_payday = data.nextPayday;
+        if (data.useCalculatedBalance !== undefined) dbData.use_calculated_balance = data.useCalculatedBalance;
         await db('financial_profiles').where('id', id).update(dbData);
         console.log(`✅ Financial profile updated in database: ${id}`);
       } catch (err) {
