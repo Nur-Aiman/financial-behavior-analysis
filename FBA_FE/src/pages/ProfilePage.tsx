@@ -41,20 +41,17 @@ function ProfilePage(): React.ReactElement {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [calculatedBalance, setCalculatedBalance] = useState<number>(0);
 
-  // Calculate balance from transactions
+  // Calculate balance: expected salary - total spent
   useEffect(() => {
     if (profile && transactions) {
-      let balance = profile.openingBalanceCents || 0;
-      transactions.forEach(tx => {
-        if (tx.type === 'EXPENSE') {
-          balance -= tx.amountCents;
-        } else if (tx.type === 'INCOME') {
-          balance += tx.amountCents;
-        }
-      });
+      const totalExpenses = transactions
+        .filter(tx => tx.type === 'EXPENSE')
+        .reduce((sum, tx) => sum + tx.amountCents, 0);
+      const balance = (profile.expectedSalaryCents || 0) - totalExpenses;
       setCalculatedBalance(balance);
     }
   }, [profile, transactions]);
+
 
   React.useEffect(() => {
     if (profile) {

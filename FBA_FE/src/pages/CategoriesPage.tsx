@@ -65,17 +65,11 @@ function CategoriesPage(): React.ReactElement {
     const totalSpent = activeCats.reduce((sum, c) => sum + (((c as any).spent || 0) || 0), 0);
     const totalRemaining = activeCats.reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
     
-    // Calculate balance from transactions
-    let calculatedBalance = profile?.openingBalanceCents || 0;
-    if (transactions) {
-      transactions.forEach(tx => {
-        if (tx.type === 'EXPENSE') {
-          calculatedBalance -= tx.amountCents;
-        } else if (tx.type === 'INCOME') {
-          calculatedBalance += tx.amountCents;
-        }
-      });
-    }
+    // Calculate balance: expected salary - total spent
+    const totalExpenses = transactions
+      ?.filter(tx => tx.type === 'EXPENSE')
+      .reduce((sum, tx) => sum + tx.amountCents, 0) || 0;
+    const calculatedBalance = (profile?.expectedSalaryCents || 0) - totalExpenses;
 
     return {
       totalAllocated,
