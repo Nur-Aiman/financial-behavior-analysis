@@ -94,9 +94,12 @@ export class CategoryController {
    */
   static async deactivate(req, res, next) {
     try {
-      const category = categoryService.deactivate(req.params.id);
-      res.json(successResponse(category, 'Category deactivated'));} catch (err) {
-      next(err);}}
+      const category = await categoryService.deactivate(req.params.id);
+      res.json(successResponse(category, 'Category deactivated'));
+    } catch (err) {
+      next(err);
+    }
+  }
 
   /**
    * DELETE /api/categories/:id

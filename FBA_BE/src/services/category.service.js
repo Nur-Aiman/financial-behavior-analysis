@@ -104,9 +104,9 @@ export const categoryService = {
   /**
    * Deactivate category (soft delete)
    */
-  deactivate(id) {
+  async deactivate(id) {
     this.getById(id);
-    return categoryRepository.deactivate(id);
+    return await categoryRepository.deactivate(id);
   },
 
   /**

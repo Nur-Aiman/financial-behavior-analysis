@@ -65,6 +65,12 @@ export const transactionRepository = {
         if (data.categoryId !== undefined) dbData.category_id = data.categoryId;
         if (data.amountCents !== undefined) dbData.amount_cents = data.amountCents;
         if (data.description !== undefined) dbData.description = data.description;
+        if (data.type !== undefined) dbData.type = data.type;
+        if (data.transactionDate !== undefined) dbData.transaction_date = data.transactionDate;
+        if (data.source !== undefined) dbData.source = data.source;
+        if (data.merchant !== undefined) dbData.merchant = data.merchant;
+        if (data.notes !== undefined) dbData.notes = data.notes;
+        if (data.linkedFixedExpensePaymentId !== undefined) dbData.linked_fixed_expense_payment_id = data.linkedFixedExpensePaymentId;
         await db('transactions').where('id', id).update(dbData);
         console.log(`✅ Transaction updated in database: ${id}`);
       } catch (err) {

@@ -113,7 +113,15 @@ export const createTransactionSchema = z.object({
   notes: z.string().max(500).optional(),
 });
 
-export const updateTransactionSchema = createTransactionSchema.partial();
+export const updateTransactionSchema = z.object({
+  categoryId: uuidSchema.optional(),
+  type: transactionTypeSchema.optional(),
+  amountCents: z.number().int().positive('Amount must be positive').optional(),
+  transactionDate: isoDateSchema.optional(),
+  merchant: z.string().max(100).optional().nullable(),
+  description: z.string().max(255).optional().nullable(),
+  notes: z.string().max(500).optional().nullable(),
+});
 
 // Fixed Expense Payment schemas
 export const payFixedExpenseSchema = z.object({

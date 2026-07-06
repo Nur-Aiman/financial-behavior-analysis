@@ -69,6 +69,11 @@ export const categoryRepository = {
         const dbData = { updated_at: now };
         if (data.name !== undefined) dbData.name = data.name;
         if (data.allocatedAmountCents !== undefined) dbData.allocated_amount_cents = data.allocatedAmountCents;
+        if (data.preferredDailyAmountCents !== undefined) dbData.preferred_daily_amount_cents = data.preferredDailyAmountCents;
+        if (data.expectedAmountCents !== undefined) dbData.expected_amount_cents = data.expectedAmountCents;
+        if (data.dueDate !== undefined) dbData.due_date = data.dueDate;
+        if (data.recurring !== undefined) dbData.recurring = data.recurring;
+        if (data.protected !== undefined) dbData.protected = data.protected;
         if (data.active !== undefined) dbData.active = data.active;
         if (data.displayOrder !== undefined) dbData.display_order = data.displayOrder;
         await db('spending_categories').where('id', id).update(dbData);
@@ -93,6 +98,29 @@ export const categoryRepository = {
         console.error(`❌ Error deleting category: ${err.message}`);
       }
     }
+  },
+
+  async deactivate(id) {
+    const existing = this.findById(id);
+    if (!existing) throw new Error(`Category not found: ${id}`);
+
+    const now = new Date().toISOString();
+    store.updateCategory(id, { active: false, updatedAt: now });
+
+    if (USE_REAL_DB) {
+      try {
+        const db = getDatabase();
+        await db('spending_categories').where('id', id).update({
+          active: false,
+          updated_at: now
+        });
+        console.log(`✅ Category deactivated in database: ${id}`);
+      } catch (err) {
+        console.error(`❌ Error deactivating category: ${err.message}`);
+      }
+    }
+
+    return this.findById(id);
   },
 
   findByType(type) {
