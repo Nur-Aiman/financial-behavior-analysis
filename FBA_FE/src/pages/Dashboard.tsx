@@ -28,7 +28,7 @@ import {
 import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
-import { useDashboard, useForecast, useCategories, useProfile } from '../hooks';
+import { useDashboard, useForecast, useCategories, useProfile, useTransactions } from '../hooks';
 import { formatCurrency, formatDate } from '../utils';
 
 function Dashboard(): React.ReactElement {
@@ -36,6 +36,26 @@ function Dashboard(): React.ReactElement {
   const { forecast } = useForecast();
   const { categories } = useCategories();
   const { profile } = useProfile();
+  const { transactions } = useTransactions();
+
+  // Calculate effective balance based on user preference
+  const calculateEffectiveBalance = () => {
+    if (!profile) return { currentBalance: 0, calculatedBalance: 0, effectiveBalance: 0 };
+    
+    const totalExpenses = transactions
+      ?.filter(tx => tx.type === 'EXPENSE')
+      .reduce((sum, tx) => sum + tx.amountCents, 0) || 0;
+    const calculatedBalance = (profile.expectedSalaryCents || 0) - totalExpenses;
+    const currentBalance = profile.currentBalanceCents || 0;
+    
+    return {
+      currentBalance,
+      calculatedBalance,
+      effectiveBalance: profile.useCalculatedBalance ? calculatedBalance : currentBalance,
+    };
+  };
+
+  const balance = calculateEffectiveBalance();
 
   // Calculate daily food spending allowance
   const calculateDailyFoodAllowance = () => {
@@ -49,7 +69,7 @@ function Dashboard(): React.ReactElement {
       .filter(c => c.active && c.id !== foodCategory.id)
       .reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
     
-    const availableAfterOthers = (summary.currentBalanceCents || 0) - otherCategoriesRemaining;
+    const availableAfterOthers = balance.effectiveBalance - otherCategoriesRemaining;
     
     // If available balance after other categories is > RM600, can spend more
     if (availableAfterOthers > 60000) {
@@ -93,7 +113,7 @@ function Dashboard(): React.ReactElement {
 
       {/* Status Cards */}
       <Grid container spacing={{ xs: 1.5, sm: 2, md: 3 }} sx={{ mb: 3 }}>
-        {/* Current Balance */}
+        {/* Current/Calculated Balance (Effective) */}
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ '@media (max-width:600px)': { p: 1.5 } }}>
@@ -102,13 +122,13 @@ function Dashboard(): React.ReactElement {
                 gutterBottom
                 sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}
               >
-                Current Balance
+                {profile?.useCalculatedBalance ? 'Calculated Balance' : 'Current Balance'}
               </Typography>
               <Typography 
                 variant="h4"
                 sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}
               >
-                {summary?.currentBalanceCents ? formatCurrency(summary.currentBalanceCents) : '—'}
+                {formatCurrency(balance.effectiveBalance)}
               </Typography>
               <Chip
                 label={`Status: ${summary?.status || 'UNKNOWN'}`}
@@ -116,6 +136,9 @@ function Dashboard(): React.ReactElement {
                 size="small"
                 sx={{ mt: 1, fontSize: '0.75rem' }}
               />
+              <Typography variant="caption" sx={{ display: 'block', mt: 0.5, color: profile?.useCalculatedBalance ? '#4caf50' : '#999' }}>
+                {profile?.useCalculatedBalance ? '(Salary - Expenses)' : '(User Input)'}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -135,7 +158,7 @@ function Dashboard(): React.ReactElement {
                 variant="h4"
                 sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}
               >
-                {summary?.projectedBalanceOnPaydayCents ? formatCurrency(summary.projectedBalanceOnPaydayCents) : '—'}
+                {formatCurrency(balance.effectiveBalance + (profile?.expectedSalaryCents || 0))}
               </Typography>
               <Typography 
                 variant="caption"
@@ -162,7 +185,7 @@ function Dashboard(): React.ReactElement {
                 variant="h4"
                 sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }}
               >
-                {summary?.safelyAvailableBalanceCents ? formatCurrency(summary.safelyAvailableBalanceCents) : '—'}
+                {formatCurrency(Math.max(0, balance.effectiveBalance - (summary?.reservedFixedExpensesCents || 0) - (summary?.protectedUsageAllocationCents || 0)))}
               </Typography>
               <Typography 
                 variant="caption"

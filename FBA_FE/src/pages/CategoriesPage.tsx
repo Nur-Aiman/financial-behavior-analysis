@@ -380,40 +380,26 @@ function CategoriesPage(): React.ReactElement {
         </Grid>
         <Grid item xs={12} sm={6} md={2.4}>
           <Card sx={{ 
-            backgroundColor: profile?.useCalculatedBalance ? '#fff3e0' : '#e3f2fd',
-            border: profile?.useCalculatedBalance ? '' : '2px solid #1976d2'
+            backgroundColor: profile?.useCalculatedBalance ? '#e8f5e9' : '#e3f2fd',
+            border: '2px solid ' + (profile?.useCalculatedBalance ? '#2e7d32' : '#1976d2')
           }}>
             <CardContent sx={{ p: 2 }}>
               <Typography variant="caption" sx={{ color: '#666' }}>
-                Current Balance
-              </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: profile?.useCalculatedBalance ? '#999' : '#1976d2', mt: 1 }}>
-                {formatCurrency(summary.currentBalance)}
-              </Typography>
-              {profile?.useCalculatedBalance && <Typography variant="caption" sx={{ color: '#f57c00', display: 'block', mt: 0.5 }}>Not in use</Typography>}
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4}>
-          <Card sx={{ 
-            backgroundColor: profile?.useCalculatedBalance ? '#e8f5e9' : '#fff3e0',
-            border: profile?.useCalculatedBalance ? '2px solid #2e7d32' : ''
-          }}>
-            <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#666' }}>
-                Calculated Balance
+                Active Balance
               </Typography>
               <Typography 
                 variant="h6" 
                 sx={{ 
                   fontWeight: 600, 
-                  color: profile?.useCalculatedBalance ? '#2e7d32' : '#f57c00',
+                  color: profile?.useCalculatedBalance ? '#2e7d32' : '#1976d2',
                   mt: 1 
                 }}
               >
-                {formatCurrency(summary.calculatedBalance)}
+                {formatCurrency(summary.balanceToUse)}
               </Typography>
-              {profile?.useCalculatedBalance && <Typography variant="caption" sx={{ color: '#2e7d32', display: 'block', mt: 0.5 }}>In use</Typography>}
+              <Typography variant="caption" sx={{ display: 'block', mt: 0.5, color: profile?.useCalculatedBalance ? '#2e7d32' : '#1976d2', fontWeight: 500 }}>
+                {profile?.useCalculatedBalance ? '(Calculated)' : '(Current)'}
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
