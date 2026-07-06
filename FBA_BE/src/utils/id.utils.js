@@ -2,13 +2,14 @@
  * ID Generation Utilities
  */
 
-import { v4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Generate a unique ID using UUID v4
  */
 export function generateId() {
-  return uuidv4();}
+  return uuidv4();
+}
 
 /**
  * Generate a prefixed ID
