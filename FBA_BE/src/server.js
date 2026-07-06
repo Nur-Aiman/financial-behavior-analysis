@@ -4,6 +4,12 @@
  */
 
 import 'dotenv/config';
+
+// Disable SSL certificate validation for production (Render uses self-signed certs)
+if (process.env.NODE_ENV === 'production') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 import knex from 'knex';
 import knexfile from '../config/knexfile.js';
 import app from './app.js';

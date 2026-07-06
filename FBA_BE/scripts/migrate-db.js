@@ -11,6 +11,11 @@
  * - No impact on existing tables
  */
 
+// Disable SSL certificate validation for Render's self-signed certificates
+if (process.env.NODE_ENV === 'production') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -43,10 +48,7 @@ const db = knex({
   client: 'pg',
   connection: {
     connectionString: connectionString,
-    ssl: connectionString.includes('localhost') ? false : {
-      rejectUnauthorized: false,
-      require: true,
-    },
+    ssl: { rejectUnauthorized: false },
   },
   acquireConnectionTimeout: 10000,
 });

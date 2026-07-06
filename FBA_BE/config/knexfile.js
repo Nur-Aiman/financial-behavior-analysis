@@ -1,5 +1,10 @@
 import 'dotenv/config';
 
+// Disable SSL certificate validation for production (Render uses self-signed certs)
+if (process.env.NODE_ENV === 'production') {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+}
+
 export default {
   development: {
     client: 'pg',
@@ -21,10 +26,7 @@ export default {
     client: 'pg',
     connection: {
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production' ? {
-        rejectUnauthorized: false,
-        require: true,
-      } : false,
+      ssl: { rejectUnauthorized: false },
     },
     acquireConnectionTimeout: 10000,
     migrations: {
