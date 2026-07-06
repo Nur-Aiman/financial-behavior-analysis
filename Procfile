@@ -1,1 +1,1 @@
-web: cd FBA_FE && npm run serve:prod
+web: npm run build:fe && npm run serve:fe

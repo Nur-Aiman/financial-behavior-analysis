@@ -9,7 +9,9 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "cd FBA_BE && npm start",
     "client": "cd FBA_FE && npm start",
-    "build": "cd FBA_BE && npm install && npm run build"
+    "build": "cd FBA_BE && npm install && npm run build",
+    "build:fe": "cd FBA_FE && npm install && npm run build",
+    "serve:fe": "cd FBA_FE && node server.js"
   },
   "keywords": ["financial", "analysis", "behavior"],
   "author": "",
