@@ -37,6 +37,7 @@ export const updateFinancialProfileSchema = z.object({
   currentBalanceCents: amountCentsSchema.optional(),
   salaryCycleStartDate: nullableIsoDateSchema.optional(),
   nextPayday: nullableIsoDateSchema.optional(),
+  useCalculatedBalance: z.boolean().optional(),
 });
 
 // Balance schemas
