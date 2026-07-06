@@ -134,4 +134,20 @@ export const balanceService = {
 
     return { previous: profile.currentBalanceCents, new: newBalance };
   },
+
+  /**
+   * Internal: Update balance without creating transaction record
+   * Used for internal adjustments like transaction refunds
+   */
+  async adjustBalanceInternal(amountCents) {
+    const profile = financialProfileService.getProfile();
+    const newBalance = profile.currentBalanceCents + amountCents;
+
+    // Allow negative balance for internal adjustments
+    await financialProfileRepository.update(profile.id, {
+      currentBalanceCents: newBalance,
+    });
+
+    return { previous: profile.currentBalanceCents, new: newBalance };
+  },
 };

@@ -157,21 +157,13 @@ export const transactionService = {
   async deleteTransaction(id) {
     const transaction = this.getTransaction(id);
     
-    // Refund the transaction amount back to balance
+    // Refund the transaction amount back to balance (without creating transaction record)
     if (transaction.type === TransactionType.EXPENSE) {
       // Refund expense back to balance
-      await balanceService.addIncome(transaction.amountCents, 'Transaction refund');
+      await balanceService.adjustBalanceInternal(transaction.amountCents);
     } else if (transaction.type === TransactionType.INCOME) {
       // Remove income from balance
-      const currentBalance = balanceService.getCurrentBalance();
-      if (currentBalance < transaction.amountCents) {
-        throw new AppError({
-          code: 'INSUFFICIENT_BALANCE',
-          message: 'Insufficient balance to reverse income',
-          statusCode: 400,
-        });
-      }
-      await balanceService.deductFromBalance(transaction.amountCents);
+      await balanceService.adjustBalanceInternal(-transaction.amountCents);
     }
     
     await transactionRepository.delete(id);
