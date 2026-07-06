@@ -176,3 +176,4 @@ export const transactionService = {
     
     await transactionRepository.delete(id);
   },
+};

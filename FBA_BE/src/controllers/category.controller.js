@@ -110,6 +110,12 @@ export class CategoryController {
       next(err);
     }
   }
+
+  /**
+   * PUT /api/categories/reorder
+   * Update category display order
+   */
+  static async reorder(req, res, next) {
     try {
       const { categoryIds } = req.body;
       if (!Array.isArray(categoryIds)) {
