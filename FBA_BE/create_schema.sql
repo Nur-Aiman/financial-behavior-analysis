@@ -54,14 +54,20 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount_cents BIGINT NOT NULL,
     description TEXT,
     transaction_date DATE NOT NULL,
+    source VARCHAR(50),
+    merchant VARCHAR(255),
+    notes TEXT,
+    linked_fixed_expense_payment_id UUID,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (linked_fixed_expense_payment_id) REFERENCES fixed_expense_payments(id) ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_transactions_category_id ON transactions(category_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_transaction_date ON transactions(transaction_date);
 CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
 CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions(created_at);
+CREATE INDEX IF NOT EXISTS idx_transactions_source ON transactions(source);
 
 -- Create spending_logs table
 CREATE TABLE IF NOT EXISTS spending_logs (
