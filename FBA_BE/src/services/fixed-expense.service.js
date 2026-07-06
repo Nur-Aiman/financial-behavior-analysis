@@ -1,199 +1,162 @@
 ﻿/**
  * Fixed Expense Service
- * 
  * Manages fixed expenses (bills, subscriptions, loans)
- * Handles payment tracking and reversals
  */
 
-import {
-  FixedExpensePayment,
-  FixedExpensePaymentStatus,
-  Transaction,
-  TransactionType,
-  TransactionSource,} from '../models/index';
-import { fixedExpenseRepository} from '../repositories/fixed-expense.repository';
-import { categoryService} from './category.service.js';
-import { transactionRepository} from '../repositories/transaction.repository';
-import { balanceService} from './balance.service.js';
-import { AppError} from '../errors/app-error';
-import { getTodayIsoString} from '../utils/date.utils';
+import { FixedExpensePaymentStatus, TransactionType, TransactionSource } from '../models/index.js';
+import { fixedExpenseRepository } from '../repositories/fixed-expense.repository.js';
+import { categoryService } from './category.service.js';
+import { transactionRepository } from '../repositories/transaction.repository.js';
+import { balanceService } from './balance.service.js';
+import { AppError } from '../errors/app-error.js';
 
-export class FixedExpenseService {
+export const fixedExpenseService = {
   /**
    * Get all fixed expenses
    */
-  getAllFixedExpenses()] {
-    return fixedExpenseRepository.findAll();}
+  getAllFixedExpenses() {
+    return fixedExpenseRepository.findAll();
+  },
 
   /**
    * Get unpaid fixed expenses
    */
-  getUnpaidExpenses()] {
-    return fixedExpenseRepository.findUnpaid();}
+  getUnpaidExpenses() {
+    return fixedExpenseRepository.findUnpaid();
+  },
 
   /**
    * Get paid fixed expenses
    */
-  getPaidExpenses()] {
-    return fixedExpenseRepository.findPaid();}
+  getPaidExpenses() {
+    return fixedExpenseRepository.findPaid();
+  },
 
   /**
    * Get overdue fixed expenses
    */
-  getOverdueExpenses()] {
-    return fixedExpenseRepository.findOverdue();}
+  getOverdueExpenses() {
+    return fixedExpenseRepository.findOverdue();
+  },
+
+  /**
+   * Update overdue status
+   */
+  updateOverdueStatus() {
+    const today = new Date().toISOString().split('T')[0];
+    const expenses = this.getUnpaidExpenses();
+    expenses.forEach(exp => {
+      if (exp.dueDate < today) {
+        fixedExpenseRepository.update(exp.id, { status: FixedExpensePaymentStatus.OVERDUE });
+      }
+    });
+  },
 
   /**
    * Get fixed expense for a category
    */
   getExpenseForCategory(categoryId) {
-    return fixedExpenseRepository.findUnpaidByCategory(categoryId);}
-
-  /**
-   * Create fixed expense payment record
-   */
-  async createFixedExpense(categoryId) {
-    // Verify category is FIXED_ONE_TIME type
-    const category = categoryService.getById(categoryId);
-
-    const { SpendingCategoryType} = require('../models');
-    if (category.type !== SpendingCategoryType.FIXED_ONE_TIME) {
-      throw new AppError({
-        code: 'CATEGORY_TYPE_MISMATCH',
-        message: `Category must be FIXED_ONE_TIME type, got ${category.type}`,
-        statusCode});}
-
-    // Create payment record
-    return await fixedExpenseRepository.create({
-      categoryId,
-      expectedAmountCents: category.expectedAmountCents!,
-      dueDate: category.dueDate!,
-      status: FixedExpensePaymentStatus.UNPAID,});}
+    const expenses = fixedExpenseRepository.findAll();
+    return expenses.find(exp => exp.categoryId === categoryId && exp.status === FixedExpensePaymentStatus.UNPAID);
+  },
 
   /**
    * Pay fixed expense
    */
-  async payFixedExpense(categoryId, actualAmountCents, paymentDate) {
+  async payFixedExpense(categoryId, data) {
+    const { actualAmountCents, paymentDate } = data;
+
     if (actualAmountCents <= 0) {
       throw new AppError({
         code: 'NEGATIVE_TRANSACTION_AMOUNT',
         message: 'Payment amount must be positive',
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
-    // Find unpaid payment
-    const payment = fixedExpenseRepository.findUnpaidByCategory(categoryId);
+    const payment = this.getExpenseForCategory(categoryId);
     if (!payment) {
       throw new AppError({
         code: 'FIXED_EXPENSE_ALREADY_PAID',
         message: `No unpaid fixed expense for category: ${categoryId}`,
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
-    // Check balance
     const currentBalance = balanceService.getCurrentBalance();
     if (currentBalance < actualAmountCents) {
       throw new AppError({
         code: 'INSUFFICIENT_BALANCE',
-        message: `Insufficient balance for payment`,
-        statusCode,
-        details: {
-          available,
-          required});}
+        message: 'Insufficient balance for payment',
+        statusCode: 400,
+        details: { available: currentBalance, required: actualAmountCents },
+      });
+    }
 
     // Deduct from balance
     await balanceService.deductFromBalance(actualAmountCents);
 
-    // Create linked expense transaction
+    // Create linked transaction
+    const category = categoryService.getById(categoryId);
     const transaction = await transactionRepository.create({
       categoryId,
       type: TransactionType.EXPENSE,
       source: TransactionSource.FIXED_EXPENSE_PAYMENT,
-      amountCents,
-      transactionDate,
-      description: `Fixed expense payment: ${categoryService.getById(categoryId).name}`,
-      linkedFixedExpensePaymentId: payment.id,});
+      amountCents: actualAmountCents,
+      transactionDate: paymentDate,
+      description: `Fixed expense payment: ${category.name}`,
+      linkedFixedExpensePaymentId: payment.id,
+    });
 
     // Update payment record
     await fixedExpenseRepository.update(payment.id, {
       status: FixedExpensePaymentStatus.PAID,
       actualAmountCents,
       paymentDate,
-      transactionId: transaction.id,});
+      transactionId: transaction.id,
+    });
 
-    return transaction;}
+    return transaction;
+  },
 
   /**
    * Reverse fixed expense payment
    */
-  reverseFixedExpensePayment(categoryId) {
-    const payment = fixedExpenseRepository.findByCategory(categoryId).find(
-      p => p.status === FixedExpensePaymentStatus.PAID);
+  async reverseFixedExpensePayment(categoryId) {
+    const expenses = fixedExpenseRepository.findAll();
+    const payment = expenses.find(p => p.categoryId === categoryId && p.status === FixedExpensePaymentStatus.PAID);
 
     if (!payment) {
       throw new AppError({
         code: 'FIXED_EXPENSE_NOT_PAID',
         message: `No paid fixed expense to reverse for category: ${categoryId}`,
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
-    // Find linked transaction
     const transaction = transactionRepository.findByFixedExpensePaymentId(payment.id);
     if (!transaction) {
       throw new AppError({
         code: 'INVALID_OPERATION',
         message: `No linked transaction found for payment: ${payment.id}`,
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
     // Restore balance
-    const currentBalance = balanceService.getCurrentBalance();
-    const financialProfileRepository = require('../repositories/financial-profile.repository')
-      .financialProfileRepository;
-    const profile = financialProfileRepository.getActive();
-
-    financialProfileRepository.update(profile.id, {
-      currentBalanceCents: currentBalance + transaction.amountCents,});
+    await balanceService.addIncome(payment.actualAmountCents, `Reversal of: ${payment.id}`);
 
     // Delete transaction
-    transactionRepository.delete(transaction.id);
+    await transactionRepository.delete(transaction.id);
 
-    // Mark payment.update(payment.id, {
+    // Update payment status back to unpaid
+    await fixedExpenseRepository.update(payment.id, {
       status: FixedExpensePaymentStatus.UNPAID,
-      actualAmountCents,
-      paymentDate,
-      transactionId});}
+      actualAmountCents: null,
+      paymentDate: null,
+      transactionId: null,
+    });
 
-  /**
-   * Check if fixed expense is overdue
-   */
-  isOverdue(categoryId) {
-    const payment = this.getExpenseForCategory(categoryId);
-    if (!payment) return false;
-
-    const today = getTodayIsoString();
-    return payment.dueDate < today;}
-
-  /**
-   * Get days until due
-   */
-  getDaysUntilDue(categoryId) {
-    const { calculateRemainingDays} = require('../utils/date.utils');
-    const payment = this.getExpenseForCategory(categoryId);
-    if (!payment) return -1;
-
-    const today = getTodayIsoString();
-    return calculateRemainingDays(today, payment.dueDate);}
-
-  /**
-   * Mark*/
-  updateOverdueStatus() {
-    const unpaid = fixedExpenseRepository.findUnpaid();
-    const today = getTodayIsoString();
-
-    for (const payment of unpaid) {
-      if (payment.dueDate < today && payment.status !== FixedExpensePaymentStatus.OVERDUE) {
-        fixedExpenseRepository.update(payment.id, {
-          status: FixedExpensePaymentStatus.OVERDUE,});}}
-
-export const fixedExpenseService = new FixedExpenseService();
-
-
-
-
+    return { success: true, paymentId: payment.id };
+  },
+};

@@ -8,112 +8,133 @@
  * For production, replace with PostgreSQL using the repository interfaces.
  */
 
-import {
-  FinancialProfile,
-  SpendingCategory,
-  Transaction,
-  FixedExpensePayment,
-  BalanceAdjustment,} from '../models/index';
-
 export class InMemoryStore {
-  private financialProfiles= new Map();
-  private categories= new Map();
-  private transactions= new Map();
-  private fixedExpensePayments= new Map();
-  private balanceAdjustments= [];
+  constructor() {
+    this.financialProfiles = new Map();
+    this.categories = new Map();
+    this.transactions = new Map();
+    this.fixedExpensePayments = new Map();
+    this.balanceAdjustments = [];
+  }
 
   /**
    * Financial Profiles
    */
   addProfile(profile) {
-    this.financialProfiles.set(profile.id, { ...profile});}
+    this.financialProfiles.set(profile.id, { ...profile });
+  }
 
   getProfile(id) {
     const profile = this.financialProfiles.get(id);
-    return profile ? { ...profile} ;}
+    return profile ? { ...profile } : null;
+  }
 
-  getAllProfiles()] {
-    return Array.from(this.financialProfiles.values()).map(p => ({ ...p}));}
+  getAllProfiles() {
+    return Array.from(this.financialProfiles.values()).map(p => ({ ...p }));
+  }
 
   updateProfile(id, updates) {
     const profile = this.financialProfiles.get(id);
     if (profile) {
-      this.financialProfiles.set(id, { ...profile, ...updates, id, updatedAt: new Date().toISOString()});}}
+      this.financialProfiles.set(id, { ...profile, ...updates, id, updatedAt: new Date().toISOString() });
+    }
+  }
 
   deleteProfile(id) {
-    this.financialProfiles.delete(id);}
+    this.financialProfiles.delete(id);
+  }
 
   /**
    * Categories
    */
   addCategory(category) {
-    this.categories.set(category.id, { ...category});}
+    this.categories.set(category.id, { ...category });
+  }
 
   getCategory(id) {
     const category = this.categories.get(id);
-    return category ? { ...category} ;}
+    return category ? { ...category } : null;
+  }
 
-  getAllCategories()] {
-    return Array.from(this.categories.values()).map(c => ({ ...c}));}
+  getAllCategories() {
+    return Array.from(this.categories.values()).map(c => ({ ...c }));
+  }
 
   updateCategory(id, updates) {
     const category = this.categories.get(id);
     if (category) {
-      this.categories.set(id, { ...category, ...updates, id, updatedAt: new Date().toISOString()});}}
+      this.categories.set(id, { ...category, ...updates, id, updatedAt: new Date().toISOString() });
+    }
+  }
 
   deleteCategory(id) {
-    this.categories.delete(id);}
+    this.categories.delete(id);
+  }
 
   /**
    * Transactions
    */
   addTransaction(transaction) {
-    this.transactions.set(transaction.id, { ...transaction});}
+    this.transactions.set(transaction.id, { ...transaction });
+  }
 
   getTransaction(id) {
     const transaction = this.transactions.get(id);
-    return transaction ? { ...transaction} ;}
+    return transaction ? { ...transaction } : null;
+  }
 
-  getAllTransactions()] {
-    return Array.from(this.transactions.values()).map(t => ({ ...t}));}
+  getAllTransactions() {
+    return Array.from(this.transactions.values()).map(t => ({ ...t }));
+  }
 
   updateTransaction(id, updates) {
     const transaction = this.transactions.get(id);
     if (transaction) {
-      this.transactions.set(id, { ...transaction, ...updates, id, updatedAt: new Date().toISOString()});}}
+      this.transactions.set(id, { ...transaction, ...updates, id, updatedAt: new Date().toISOString() });
+    }
+  }
 
   deleteTransaction(id) {
-    this.transactions.delete(id);}
+    this.transactions.delete(id);
+  }
 
   /**
    * Fixed Expense Payments
    */
   addFixedExpensePayment(payment) {
-    this.fixedExpensePayments.set(payment.id, { ...payment});}
+    this.fixedExpensePayments.set(payment.id, { ...payment });
+  }
 
   getFixedExpensePayment(id) {
     const payment = this.fixedExpensePayments.get(id);
-    return payment ? { ...payment} ;}
+    return payment ? { ...payment } : null;
+  }
 
-  getAllFixedExpensePayments()] {
-    return Array.from(this.fixedExpensePayments.values()).map(p => ({ ...p}));}
+  getAllFixedExpensePayments() {
+    return Array.from(this.fixedExpensePayments.values()).map(p => ({ ...p }));
+  }
 
   updateFixedExpensePayment(id, updates) {
     const payment = this.fixedExpensePayments.get(id);
     if (payment) {
-      this.fixedExpensePayments.set(id, { ...payment, ...updates, id, updatedAt: new Date().toISOString()});}}
+      this.fixedExpensePayments.set(id, { ...payment, ...updates, id, updatedAt: new Date().toISOString() });
+    }
+  }
 
   deleteFixedExpensePayment(id) {
-    this.fixedExpensePayments.delete(id);}
+    this.fixedExpensePayments.delete(id);
+  }
 
   /**
    * Balance Adjustments
    */
   addBalanceAdjustment(adjustment) {
-    this.balanceAdjustments.push({ ...adjustment});}
+    this.balanceAdjustments.push({ ...adjustment });
+  }
 
-  getBalanceAdjustments()] {
-    return this.balanceAdjustments.map(a => ({ ...a}));}
+  getBalanceAdjustments() {
+    return this.balanceAdjustments.map(a => ({ ...a }));
+  }
 
   /**
    * Utility: Clear all data
@@ -126,6 +147,7 @@ export class InMemoryStore {
     this.balanceAdjustments = [];
   }
 }
+
 export const store = new InMemoryStore();
 
 

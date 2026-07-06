@@ -4,10 +4,9 @@
  * Only available outside production
  */
 
-import { Request, Response, NextFunction} from 'express';
-import { clearAllData, seedData} from '../storage/seed-data';
-import { store} from '../storage/in-memory.store';
-import { successResponse} from '../utils/response.utils';
+import { clearAllData, seedData } from '../storage/seed-data.js';
+import { store } from '../storage/in-memory.store.js';
+import { successResponse } from '../utils/response.utils.js';
 
 export class DevelopmentController {
   /**
@@ -39,3 +38,5 @@ export class DevelopmentController {
 
 
 
+
+}

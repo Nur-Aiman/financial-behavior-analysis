@@ -2,11 +2,10 @@
  * Transaction Controller
  */
 
-import { Request, Response, NextFunction} from 'express';
-import { transactionService} from '../services/transaction.service';
-import { createTransactionSchema, updateTransactionSchema, transactionFilterSchema} from '../validators/schemas';
-import { successResponse} from '../utils/response.utils';
-import { formatCentsAsRinggit} from '../utils/money.utils';
+import { transactionService } from '../services/transaction.service.js';
+import { createTransactionSchema, updateTransactionSchema, transactionFilterSchema } from '../validators/schemas.js';
+import { successResponse } from '../utils/response.utils.js';
+import { formatCentsAsRinggit } from '../utils/money.utils.js';
 
 export class TransactionController {
   /**
@@ -84,8 +83,12 @@ export class TransactionController {
   static async delete(req, res, next) {
     try {
       await transactionService.deleteTransaction(req.params.id);
-      res.json(successResponse({ id: req.params.id}, 'Transaction deleted'));} catch (err) {
-      next(err);}}
+      res.json(successResponse({ id: req.params.id }, 'Transaction deleted'));
+    } catch (err) {
+      next(err);
+    }
+  }
+}
 
 
 

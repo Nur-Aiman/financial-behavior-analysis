@@ -27,20 +27,27 @@ export function centsTToRinggit(cents) {
   return ringgit.toNumber();}
 
 /**
- * Format cents* Example: 150050 -> "RM 1,500.50"
+ * Format cents as Ringgit string
+ * Example: 150050 -> "RM 1,500.50"
  */
 export function formatCentsAsRinggit(cents) {
+  if (cents === undefined || cents === null || isNaN(cents)) {
+    return 'RM 0.00';
+  }
   const ringgit = centsTToRinggit(cents);
   return `RM ${ringgit.toLocaleString('en-MY', {
-    minimumFractionDigits,
-    maximumFractionDigits})}`;}
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
 
 /**
  * Safe addition of cents values
  */
 export function addCents(a, b) {
   const decimal = new Decimal(a).plus(new Decimal(b));
-  return Math.round(decimal.toNumber());}
+  return Math.round(decimal.toNumber());
+}
 
 /**
  * Safe subtraction of cents values

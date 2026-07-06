@@ -1,31 +1,31 @@
 ﻿/**
  * Balance Service
- * 
  * Manages account balance and balance adjustments
  */
 
-import { BalanceAdjustment, TransactionType, TransactionSource} from '../models/index';
-import { financialProfileService} from './financial-profile.service.js';
-import { financialProfileRepository} from '../repositories/financial-profile.repository';
-import { balanceAdjustmentRepository} from '../repositories/balance-adjustment.repository';
-import { transactionRepository} from '../repositories/transaction.repository';
-import { AppError} from '../errors/app-error';
-import { getTodayIsoString} from '../utils/date.utils';
-import { addCents} from '../utils/money.utils';
+import { TransactionType, TransactionSource } from '../models/index.js';
+import { financialProfileService } from './financial-profile.service.js';
+import { financialProfileRepository } from '../repositories/financial-profile.repository.js';
+import { balanceAdjustmentRepository } from '../repositories/balance-adjustment.repository.js';
+import { transactionRepository } from '../repositories/transaction.repository.js';
+import { AppError } from '../errors/app-error.js';
+import { getTodayIsoString } from '../utils/date.utils.js';
 
-export class BalanceService {
+export const balanceService = {
   /**
    * Get current balance
    */
   getCurrentBalance() {
     const profile = financialProfileService.getProfile();
-    return profile.currentBalanceCents;}
+    return profile.currentBalanceCents;
+  },
 
   /**
    * Get balance adjustment history
    */
-  getAdjustmentHistory()] {
-    return balanceAdjustmentRepository.getHistory();}
+  getAdjustmentHistory() {
+    return balanceAdjustmentRepository.findAll();
+  },
 
   /**
    * Update balance with reason
@@ -35,90 +35,103 @@ export class BalanceService {
       throw new AppError({
         code: 'INVALID_REQUEST_DATA',
         message: 'Reason is required for balance adjustment',
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
     if (newBalanceCents < 0) {
       throw new AppError({
         code: 'INVALID_BALANCE_AMOUNT',
         message: 'Balance cannot be negative',
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
     const profile = financialProfileService.getProfile();
     const previousBalance = profile.currentBalanceCents;
     const adjustmentAmount = newBalanceCents - previousBalance;
 
-    // Update profile
     await financialProfileRepository.update(profile.id, {
-      currentBalanceCents});
+      currentBalanceCents: newBalanceCents,
+    });
 
-    // Create adjustment record
     const adjustment = await balanceAdjustmentRepository.create({
-      previousBalanceCents,
-      adjustmentAmountCents,
-      createdAt: getTodayIsoString(),});
+      previousBalanceCents: previousBalance,
+      newBalanceCents: newBalanceCents,
+      adjustmentAmountCents: adjustmentAmount,
+      reason,
+      createdAt: getTodayIsoString(),
+    });
 
-    // Create balance adjustment transaction for tracking
     await transactionRepository.create({
       type: TransactionType.BALANCE_ADJUSTMENT,
       source: TransactionSource.MANUAL,
       amountCents: Math.abs(adjustmentAmount),
       transactionDate: getTodayIsoString(),
-      description});
+      description: reason,
+    });
 
-    return adjustment;}
+    return adjustment;
+  },
 
   /**
    * Add income
    */
-  async addIncome(amountCents, description?) {
+  async addIncome(amountCents, description) {
     if (amountCents <= 0) {
       throw new AppError({
         code: 'INVALID_BALANCE_AMOUNT',
         message: 'Income amount must be positive',
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
     const profile = financialProfileService.getProfile();
-    const newBalance = addCents(profile.currentBalanceCents, amountCents);
+    const newBalance = profile.currentBalanceCents + amountCents;
 
     await financialProfileRepository.update(profile.id, {
-      currentBalanceCents});
+      currentBalanceCents: newBalance,
+    });
 
-    // Record transaction
     await transactionRepository.create({
       type: TransactionType.INCOME,
       source: TransactionSource.MANUAL,
       amountCents,
       transactionDate: getTodayIsoString(),
-      description: description || 'Income',});}
+      description,
+    });
+
+    return { previous: profile.currentBalanceCents, new: newBalance };
+  },
 
   /**
    * Deduct from balance
    */
-  async deductFromBalance(amountCents) {
+  async deductFromBalance(amountCents, description) {
     if (amountCents <= 0) {
       throw new AppError({
         code: 'INVALID_BALANCE_AMOUNT',
         message: 'Deduction amount must be positive',
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
     const profile = financialProfileService.getProfile();
-
     if (profile.currentBalanceCents < amountCents) {
       throw new AppError({
         code: 'INSUFFICIENT_BALANCE',
-        message: `Insufficient balance. Available: ${profile.currentBalanceCents}, Required: ${amountCents}`,
-        statusCode,
-        details: {
-          available: profile.currentBalanceCents,
-          required});}
+        message: 'Insufficient balance for deduction',
+        statusCode: 400,
+        details: { available: profile.currentBalanceCents, required: amountCents },
+      });
+    }
 
     const newBalance = profile.currentBalanceCents - amountCents;
 
     await financialProfileRepository.update(profile.id, {
-      currentBalanceCents});}}
+      currentBalanceCents: newBalance,
+    });
 
-export const balanceService = new BalanceService();
-
-
-
-
+    return { previous: profile.currentBalanceCents, new: newBalance };
+  },
+};

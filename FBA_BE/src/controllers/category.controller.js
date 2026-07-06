@@ -2,11 +2,10 @@
  * Category Controller
  */
 
-import { Request, Response, NextFunction} from 'express';
-import { categoryService} from '../services/category.service';
-import { createCategorySchema, updateCategorySchema, categoryFilterSchema} from '../validators/schemas';
-import { successResponse} from '../utils/response.utils';
-import { formatCentsAsRinggit} from '../utils/money.utils';
+import { categoryService } from '../services/category.service.js';
+import { createCategorySchema, updateCategorySchema, categoryFilterSchema } from '../validators/schemas.js';
+import { successResponse } from '../utils/response.utils.js';
+import { formatCentsAsRinggit } from '../utils/money.utils.js';
 
 export class CategoryController {
   /**
@@ -115,12 +114,17 @@ export class CategoryController {
    */
   static async reorder(req, res, next) {
     try {
-      const { categoryIds} = req.body;
+      const { categoryIds } = req.body;
       if (!Array.isArray(categoryIds)) {
-        throw new Error('categoryIds must be an array');}
+        throw new Error('categoryIds must be an array');
+      }
       const categories = categoryService.reorder(categoryIds);
-      res.json(successResponse(categories, 'Categories reordered successfully'));} catch (err) {
-      next(err);}}
+      res.json(successResponse(categories, 'Categories reordered successfully'));
+    } catch (err) {
+      next(err);
+    }
+  }
+}
 
 
 

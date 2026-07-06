@@ -2,8 +2,8 @@
  * Forecast Routes
  */
 
-import { Router} from 'express';
-import { ForecastController} from '../controllers/forecast.controller';
+import { Router } from 'express';
+import { ForecastController } from '../controllers/forecast.controller.js';
 
 export const forecastRoutes = Router();
 

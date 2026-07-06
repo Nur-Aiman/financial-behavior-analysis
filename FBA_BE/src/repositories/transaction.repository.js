@@ -2,163 +2,106 @@
  * Transaction Repository
  */
 
-import { Transaction, TransactionType} from '../models/index';
-import { store} from '../storage/in-memory.store';
-import { generateId} from '../utils/id.utils';
-import { isDateInRange} from '../utils/date.utils';
-import { getDatabase} from '../database/connection';
+import { store } from '../storage/in-memory.store.js';
+import { generateId } from '../utils/id.utils.js';
+import { getDatabase } from '../database/connection.js';
 
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
 
-export class TransactionRepository {
-  /**
-   * Create a new transaction
-   */
-  async create(data, 'id' | 'createdAt' | 'updatedAt'>) {
+export const transactionRepository = {
+  async create(data) {
     const now = new Date().toISOString();
-    const transaction= {
+    const transaction = {
       id: generateId(),
       ...data,
-      createdAt,
-      updatedAt};
+      createdAt: now,
+      updatedAt: now,
+    };
     store.addTransaction(transaction);
 
-    // Persist to database
     if (USE_REAL_DB) {
       try {
         const db = getDatabase();
         const dbData = {
           id: transaction.id,
-          category_id: transaction.categoryId || null,
-          type: transaction.type,
+          category_id: transaction.categoryId,
           amount_cents: transaction.amountCents,
-          transaction_date: transaction.transactionDate,
-          merchant: transaction.merchant || null,
-          description: transaction.description || null,
-          notes: transaction.notes || null,
+          type: transaction.type,
           source: transaction.source,
-          linked_fixed_expense_payment_id: transaction.linkedFixedExpensePaymentId || null,
-          created_at,
-          updated_at};
+          description: transaction.description,
+          transaction_date: transaction.transactionDate,
+          created_at: now,
+          updated_at: now,
+        };
         await db('transactions').insert(dbData);
-        console.log(`âœ… Transaction saved to database: ${transaction.id}`);} catch (err) {
-        console.error('âŒ Error persisting transaction to database:', err.message);}}
+        console.log(`✅ Transaction saved to database: ${transaction.id}`);
+      } catch (err) {
+        console.error(`❌ Error persisting transaction: ${err.message}`);
+      }
+    }
 
-    return transaction;}
+    return transaction;
+  },
 
-  /**
-   * Find transaction by ID
-   */
   findById(id) {
-    return store.getTransaction(id);}
+    return store.getTransaction(id);
+  },
 
-  /**
-   * Find all transactions
-   */
-  findAll()] {
-    return store.getAllTransactions();}
+  findAll() {
+    return store.getAllTransactions();
+  },
 
-  /**
-   * Find transactions by category
-   */
-  findByCategory(categoryId)] {
-    return this.findAll().filter(t => t.categoryId === categoryId);}
-
-  /**
-   * Find transactions by type
-   */
-  findByType(type)] {
-    return this.findAll().filter(t => t.type === type);}
-
-  /**
-   * Find transactions on a specific date
-   */
-  findByDate(dateStr)] {
-    return this.findAll().filter(t => t.transactionDate === dateStr);}
-
-  /**
-   * Find transactions within a date range
-   */
-  findByDateRange(startDateStr, endDateStr)] {
-    return this.findAll().filter(t =>
-      isDateInRange(t.transactionDate, startDateStr, endDateStr));}
-
-  /**
-   * Find transactions by category and date range
-   */
-  findByCategoryAndDateRange(
-    categoryId,
-    startDateStr,
-    endDateStr)] {
-    return this.findByCategory(categoryId).filter(t =>
-      isDateInRange(t.transactionDate, startDateStr, endDateStr));}
-
-  /**
-   * Find transaction linked to fixed expense payment
-   */
-  findByFixedExpensePaymentId(paymentId) {
-    const transactions = this.findAll();
-    return transactions.find(t => t.linkedFixedExpensePaymentId === paymentId) || null;}
-
-  /**
-   * Update transaction
-   */
-  async update(id, data, 'id' | 'createdAt'>>) {
+  async update(id, data) {
     const existing = this.findById(id);
-    if (!existing) {
-      throw new Error(`Transaction not found: ${id}`);}
+    if (!existing) throw new Error(`Transaction not found: ${id}`);
 
     const now = new Date().toISOString();
-    store.updateTransaction(id, {
-      ...data,
-      updatedAt});
+    store.updateTransaction(id, { ...data, updatedAt: now });
 
-    // Persist to database
     if (USE_REAL_DB) {
       try {
         const db = getDatabase();
-        const dbData= {
-          updated_at};
-
-        if (data.categoryId !== undefined) dbData.category_id = data.categoryId || null;
-        if (data.type !== undefined) dbData.type = data.type;
+        const dbData = { updated_at: now };
+        if (data.categoryId !== undefined) dbData.category_id = data.categoryId;
         if (data.amountCents !== undefined) dbData.amount_cents = data.amountCents;
-        if (data.transactionDate !== undefined) dbData.transaction_date = data.transactionDate;
-        if (data.merchant !== undefined) dbData.merchant = data.merchant || null;
-        if (data.description !== undefined) dbData.description = data.description || null;
-        if (data.notes !== undefined) dbData.notes = data.notes || null;
-        if (data.source !== undefined) dbData.source = data.source;
-        if (data.linkedFixedExpensePaymentId !== undefined) dbData.linked_fixed_expense_payment_id = data.linkedFixedExpensePaymentId || null;
-
+        if (data.description !== undefined) dbData.description = data.description;
         await db('transactions').where('id', id).update(dbData);
-        console.log(`âœ… Transaction updated in database: ${id}`);} catch (err) {
-        console.error(`âŒ Error persisting transaction update to database: ${err.message}`);}}
+        console.log(`✅ Transaction updated in database: ${id}`);
+      } catch (err) {
+        console.error(`❌ Error updating transaction: ${err.message}`);
+      }
+    }
 
-    return this.findById(id)!;}
+    return this.findById(id);
+  },
 
-  /**
-   * Delete transaction
-   */
   async delete(id) {
     store.deleteTransaction(id);
 
-    // Persist to database
     if (USE_REAL_DB) {
       try {
         const db = getDatabase();
         await db('transactions').where('id', id).del();
-        console.log(`âœ… Transaction deleted from database: ${id}`);} catch (err) {
-        console.error(`âŒ Error persisting transaction deletion to database: ${err.message}`);}}
+        console.log(`✅ Transaction deleted from database: ${id}`);
+      } catch (err) {
+        console.error(`❌ Error deleting transaction: ${err.message}`);
+      }
+    }
+  },
 
-  /**
-   * Clear all transactions
-   */
+  findByCategory(categoryId) {
+    return this.findAll().filter(t => t.categoryId === categoryId);
+  },
+
+  findByDateRange(startDate, endDate) {
+    return this.findAll().filter(t => {
+      const tDate = new Date(t.transactionDate);
+      return tDate >= new Date(startDate) && tDate <= new Date(endDate);
+    });
+  },
+
   clear() {
-    const transactions = this.findAll();
-    transactions.forEach(t => this.delete(t.id));}}
-
-export const transactionRepository = new TransactionRepository();
-
-
-
-
+    const all = this.findAll();
+    all.forEach(t => this.delete(t.id));
+  },
+};

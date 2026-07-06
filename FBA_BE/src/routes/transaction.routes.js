@@ -2,8 +2,8 @@
  * Transaction Routes
  */
 
-import { Router} from 'express';
-import { TransactionController} from '../controllers/transaction.controller';
+import { Router } from 'express';
+import { TransactionController } from '../controllers/transaction.controller.js';
 
 export const transactionRoutes = Router();
 

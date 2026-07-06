@@ -2,8 +2,8 @@
  * Financial Profile Routes
  */
 
-import { Router} from 'express';
-import { FinancialProfileController} from '../controllers/financial-profile.controller';
+import { Router } from 'express';
+import { FinancialProfileController } from '../controllers/financial-profile.controller.js';
 
 export const financialProfileRoutes = Router();
 

@@ -2,10 +2,9 @@
  * Dashboard Controller
  */
 
-import { Request, Response, NextFunction} from 'express';
-import { dashboardService} from '../services/dashboard.service';
-import { successResponse} from '../utils/response.utils';
-import { formatCentsAsRinggit} from '../utils/money.utils';
+import { dashboardService } from '../services/dashboard.service.js';
+import { successResponse } from '../utils/response.utils.js';
+import { formatCentsAsRinggit } from '../utils/money.utils.js';
 
 export class DashboardController {
   /**
@@ -101,3 +100,5 @@ export class DashboardController {
 
 
 
+
+}

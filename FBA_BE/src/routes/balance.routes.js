@@ -2,8 +2,8 @@
  * Balance Routes
  */
 
-import { Router} from 'express';
-import { BalanceController} from '../controllers/balance.controller';
+import { Router } from 'express';
+import { BalanceController } from '../controllers/balance.controller.js';
 
 export const balanceRoutes = Router();
 

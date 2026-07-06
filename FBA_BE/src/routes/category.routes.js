@@ -2,8 +2,8 @@
  * Category Routes
  */
 
-import { Router} from 'express';
-import { CategoryController} from '../controllers/category.controller';
+import { Router } from 'express';
+import { CategoryController } from '../controllers/category.controller.js';
 
 export const categoryRoutes = Router();
 

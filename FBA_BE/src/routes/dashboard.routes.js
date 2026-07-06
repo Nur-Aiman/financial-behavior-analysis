@@ -2,8 +2,8 @@
  * Dashboard Routes
  */
 
-import { Router} from 'express';
-import { DashboardController} from '../controllers/dashboard.controller';
+import { Router } from 'express';
+import { DashboardController } from '../controllers/dashboard.controller.js';
 
 export const dashboardRoutes = Router();
 

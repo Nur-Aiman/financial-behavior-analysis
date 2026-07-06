@@ -2,9 +2,7 @@
  * Request Logger Middleware
  */
 
-import { Request, Response, NextFunction} from 'express';
-
-export const requestLogger = (req, res, next)=> {
+export const requestLogger = (req, res, next) => {
   const start = Date.now();
   
   res.on('finish', () => {

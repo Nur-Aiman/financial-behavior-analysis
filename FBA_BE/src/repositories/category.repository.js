@@ -2,27 +2,23 @@
  * Spending Category Repository
  */
 
-import { SpendingCategory, SpendingCategoryType} from '../models/index';
-import { store} from '../storage/in-memory.store';
-import { generateId} from '../utils/id.utils';
-import { getDatabase} from '../database/connection';
+import { store } from '../storage/in-memory.store.js';
+import { generateId } from '../utils/id.utils.js';
+import { getDatabase } from '../database/connection.js';
 
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
 
-export class CategoryRepository {
-  /**
-   * Create a new category
-   */
-  create(data, 'id' | 'createdAt' | 'updatedAt'>): SpendingCategory {
+export const categoryRepository = {
+  create(data) {
     const now = new Date().toISOString();
-    const category= {
+    const category = {
       id: generateId(),
       ...data,
-      createdAt,
-      updatedAt};
+      createdAt: now,
+      updatedAt: now,
+    };
     store.addCategory(category);
 
-    // Persist to database
     if (USE_REAL_DB) {
       try {
         const db = getDatabase();
@@ -38,122 +34,77 @@ export class CategoryRepository {
           protected: category.protected || false,
           display_order: category.displayOrder,
           active: category.active,
-          created_at,
-          updated_at};
+          created_at: now,
+          updated_at: now,
+        };
         db('spending_categories').insert(dbData).catch((err) => {
-          console.error('Error inserting category to database:', err);});} catch (err) {
-        console.error('Error persisting category to database:', err);}}
+          console.error('Error inserting category:', err);
+        });
+      } catch (err) {
+        console.error('Error persisting category:', err);
+      }
+    }
 
-    return category;}
+    return category;
+  },
 
-  /**
-   * Find category by ID
-   */
   findById(id) {
-    return store.getCategory(id);}
+    return store.getCategory(id);
+  },
 
-  /**
-   * Find all categories, sorted by displayOrder
-   */
-  findAll()] {
-    return store.getAllCategories().sort((a, b) => a.displayOrder - b.displayOrder);}
+  findAll() {
+    return store.getAllCategories().sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  },
 
-  /**
-   * Find all active categories
-   */
-  findActive()] {
-    return this.findAll().filter(c => c.active);}
-
-  /**
-   * Find categories by type
-   */
-  findByType(type)] {
-    return this.findAll().filter(c => c.type === type);}
-
-  /**
-   * Find active categories by type
-   */
-  findActiveByType(type)] {
-    return this.findActive().filter(c => c.type === type);}
-
-  /**
-   * Update category
-   */
-  update(id, data, 'id' | 'createdAt'>>): SpendingCategory {
+  async update(id, data) {
     const existing = this.findById(id);
-    if (!existing) {
-      throw new Error(`Category not found: ${id}`);}
+    if (!existing) throw new Error(`Category not found: ${id}`);
 
     const now = new Date().toISOString();
-    store.updateCategory(id, {
-      ...data,
-      updatedAt});
+    store.updateCategory(id, { ...data, updatedAt: now });
 
-    // Persist to database
     if (USE_REAL_DB) {
       try {
         const db = getDatabase();
-        const dbData= {
-          updated_at};
-
+        const dbData = { updated_at: now };
         if (data.name !== undefined) dbData.name = data.name;
-        if (data.type !== undefined) dbData.type = data.type;
         if (data.allocatedAmountCents !== undefined) dbData.allocated_amount_cents = data.allocatedAmountCents;
-        if (data.preferredDailyAmountCents !== undefined) dbData.preferred_daily_amount_cents = data.preferredDailyAmountCents || null;
-        if (data.expectedAmountCents !== undefined) dbData.expected_amount_cents = data.expectedAmountCents || null;
-        if (data.dueDate !== undefined) dbData.due_date = data.dueDate || null;
-        if (data.recurring !== undefined) dbData.recurring = data.recurring;
-        if (data.protected !== undefined) dbData.protected = data.protected;
-        if (data.displayOrder !== undefined) dbData.display_order = data.displayOrder;
         if (data.active !== undefined) dbData.active = data.active;
+        if (data.displayOrder !== undefined) dbData.display_order = data.displayOrder;
+        await db('spending_categories').where('id', id).update(dbData);
+        console.log(`✅ Category updated in database: ${id}`);
+      } catch (err) {
+        console.error(`❌ Error updating category: ${err.message}`);
+      }
+    }
 
-        db('spending_categories').where('id', id).update(dbData).catch((err) => {
-          console.error('Error updating category in database:', err);});} catch (err) {
-        console.error('Error persisting category update to database:', err);}}
+    return this.findById(id);
+  },
 
-    return this.findById(id)!;}
-
-  /**
-   * Deactivate category (soft delete)
-   */
-  deactivate(id): SpendingCategory {
-    // Persist to database
-    if (USE_REAL_DB) {
-      try {
-        const db = getDatabase();
-        const now = new Date().toISOString();
-        db('spending_categories')
-          .where('id', id)
-          .update({ active, updated_at})
-          .catch((err) => {
-            console.error('Error deactivating category in database:', err);});} catch (err) {
-        console.error('Error persisting category deactivation to database:', err);}}
-
-    return this.update(id, { active});}
-
-  /**
-   * Delete category (hard delete)
-   */
-  delete(id) {
+  async delete(id) {
     store.deleteCategory(id);
 
-    // Persist to database
     if (USE_REAL_DB) {
       try {
         const db = getDatabase();
-        db('spending_categories').where('id', id).del().catch((err) => {
-          console.error('Error deleting category from database:', err);});} catch (err) {
-        console.error('Error persisting category deletion to database:', err);}}
+        await db('spending_categories').where('id', id).del();
+        console.log(`✅ Category deleted from database: ${id}`);
+      } catch (err) {
+        console.error(`❌ Error deleting category: ${err.message}`);
+      }
+    }
+  },
 
-  /**
-   * Clear all categories
-   */
+  findByType(type) {
+    return this.findAll().filter(c => c.type === type);
+  },
+
+  findActive() {
+    return this.findAll().filter(c => c.active === true);
+  },
+
   clear() {
-    const categories = this.findAll();
-    categories.forEach(c => this.delete(c.id));}}
-
-export const categoryRepository = new CategoryRepository();
-
-
-
-
+    const all = this.findAll();
+    all.forEach(c => this.delete(c.id));
+  },
+};

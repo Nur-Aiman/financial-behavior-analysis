@@ -3,8 +3,8 @@
  * Only available outside production
  */
 
-import { Router} from 'express';
-import { DevelopmentController} from '../controllers/development.controller';
+import { Router } from 'express';
+import { DevelopmentController } from '../controllers/development.controller.js';
 
 export const developmentRoutes = Router();
 

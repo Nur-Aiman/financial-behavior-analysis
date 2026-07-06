@@ -2,11 +2,10 @@
  * Validation Error Handler Middleware
  */
 
-import { Request, Response, NextFunction} from 'express';
-import { ZodError} from 'zod';
-import { errorResponse} from '../utils/response.utils';
+import { ZodError } from 'zod';
+import { errorResponse } from '../utils/response.utils.js';
 
-export const validationErrorHandler = (err, _req, res, next)=> {
+export const validationErrorHandler = (err, _req, res, next) => {
   if (err instanceof ZodError) {
     res.status(400).json(
       errorResponse(

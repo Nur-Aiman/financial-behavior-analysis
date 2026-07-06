@@ -1,39 +1,36 @@
 ﻿/**
  * Category Service
- * 
  * Manages spending categories (Daily, Usage-based, Fixed)
  */
 
-import { SpendingCategory, SpendingCategoryType} from '../models/index';
-import { categoryRepository} from '../repositories/category.repository';
-import { transactionRepository} from '../repositories/transaction.repository';
-import { AppError} from '../errors/app-error';
+import { SpendingCategoryType } from '../models/index.js';
+import { categoryRepository } from '../repositories/category.repository.js';
+import { transactionRepository } from '../repositories/transaction.repository.js';
+import { AppError } from '../errors/app-error.js';
 
-export class CategoryService {
+export const categoryService = {
   /**
    * Create spending category
    */
-  create(data: {
-    name;
-    type;
-    allocatedAmountCents;
-    preferredDailyAmountCents?;
-    protected?;
-    expectedAmountCents?;
-    dueDate?;
-    recurring?;}): SpendingCategory {
+  create(data) {
     // Validate required fields by type
     if (data.type === SpendingCategoryType.DAILY_TIME_BASED) {
       if (!data.preferredDailyAmountCents || data.preferredDailyAmountCents <= 0) {
         throw new AppError({
           code: 'INVALID_CATEGORY_DATA',
           message: 'Daily categories must have preferredDailyAmountCents > 0',
-          statusCode});}} else if (data.type === SpendingCategoryType.FIXED_ONE_TIME) {
+          statusCode: 400,
+        });
+      }
+    } else if (data.type === SpendingCategoryType.FIXED_ONE_TIME) {
       if (!data.expectedAmountCents || !data.dueDate) {
         throw new AppError({
           code: 'INVALID_CATEGORY_DATA',
           message: 'Fixed categories must have expectedAmountCents and dueDate',
-          statusCode});}}
+          statusCode: 400,
+        });
+      }
+    }
 
     // Calculate next displayOrder based on existing categories
     const allCategories = categoryRepository.findAll();
@@ -43,45 +40,51 @@ export class CategoryService {
 
     return categoryRepository.create({
       ...data,
-      active,
-      displayOrder});}
+      active: data.active !== false,
+      displayOrder: nextDisplayOrder,
+    });
+  },
 
   /**
    * Get all categories
    */
-  getAll()] {
-    return categoryRepository.findAll();}
+  getAll() {
+    return categoryRepository.findAll();
+  },
 
   /**
    * Get active categories
    */
-  getActive()] {
-    return categoryRepository.findActive();}
+  getActive() {
+    return categoryRepository.findActive();
+  },
 
   /**
    * Get category by ID
    */
-  getById(id): SpendingCategory {
+  getById(id) {
     const category = categoryRepository.findById(id);
     if (!category) {
       throw new AppError({
         code: 'CATEGORY_NOT_FOUND',
         message: `Category not found: ${id}`,
-        statusCode});}
-    return category;}
+        statusCode: 404,
+      });
+    }
+    return category;
+  },
 
   /**
    * Get categories by type
    */
-  getByType(type)] {
-    return categoryRepository.findByType(type);}
+  getByType(type) {
+    return categoryRepository.findByType(type);
+  },
 
   /**
    * Update category
    */
-  update(
-    id,
-    data, 'id' | 'createdAt'>>): SpendingCategory {
+  update(id, data) {
     const category = this.getById(id);
 
     // Validate updates by type
@@ -90,16 +93,21 @@ export class CategoryService {
         throw new AppError({
           code: 'INVALID_CATEGORY_DATA',
           message: 'Daily categories must have preferredDailyAmountCents > 0',
-          statusCode});}}
+          statusCode: 400,
+        });
+      }
+    }
 
-    return categoryRepository.update(id, data);}
+    return categoryRepository.update(id, data);
+  },
 
   /**
    * Deactivate category (soft delete)
    */
-  deactivate(id): SpendingCategory {
+  deactivate(id) {
     this.getById(id);
-    return categoryRepository.deactivate(id);}
+    return categoryRepository.deactivate(id);
+  },
 
   /**
    * Delete category (hard delete)
@@ -114,17 +122,21 @@ export class CategoryService {
       throw new AppError({
         code: 'CATEGORY_HAS_TRANSACTIONS',
         message: `Cannot delete category with ${transactions.length} transactions. Deactivate instead.`,
-        statusCode,
-        details: { transactionCount: transactions.length});}
+        statusCode: 400,
+        details: { transactionCount: transactions.length },
+      });
+    }
 
-    categoryRepository.delete(id);}
+    categoryRepository.delete(id);
+  },
 
   /**
    * Get category spending total
    */
   getSpendingTotal(categoryId) {
     const transactions = transactionRepository.findByCategory(categoryId);
-    return transactions.reduce((sum, t) => sum + t.amountCents, 0);}
+    return transactions.reduce((sum, t) => sum + t.amountCents, 0);
+  },
 
   /**
    * Get category remaining allocation
@@ -132,7 +144,8 @@ export class CategoryService {
   getRemainingAllocation(categoryId) {
     const category = this.getById(categoryId);
     const spent = this.getSpendingTotal(categoryId);
-    return Math.max(0, category.allocatedAmountCents - spent);}
+    return Math.max(0, category.allocatedAmountCents - spent);
+  },
 
   /**
    * Get category utilisation percentage
@@ -142,24 +155,19 @@ export class CategoryService {
     const spent = this.getSpendingTotal(categoryId);
 
     if (category.allocatedAmountCents === 0) return 0;
-    return (spent / category.allocatedAmountCents) * 100;}
+    return (spent / category.allocatedAmountCents) * 100;
+  },
 
   /**
    * Reorder categories by ID array
    */
-  reorder(categoryIds)] {
-    // Validate all IDs exist
-    categoryIds.forEach(id => this.getById(id));
-
-    // Update display order for each category
+  reorder(categoryIds) {
     categoryIds.forEach((id, index) => {
-      categoryRepository.update(id, {
-        displayOrder});});
-
-    // Return categories in new order
-    return categoryIds.map(id => this.getById(id));}}
-
-export const categoryService = new CategoryService();
+      categoryRepository.update(id, { displayOrder: index + 1 });
+    });
+    return this.getAll();
+  },
+};
 
 
 

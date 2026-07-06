@@ -4,6 +4,8 @@
  */
 
 import 'dotenv/config';
+import knex from 'knex';
+import knexfile from '../config/knexfile.js';
 import app from './app.js';
 import { seedData} from './storage/seed-data.js';
 import { store} from './storage/in-memory.store.js';
@@ -23,8 +25,6 @@ async function runMigrations() {
     console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`   DATABASE_URL set: ${!!process.env.DATABASE_URL}`);
     
-    const knex = require('knex');
-    const knexfile = require('../config/knexfile');
     const env = process.env.NODE_ENV || 'development';
     
     console.log(`   Knex config: Using '${env}' configuration`);
@@ -52,9 +52,7 @@ async function runMigrations() {
 async function initializeDatabase() {
   if (USE_REAL_DB) {
     try {
-      console.log('ðŸ“¦ Loading data from PostgreSQL...');
-      const knex = require('knex');
-      const knexfile = require('../config/knexfile');
+      console.log('Loading data from PostgreSQL...');
       const env = process.env.NODE_ENV || 'development';
       console.log(`   Using environment: ${env}`);
       const db = knex(knexfile[env]);

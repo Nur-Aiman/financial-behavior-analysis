@@ -1,9 +1,6 @@
-// Only load .env in development
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config({ path: '../.env' });
-}
+import 'dotenv/config';
 
-module.exports = {
+export default {
   development: {
     client: 'pg',
     connection: {

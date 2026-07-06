@@ -9,10 +9,11 @@
  * Parse ISO date string to Date object (midnight UTC)
  * Example: "2026-07-05" -> Date object
  */
-export function parseIsoDate(dateStr): Date {
+export function parseIsoDate(dateStr) {
   const [year, month, day] = dateStr.split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
-  return date;}
+  return date;
+}
 
 /**
  * Convert Date object to ISO date string
@@ -22,12 +23,15 @@ export function dateToIsoString(date) {
   const year = date.getUTCFullYear();
   const month = String(date.getUTCMonth() + 1).padStart(2, '0');
   const day = String(date.getUTCDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;}
+  return `${year}-${month}-${day}`;
+}
 
 /**
- * Get today's date*/
+ * Get today's date
+ */
 export function getTodayIsoString() {
-  return dateToIsoString(new Date());}
+  return dateToIsoString(new Date());
+}
 
 /**
  * Calculate remaining days between two dates (inclusive of both dates)
@@ -37,16 +41,15 @@ export function getTodayIsoString() {
  * Returns 1 if dates are the same.
  * Returns 0 if end date is before start date.
  */
-export function calculateRemainingDays(
-  startDateStr,
-  endDateStr) {
+export function calculateRemainingDays(startDateStr, endDateStr) {
   const startDate = parseIsoDate(startDateStr);
   const endDate = parseIsoDate(endDateStr);
 
   const diffTime = endDate.getTime() - startDate.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-  return Math.max(1, diffDays); // Minimum 1 day to avoid division by zero}
+  return Math.max(1, diffDays); // Minimum 1 day to avoid division by zero
+}
 
 /**
  * Check if a date has passed (is before today)

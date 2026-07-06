@@ -1,82 +1,68 @@
 ﻿/**
  * Financial Profile Service
- * 
  * Manages user's financial configuration
  */
 
-import { FinancialProfile} from '../models/index';
-import { financialProfileRepository} from '../repositories/financial-profile.repository';
-import { AppError} from '../errors/app-error';
-import { getTodayIsoString, calculateRemainingDays} from '../utils/date.utils';
+import { financialProfileRepository } from '../repositories/financial-profile.repository.js';
+import { AppError } from '../errors/app-error.js';
+import { getTodayIsoString } from '../utils/date.utils.js';
 
-export class FinancialProfileService {
+export const financialProfileService = {
   /**
    * Create financial profile
    */
-  async create(data: {
-    currency;
-    expectedSalaryCents;
-    openingBalanceCents?;
-    currentBalanceCents;
-    salaryCycleStartDate;
-    nextPayday;}) {
-    // Check if profile already exists
-    const existing = financialProfileRepository.getActive();
-    if (existing) {
+  async create(data) {
+    const existing = financialProfileRepository.findAll();
+    if (existing.length > 0) {
       throw new AppError({
         code: 'PROFILE_ALREADY_EXISTS',
         message: 'A financial profile already exists. Update it instead.',
-        statusCode});}
+        statusCode: 400,
+      });
+    }
 
-    // If opening balance not provided, use current balance
     const profileData = {
       ...data,
-      openingBalanceCents: data.openingBalanceCents ?? data.currentBalanceCents,};
+      openingBalanceCents: data.openingBalanceCents ?? data.currentBalanceCents,
+    };
 
-    return await financialProfileRepository.create(profileData);}
+    return await financialProfileRepository.create(profileData);
+  },
 
   /**
    * Get active profile
    */
-  getProfile(): FinancialProfile {
-    const profile = financialProfileRepository.getActive();
-    if (!profile) {
+  getProfile() {
+    const profiles = financialProfileRepository.findAll();
+    if (profiles.length === 0) {
       throw new AppError({
         code: 'PROFILE_NOT_FOUND',
         message: 'No financial profile configured',
-        statusCode});}
-    return profile;}
+        statusCode: 404,
+      });
+    }
+    return profiles[0];
+  },
 
   /**
    * Update financial profile
    */
-  async updateProfile(data: {
-    expectedSalaryCents?;
-    openingBalanceCents?;
-    currentBalanceCents?;
-    salaryCycleStartDate?;
-    nextPayday?;}) {
+  async updateProfile(data) {
     const profile = this.getProfile();
-
-    return await financialProfileRepository.update(profile.id, data);}
+    return await financialProfileRepository.update(profile.id, data);
+  },
 
   /**
    * Get remaining days until payday
    */
   getRemainingDays() {
     const profile = this.getProfile();
-    const today = getTodayIsoString();
-    return calculateRemainingDays(today, profile.nextPayday);}
-
-  /**
-   * Validate payday is in future
-   */
-  validatePayday(payday) {
-    const today = getTodayIsoString();
-    const remaining = calculateRemainingDays(today, payday);
-    return remaining > 0;}}
-
-export const financialProfileService = new FinancialProfileService();
+    const today = new Date(getTodayIsoString());
+    const payday = new Date(profile.nextPayday);
+    const msPerDay = 86400000;
+    return Math.ceil((payday - today) / msPerDay);
+  },
+};
 
 
 

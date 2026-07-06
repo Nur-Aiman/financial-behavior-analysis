@@ -2,11 +2,10 @@
  * Forecast Controller
  */
 
-import { Request, Response, NextFunction} from 'express';
-import { financialProfileService} from '../services/financial-profile.service';
-import { financialForecastService} from '../services/financial-forecast.service';
-import { successResponse} from '../utils/response.utils';
-import { formatCentsAsRinggit} from '../utils/money.utils';
+import { financialProfileService } from '../services/financial-profile.service.js';
+import { financialForecastService } from '../services/financial-forecast.service.js';
+import { successResponse } from '../utils/response.utils.js';
+import { formatCentsAsRinggit } from '../utils/money.utils.js';
 
 export class ForecastController {
   /**
@@ -92,3 +91,5 @@ export class ForecastController {
 
 
 
+
+}
