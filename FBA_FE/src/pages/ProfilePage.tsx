@@ -289,6 +289,7 @@ function ProfilePage(): React.ReactElement {
             </Grid>
           </CardContent>
         </Card>
+        </>
       )}
     </Box>
   );
