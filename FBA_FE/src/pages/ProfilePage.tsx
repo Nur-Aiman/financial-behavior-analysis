@@ -13,6 +13,8 @@ import {
   CircularProgress,
   Alert,
   Grid,
+  FormControlLabel,
+  Switch,
 } from '@mui/material';
 import { useProfile, useTransactions } from '../hooks';
 import { FinancialProfile } from '../types';
@@ -60,10 +62,10 @@ function ProfilePage(): React.ReactElement {
   }, [profile]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev: Partial<FinancialProfile>) => ({
       ...prev,
-      [name]: name.includes('Cents') ? parseInt(value) * 100 || 0 : value,
+      [name]: type === 'checkbox' ? checked : name.includes('Cents') ? parseInt(value) * 100 || 0 : value,
     }));
   };
 
@@ -177,6 +179,20 @@ function ProfilePage(): React.ReactElement {
               </Grid>
 
               <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      name="useCalculatedBalance"
+                      checked={formData.useCalculatedBalance || false}
+                      onChange={handleChange}
+                    />
+                  }
+                  label="Use Calculated Balance (Expected Salary - Total Spent)"
+                  sx={{ display: 'flex' }}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -206,14 +222,15 @@ function ProfilePage(): React.ReactElement {
                     p: 2, 
                     backgroundColor: '#fff',
                     borderRadius: 1,
-                    border: '2px solid #2196f3'
+                    border: formData.useCalculatedBalance ? '1px solid #ccc' : '2px solid #2196f3'
                   }}>
                     <Typography variant="caption" sx={{ color: '#666' }}>
                       Current Balance (User Input)
                     </Typography>
-                    <Typography variant="h5" sx={{ fontWeight: 600, color: '#2196f3', mt: 0.5 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600, color: formData.useCalculatedBalance ? '#999' : '#2196f3', mt: 0.5 }}>
                       {formatCurrency(profile.currentBalanceCents || 0)}
                     </Typography>
+                    {formData.useCalculatedBalance && <Typography variant="caption" sx={{ color: '#f57c00', display: 'block', mt: 0.5 }}>Not in use</Typography>}
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -221,21 +238,22 @@ function ProfilePage(): React.ReactElement {
                     p: 2, 
                     backgroundColor: '#fff',
                     borderRadius: 1,
-                    border: `2px solid ${calculatedBalance === (profile.currentBalanceCents || 0) ? '#4caf50' : '#ff9800'}`
+                    border: formData.useCalculatedBalance ? '2px solid #4caf50' : '1px solid #ccc'
                   }}>
                     <Typography variant="caption" sx={{ color: '#666' }}>
-                      Calculated Balance (From Transactions)
+                      Calculated Balance (Salary - Total Spent)
                     </Typography>
                     <Typography 
                       variant="h5" 
                       sx={{ 
                         fontWeight: 600, 
-                        color: calculatedBalance === (profile.currentBalanceCents || 0) ? '#4caf50' : '#ff9800',
+                        color: formData.useCalculatedBalance ? '#4caf50' : '#999',
                         mt: 0.5 
                       }}
                     >
                       {formatCurrency(calculatedBalance)}
                     </Typography>
+                    {formData.useCalculatedBalance && <Typography variant="caption" sx={{ color: '#4caf50', display: 'block', mt: 0.5 }}>In use</Typography>}
                   </Box>
                 </Grid>
                 {calculatedBalance !== (profile.currentBalanceCents || 0) && (

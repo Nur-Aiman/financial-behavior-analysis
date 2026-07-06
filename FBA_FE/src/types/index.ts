@@ -34,6 +34,7 @@ export interface FinancialProfile {
   salaryCycleStartDate: string;
   nextPayday: string;
   active: boolean;
+  useCalculatedBalance?: boolean;
   createdAt: string;
   updatedAt: string;
 }

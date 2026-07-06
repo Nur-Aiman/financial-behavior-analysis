@@ -47,6 +47,7 @@ export const FixedExpensePaymentStatus = {
  * @property {number} currentBalanceCents
  * @property {string} salaryCycleStartDate - ISO date string: YYYY-MM-DD
  * @property {string} nextPayday - ISO date string: YYYY-MM-DD
+ * @property {boolean} [useCalculatedBalance] - If true, use expected salary - total spent for balance display
  * @property {string} createdAt
  * @property {string} updatedAt
  */

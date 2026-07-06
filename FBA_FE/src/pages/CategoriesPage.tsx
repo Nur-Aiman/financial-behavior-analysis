@@ -70,13 +70,18 @@ function CategoriesPage(): React.ReactElement {
       ?.filter(tx => tx.type === 'EXPENSE')
       .reduce((sum, tx) => sum + tx.amountCents, 0) || 0;
     const calculatedBalance = (profile?.expectedSalaryCents || 0) - totalExpenses;
+    const currentBalance = profile?.currentBalanceCents || 0;
+
+    // Use preference from profile: if useCalculatedBalance is true, use calculated balance, otherwise current balance
+    const balanceToUse = profile?.useCalculatedBalance ? calculatedBalance : currentBalance;
 
     return {
       totalAllocated,
       totalSpent,
       totalRemaining,
-      currentBalance: profile?.currentBalanceCents || 0,
+      currentBalance,
       calculatedBalance,
+      balanceToUse,
     };
   };
 
@@ -374,20 +379,25 @@ function CategoriesPage(): React.ReactElement {
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={2.4}>
-          <Card sx={{ backgroundColor: '#f3e5f5' }}>
+          <Card sx={{ 
+            backgroundColor: profile?.useCalculatedBalance ? '#fff3e0' : '#e3f2fd',
+            border: profile?.useCalculatedBalance ? '' : '2px solid #1976d2'
+          }}>
             <CardContent sx={{ p: 2 }}>
               <Typography variant="caption" sx={{ color: '#666' }}>
                 Current Balance
               </Typography>
-              <Typography variant="h6" sx={{ fontWeight: 600, color: '#7b1fa2', mt: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: profile?.useCalculatedBalance ? '#999' : '#1976d2', mt: 1 }}>
                 {formatCurrency(summary.currentBalance)}
               </Typography>
+              {profile?.useCalculatedBalance && <Typography variant="caption" sx={{ color: '#f57c00', display: 'block', mt: 0.5 }}>Not in use</Typography>}
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} sm={6} md={2.4}>
           <Card sx={{ 
-            backgroundColor: summary.calculatedBalance === summary.currentBalance ? '#e8f5e9' : '#fff3e0'
+            backgroundColor: profile?.useCalculatedBalance ? '#e8f5e9' : '#fff3e0',
+            border: profile?.useCalculatedBalance ? '2px solid #2e7d32' : ''
           }}>
             <CardContent sx={{ p: 2 }}>
               <Typography variant="caption" sx={{ color: '#666' }}>
@@ -397,12 +407,13 @@ function CategoriesPage(): React.ReactElement {
                 variant="h6" 
                 sx={{ 
                   fontWeight: 600, 
-                  color: summary.calculatedBalance === summary.currentBalance ? '#2e7d32' : '#f57c00',
+                  color: profile?.useCalculatedBalance ? '#2e7d32' : '#f57c00',
                   mt: 1 
                 }}
               >
                 {formatCurrency(summary.calculatedBalance)}
               </Typography>
+              {profile?.useCalculatedBalance && <Typography variant="caption" sx={{ color: '#2e7d32', display: 'block', mt: 0.5 }}>In use</Typography>}
             </CardContent>
           </Card>
         </Grid>
