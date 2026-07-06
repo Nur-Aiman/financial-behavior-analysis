@@ -41,8 +41,13 @@ console.log(`📍 Database: ${connectionString.includes('@') ? connectionString.
 // Create Knex instance
 const db = knex({
   client: 'pg',
-  connection: connectionString,
-  ssl: connectionString.includes('localhost') ? false : { rejectUnauthorized: false },
+  connection: {
+    connectionString: connectionString,
+    ssl: connectionString.includes('localhost') ? false : {
+      rejectUnauthorized: false,
+      require: true,
+    },
+  },
   acquireConnectionTimeout: 10000,
 });
 
