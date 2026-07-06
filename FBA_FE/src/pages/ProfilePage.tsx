@@ -2,7 +2,7 @@
  * Profile Page
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -14,7 +14,7 @@ import {
   Alert,
   Grid,
 } from '@mui/material';
-import { useProfile } from '../hooks';
+import { useProfile, useTransactions } from '../hooks';
 import { FinancialProfile } from '../types';
 
 // Helper to format date for input field (expects YYYY-MM-DD format)
@@ -27,13 +27,34 @@ const formatDateForInput = (dateStr: string | undefined): string => {
   return dateStr;
 };
 
+const formatCurrency = (cents: number): string => {
+  return 'RM ' + (cents / 100).toFixed(2);
+};
+
 function ProfilePage(): React.ReactElement {
   const { profile, loading, error, updateProfile, createProfile } = useProfile();
+  const { transactions } = useTransactions();
   const [formData, setFormData] = useState<Partial<FinancialProfile>>({
     currency: 'MYR',
   });
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [calculatedBalance, setCalculatedBalance] = useState<number>(0);
+
+  // Calculate balance from transactions
+  useEffect(() => {
+    if (profile && transactions) {
+      let balance = profile.openingBalanceCents || 0;
+      transactions.forEach(tx => {
+        if (tx.type === 'EXPENSE') {
+          balance -= tx.amountCents;
+        } else if (tx.type === 'INCOME') {
+          balance += tx.amountCents;
+        }
+      });
+      setCalculatedBalance(balance);
+    }
+  }, [profile, transactions]);
 
   React.useEffect(() => {
     if (profile) {
@@ -175,11 +196,71 @@ function ProfilePage(): React.ReactElement {
       </Card>
 
       {profile && (
-        <Card sx={{ mt: 3 }}>
-          <CardContent>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Profile Information
-            </Typography>
+        <>
+          {/* Balance Comparison */}
+          <Card sx={{ mt: 3, backgroundColor: '#f3e5f5' }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2, color: '#6a1b9a' }}>
+                💰 Balance Overview
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ 
+                    p: 2, 
+                    backgroundColor: '#fff',
+                    borderRadius: 1,
+                    border: '2px solid #2196f3'
+                  }}>
+                    <Typography variant="caption" sx={{ color: '#666' }}>
+                      Current Balance (User Input)
+                    </Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 600, color: '#2196f3', mt: 0.5 }}>
+                      {formatCurrency(profile.currentBalanceCents || 0)}
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ 
+                    p: 2, 
+                    backgroundColor: '#fff',
+                    borderRadius: 1,
+                    border: `2px solid ${calculatedBalance === (profile.currentBalanceCents || 0) ? '#4caf50' : '#ff9800'}`
+                  }}>
+                    <Typography variant="caption" sx={{ color: '#666' }}>
+                      Calculated Balance (From Transactions)
+                    </Typography>
+                    <Typography 
+                      variant="h5" 
+                      sx={{ 
+                        fontWeight: 600, 
+                        color: calculatedBalance === (profile.currentBalanceCents || 0) ? '#4caf50' : '#ff9800',
+                        mt: 0.5 
+                      }}
+                    >
+                      {formatCurrency(calculatedBalance)}
+                    </Typography>
+                  </Box>
+                </Grid>
+                {calculatedBalance !== (profile.currentBalanceCents || 0) && (
+                  <Grid item xs={12}>
+                    <Alert severity="warning">
+                      Balances don't match! Difference: {formatCurrency(Math.abs(calculatedBalance - (profile.currentBalanceCents || 0)))}
+                      {calculatedBalance > (profile.currentBalanceCents || 0) 
+                        ? ' (Calculated is higher)' 
+                        : ' (User input is higher)'}
+                    </Alert>
+                  </Grid>
+                )}
+              </Grid>
+            </CardContent>
+          </Card>
+
+          {/* Profile Information */}
+          <Card sx={{ mt: 3 }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Profile Information
+              </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <Typography variant="caption" color="textSecondary">

@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import {
   Box,
   Card,
+  CardContent,
   Table,
   TableBody,
   TableCell,
@@ -32,14 +33,15 @@ import {
   Add as AddIcon,
   DragIndicator as DragIcon,
 } from '@mui/icons-material';
-import { useCategories, useTransactions } from '../hooks';
+import { useCategories, useTransactions, useProfile } from '../hooks';
 import { SpendingCategory, Transaction } from '../types';
 import { formatCurrency } from '../utils';
 import { categoryAPI } from '../api';
 
 function CategoriesPage(): React.ReactElement {
   const { categories, loading, error, createCategory, updateCategory, deactivateCategory, deleteCategory } = useCategories();
-  const { createTransaction } = useTransactions();
+  const { createTransaction, transactions } = useTransactions();
+  const { profile } = useProfile();
   const [openDialog, setOpenDialog] = useState(false);
   const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -55,6 +57,35 @@ function CategoriesPage(): React.ReactElement {
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  // Calculate category summary stats
+  const calculateSummary = () => {
+    const totalAllocated = displayCategories.reduce((sum, c) => sum + (c.allocatedAmountCents || 0), 0);
+    const totalSpent = displayCategories.reduce((sum, c) => sum + (((c as any).spent || 0) || 0), 0);
+    const totalRemaining = displayCategories.reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
+    
+    // Calculate balance from transactions
+    let calculatedBalance = profile?.openingBalanceCents || 0;
+    if (transactions) {
+      transactions.forEach(tx => {
+        if (tx.type === 'EXPENSE') {
+          calculatedBalance -= tx.amountCents;
+        } else if (tx.type === 'INCOME') {
+          calculatedBalance += tx.amountCents;
+        }
+      });
+    }
+
+    return {
+      totalAllocated,
+      totalSpent,
+      totalRemaining,
+      currentBalance: profile?.currentBalanceCents || 0,
+      calculatedBalance,
+    };
+  };
+
+  const summary = calculateSummary();
 
   // Helper function to get status color
   const getStatusColor = (status: string): { backgroundColor: string; textColor: string } => {
@@ -308,6 +339,79 @@ function CategoriesPage(): React.ReactElement {
           Add Category
         </Button>
       </Box>
+
+      {/* Category Summary */}
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={2.4}>
+          <Card sx={{ backgroundColor: '#e3f2fd' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#666' }}>
+                Total Allocated
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, mt: 1 }}>
+                {formatCurrency(summary.totalAllocated)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={2.4}>
+          <Card sx={{ backgroundColor: '#ffebee' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#666' }}>
+                Total Spent
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#d32f2f', mt: 1 }}>
+                {formatCurrency(summary.totalSpent)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={2.4}>
+          <Card sx={{ backgroundColor: '#e8f5e9' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#666' }}>
+                Total Remaining
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#2e7d32', mt: 1 }}>
+                {formatCurrency(summary.totalRemaining)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={2.4}>
+          <Card sx={{ backgroundColor: '#f3e5f5' }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#666' }}>
+                Current Balance
+              </Typography>
+              <Typography variant="h6" sx={{ fontWeight: 600, color: '#7b1fa2', mt: 1 }}>
+                {formatCurrency(summary.currentBalance)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} sm={6} md={2.4}>
+          <Card sx={{ 
+            backgroundColor: summary.calculatedBalance === summary.currentBalance ? '#e8f5e9' : '#fff3e0'
+          }}>
+            <CardContent sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ color: '#666' }}>
+                Calculated Balance
+              </Typography>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: summary.calculatedBalance === summary.currentBalance ? '#2e7d32' : '#f57c00',
+                  mt: 1 
+                }}
+              >
+                {formatCurrency(summary.calculatedBalance)}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
       {/* Search and Filter Bar */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'stretch', sm: 'center' } }}>

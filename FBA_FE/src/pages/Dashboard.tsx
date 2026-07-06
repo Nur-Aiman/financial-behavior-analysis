@@ -28,12 +28,50 @@ import {
 import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
-import { useDashboard, useForecast } from '../hooks';
+import { useDashboard, useForecast, useCategories, useProfile } from '../hooks';
 import { formatCurrency, formatDate } from '../utils';
 
 function Dashboard(): React.ReactElement {
   const { summary, utilisation, spendingTrend, projectedBalances, loading, error } = useDashboard();
   const { forecast } = useForecast();
+  const { categories } = useCategories();
+  const { profile } = useProfile();
+
+  // Calculate daily food spending allowance
+  const calculateDailyFoodAllowance = () => {
+    const foodCategory = categories.find(c => c.name.toLowerCase().includes('food') || c.name.toLowerCase().includes('husby'));
+    if (!foodCategory || !summary) return null;
+
+    const baseDailyAllowance = foodCategory.allocatedAmountCents / 30;
+    
+    // Calculate remaining balance excluding food category
+    const otherCategoriesRemaining = categories
+      .filter(c => c.id !== foodCategory.id)
+      .reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
+    
+    const availableAfterOthers = (summary.currentBalanceCents || 0) - otherCategoriesRemaining;
+    
+    // If available balance after other categories is > RM600, can spend more
+    if (availableAfterOthers > 60000) {
+      const excessAmount = availableAfterOthers - 60000;
+      const additionalDailyAllowance = excessAmount / 30;
+      return {
+        baseAllowance: baseDailyAllowance,
+        additionalAllowance: additionalDailyAllowance,
+        totalAllowance: baseDailyAllowance + additionalDailyAllowance,
+        hasExcess: true,
+      };
+    }
+
+    return {
+      baseAllowance: baseDailyAllowance,
+      additionalAllowance: 0,
+      totalAllowance: baseDailyAllowance,
+      hasExcess: false,
+    };
+  };
+
+  const dailyFoodAllowance = calculateDailyFoodAllowance();
 
   if (loading) {
     return (
@@ -178,6 +216,66 @@ function Dashboard(): React.ReactElement {
             </Alert>
           ))}
         </Box>
+      )}
+
+      {/* Daily Food Spending Allowance */}
+      {dailyFoodAllowance && (
+        <Card sx={{ mb: 3, backgroundColor: '#e3f2fd' }}>
+          <CardContent sx={{ '@media (max-width:600px)': { p: 2 } }}>
+            <Typography variant="h6" sx={{ mb: 2, color: '#1976d2' }}>
+              📌 Daily Food Allowance Today
+            </Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Box sx={{ 
+                  p: 2, 
+                  backgroundColor: '#fff',
+                  borderRadius: 1,
+                  border: '2px solid #2196f3'
+                }}>
+                  <Typography variant="caption" sx={{ color: '#666' }}>
+                    Base Daily Allowance
+                  </Typography>
+                  <Typography variant="h5" sx={{ fontWeight: 600, color: '#1976d2' }}>
+                    {formatCurrency(dailyFoodAllowance.baseAllowance)}
+                  </Typography>
+                </Box>
+              </Grid>
+              {dailyFoodAllowance.hasExcess && (
+                <Grid item xs={12} sm={6}>
+                  <Box sx={{ 
+                    p: 2, 
+                    backgroundColor: '#fff',
+                    borderRadius: 1,
+                    border: '2px solid #4caf50'
+                  }}>
+                    <Typography variant="caption" sx={{ color: '#666' }}>
+                      Additional (Excess Balance)
+                    </Typography>
+                    <Typography variant="h5" sx={{ fontWeight: 600, color: '#4caf50' }}>
+                      + {formatCurrency(dailyFoodAllowance.additionalAllowance)}
+                    </Typography>
+                  </Box>
+                </Grid>
+              )}
+              <Grid item xs={12}>
+                <Box sx={{ 
+                  p: 2, 
+                  backgroundColor: '#fff',
+                  borderRadius: 1,
+                  border: '3px solid #1976d2'
+                }}>
+                  <Typography variant="caption" sx={{ color: '#666' }}>
+                    Total You Can Spend Today on Food
+                  </Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#1976d2', mt: 1 }}>
+                    {formatCurrency(dailyFoodAllowance.totalAllowance)}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
       )}
 
       {/* Charts */}
