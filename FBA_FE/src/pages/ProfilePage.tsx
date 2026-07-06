@@ -17,6 +17,16 @@ import {
 import { useProfile } from '../hooks';
 import { FinancialProfile } from '../types';
 
+// Helper to format date for input field (expects YYYY-MM-DD format)
+const formatDateForInput = (dateStr: string | undefined): string => {
+  if (!dateStr) return '';
+  // If it's already in YYYY-MM-DD format, return as-is
+  if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) return dateStr;
+  // If it has time (ISO format), extract just the date part
+  if (dateStr.includes('T')) return dateStr.split('T')[0];
+  return dateStr;
+};
+
 function ProfilePage(): React.ReactElement {
   const { profile, loading, error, updateProfile, createProfile } = useProfile();
   const [formData, setFormData] = useState<Partial<FinancialProfile>>({
@@ -42,12 +52,16 @@ function ProfilePage(): React.ReactElement {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setMessage(null);
     try {
       if (profile) {
-        await updateProfile(formData);
+        const updated = await updateProfile(formData);
+        // Explicitly update formData with the new profile to ensure form displays updated values
+        setFormData(updated);
         setMessage({ type: 'success', text: 'Profile updated successfully' });
       } else {
-        await createProfile(formData);
+        const created = await createProfile(formData);
+        setFormData(created);
         setMessage({ type: 'success', text: 'Profile created successfully' });
       }
     } catch (err) {
@@ -124,7 +138,7 @@ function ProfilePage(): React.ReactElement {
                   label="Salary Cycle Start Date"
                   name="salaryCycleStartDate"
                   type="date"
-                  value={formData.salaryCycleStartDate || ''}
+                  value={formatDateForInput(formData.salaryCycleStartDate as string)}
                   onChange={handleChange}
                   InputLabelProps={{ shrink: true }}
                   size="small"
@@ -137,7 +151,7 @@ function ProfilePage(): React.ReactElement {
                   label="Next Payday"
                   name="nextPayday"
                   type="date"
-                  value={formData.nextPayday || ''}
+                  value={formatDateForInput(formData.nextPayday as string)}
                   onChange={handleChange}
                   InputLabelProps={{ shrink: true }}
                   size="small"

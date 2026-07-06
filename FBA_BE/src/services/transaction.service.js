@@ -111,4 +111,50 @@ export const transactionService = {
   getTodayTransactions() {
     return transactionRepository.findByDate(getTodayIsoString());
   },
+
+  /**
+   * Update transaction
+   */
+  async updateTransaction(id, data) {
+    const existing = this.getTransaction(id);
+    
+    // If amount changed and it's an expense, handle balance adjustment
+    if (data.amountCents && data.amountCents !== existing.amountCents && existing.type === TransactionType.EXPENSE) {
+      const difference = data.amountCents - existing.amountCents;
+      if (difference > 0) {
+        // Amount increased, need to deduct more from balance
+        const currentBalance = balanceService.getCurrentBalance();
+        if (currentBalance < difference) {
+          throw new AppError({
+            code: 'INSUFFICIENT_BALANCE',
+            message: 'Insufficient balance for transaction adjustment',
+            statusCode: 400,
+          });
+        }
+        await balanceService.deductFromBalance(difference);
+      } else if (difference < 0) {
+        // Amount decreased, add back to balance
+        await balanceService.addIncome(Math.abs(difference), 'Transaction amount reduction');
+      }
+    } else if (data.amountCents && data.amountCents !== existing.amountCents && existing.type === TransactionType.INCOME) {
+      const difference = existing.amountCents - data.amountCents;
+      if (difference > 0) {
+        // Income decreased, remove from balance
+        const currentBalance = balanceService.getCurrentBalance();
+        if (currentBalance < difference) {
+          throw new AppError({
+            code: 'INSUFFICIENT_BALANCE',
+            message: 'Insufficient balance for transaction adjustment',
+            statusCode: 400,
+          });
+        }
+        await balanceService.deductFromBalance(difference);
+      } else if (difference < 0) {
+        // Income increased, add to balance
+        await balanceService.addIncome(Math.abs(difference), 'Income amount increase');
+      }
+    }
+
+    return await transactionRepository.update(id, data);
+  },
 };
