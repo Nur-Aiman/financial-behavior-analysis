@@ -3,7 +3,7 @@
  */
 
 import React, { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Box,
@@ -16,13 +16,14 @@ import {
   Typography,
   Divider,
   Container,
+  BottomNavigation,
+  BottomNavigationAction,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   Person as PersonIcon,
   Category as CategoryIcon,
   Receipt as TransactionIcon,
-  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useProfile } from '../hooks';
@@ -35,12 +36,14 @@ const navItems = [
 ];
 
 function Layout(): React.ReactElement {
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { profile } = useProfile();
 
-  const handleDrawerToggle = () => {
-    setDrawerOpen(!drawerOpen);
+  // Get current tab value based on location
+  const getCurrentTabValue = () => {
+    const index = navItems.findIndex(item => item.path === location.pathname);
+    return index >= 0 ? index : 0;
   };
 
   const drawer = (
@@ -56,7 +59,6 @@ function Layout(): React.ReactElement {
             component={RouterLink}
             to={item.path}
             selected={location.pathname === item.path}
-            onClick={() => setDrawerOpen(false)}
             sx={{
               '&.Mui-selected': {
                 backgroundColor: 'primary.light',
@@ -77,13 +79,9 @@ function Layout(): React.ReactElement {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
       <AppBar position="fixed" sx={{ zIndex: 1300 }}>
         <Toolbar sx={{ '@media (max-width:600px)': { minHeight: 56 } }}>
-          <MenuIcon
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, cursor: 'pointer', display: { sm: 'none' } }}
-          />
           <Typography 
             variant="h6" 
             sx={{ 
@@ -111,17 +109,6 @@ function Layout(): React.ReactElement {
         </Toolbar>
       </AppBar>
 
-      {/* Mobile Drawer */}
-      <Drawer
-        open={drawerOpen}
-        onClose={handleDrawerToggle}
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-        }}
-      >
-        {drawer}
-      </Drawer>
-
       {/* Desktop Drawer */}
       <Box
         sx={{
@@ -130,6 +117,12 @@ function Layout(): React.ReactElement {
           flexShrink: 0,
           backgroundColor: '#f5f5f5',
           borderRight: '1px solid #e0e0e0',
+          position: 'fixed',
+          left: 0,
+          top: 64,
+          bottom: 0,
+          height: 'calc(100vh - 64px)',
+          overflowY: 'auto',
         }}
       >
         {drawer}
@@ -142,8 +135,13 @@ function Layout(): React.ReactElement {
           flexGrow: 1,
           p: { xs: 1.5, sm: 3 },
           mt: 8,
+          mb: { xs: 7, sm: 0 },
           backgroundColor: '#f5f5f5',
           overflowY: 'auto',
+          ml: { sm: '250px' },
+          '@media (max-width:600px)': {
+            maxWidth: '100%',
+          }
         }}
       >
         <Container maxWidth="lg" sx={{ 
@@ -155,6 +153,39 @@ function Layout(): React.ReactElement {
           <Outlet />
         </Container>
       </Box>
+
+      {/* Mobile Bottom Navigation */}
+      <BottomNavigation
+        value={getCurrentTabValue()}
+        onChange={(event, newValue) => {
+          navigate(navItems[newValue].path);
+        }}
+        sx={{
+          display: { xs: 'flex', sm: 'none' },
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1200,
+          borderTop: '1px solid #e0e0e0',
+          backgroundColor: '#fff',
+        }}
+      >
+        {navItems.map((item) => (
+          <BottomNavigationAction
+            key={item.path}
+            label={item.label}
+            icon={<item.icon />}
+            sx={{
+              fontSize: { xs: '0.625rem', sm: '0.75rem' },
+              minWidth: 'auto',
+              '&.Mui-selected': {
+                color: 'primary.main',
+              },
+            }}
+          />
+        ))}
+      </BottomNavigation>
     </Box>
   );
 }
