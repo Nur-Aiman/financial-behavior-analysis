@@ -104,15 +104,12 @@ export class CategoryController {
    */
   static async delete(req, res, next) {
     try {
-      categoryService.delete(req.params.id);
-      res.json(successResponse({ id: req.params.id}, 'Category deleted'));} catch (err) {
-      next(err);}}
-
-  /**
-   * PUT /api/categories/reorder
-   * Update category display order
-   */
-  static async reorder(req, res, next) {
+      await categoryService.delete(req.params.id);
+      res.json(successResponse({ id: req.params.id}, 'Category deleted'));
+    } catch (err) {
+      next(err);
+    }
+  }
     try {
       const { categoryIds } = req.body;
       if (!Array.isArray(categoryIds)) {

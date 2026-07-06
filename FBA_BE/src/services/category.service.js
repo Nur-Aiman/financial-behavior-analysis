@@ -113,7 +113,7 @@ export const categoryService = {
    * Delete category (hard delete)
    * Only if no transactions reference it
    */
-  delete(id) {
+  async delete(id) {
     this.getById(id);
 
     // Check for transactions
@@ -127,7 +127,7 @@ export const categoryService = {
       });
     }
 
-    categoryRepository.delete(id);
+    await categoryRepository.delete(id);
   },
 
   /**
