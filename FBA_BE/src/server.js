@@ -1,6 +1,7 @@
 ﻿/**
  * Server Entry Point
- * Handles auto-migrations on startup and database initialization
+ * Loads data from PostgreSQL on startup and initializes API server
+ * Note: Database tables must be created manually or via Render dashboard
  */
 
 import 'dotenv/config';
@@ -13,7 +14,6 @@ if (process.env.NODE_ENV === 'production') {
 import knex from 'knex';
 import knexfile from '../config/knexfile.js';
 import app from './app.js';
-import { seedData} from './storage/seed-data.js';
 import { store} from './storage/in-memory.store.js';
 import { dateToIsoString} from './utils/date.utils.js';
 
@@ -173,14 +173,11 @@ async function initializeDatabase() {
       await db.destroy();
     } catch (err) {
       console.error('❌ Error loading from PostgreSQL:', err.message);
-      console.log('Falling back to in-memory storage');
+      console.log('⚠️  Failed to connect to database - API may not have data');
     }
   } else {
-    console.log('Loading seed data for in-memory storage...');
-    seedData();
+    console.log('⚠️  USE_REAL_DB is false - no data will be loaded');
   }
-  
-  console.log('Seed data loaded successfully');
 }
 
 // Initialize and start server
@@ -188,10 +185,7 @@ let server;
 
 (async () => {
   try {
-    // Run migrations first if using real database
-    await runMigrations();
-    
-    // Then initialize database
+    // Load data from database on startup
     await initializeDatabase();
 
     // Start server
