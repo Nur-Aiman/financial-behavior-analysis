@@ -1,0 +1,9 @@
+staticSite:
+  name: financial-behavior-analysis-fe
+  buildCommand: npm run build
+  buildDir: build
+  routes:
+    - path: "/*"
+      methods:
+        - GET
+      destination: /index.html

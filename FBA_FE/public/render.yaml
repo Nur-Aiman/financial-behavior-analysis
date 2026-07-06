@@ -1,0 +1,6 @@
+routes:
+  - path: "/*"
+    methods:
+      - GET
+    allowUnmatched: true
+    destination: /index.html
