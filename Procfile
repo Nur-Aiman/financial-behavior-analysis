@@ -1,1 +1,1 @@
-web: yarn start
+web: cd FBA_FE && npm run serve:prod
