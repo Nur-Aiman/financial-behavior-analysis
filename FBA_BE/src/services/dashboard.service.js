@@ -15,15 +15,15 @@ export const dashboardService = {
   getDashboardSummary() {
     const profile = financialProfileService.getProfile();
     const allTransactions = transactionService.getAllTransactions();
-    const categories = categoryService.getAll();
+    const categories = categoryService.getActive();
 
     const expenses = allTransactions.filter(t => t.type === 'EXPENSE');
     const totalSpent = expenses.reduce((sum, e) => sum + e.amountCents, 0);
 
-    const fixedExpenseCategories = categories.filter(c => c.type === 'FIXED_ONE_TIME');
+    const fixedExpenseCategories = categories.filter(c => c.active && c.type === 'FIXED_ONE_TIME');
     const reservedFixedExpensesCents = fixedExpenseCategories.reduce((sum, c) => sum + (c.allocatedAmountCents || 0), 0);
 
-    const protectedCategories = categories.filter(c => c.protected);
+    const protectedCategories = categories.filter(c => c.active && c.protected);
     const protectedUsageAllocationCents = protectedCategories.reduce((sum, c) => sum + (c.allocatedAmountCents || 0), 0);
 
     const today = new Date();
@@ -48,7 +48,7 @@ export const dashboardService = {
       currentBalanceCents: profile.currentBalanceCents,
       expectedSalaryCents: profile.expectedSalaryCents,
       nextPayday: profile.nextPayday,
-      totalCategories: categories.length,
+      totalCategories: categories.filter(c => c.active).length,
       activeTransactionsCount: allTransactions.length,
       reservedFixedExpensesCents,
       protectedUsageAllocationCents,

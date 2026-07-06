@@ -60,9 +60,10 @@ function CategoriesPage(): React.ReactElement {
 
   // Calculate category summary stats
   const calculateSummary = () => {
-    const totalAllocated = displayCategories.reduce((sum, c) => sum + (c.allocatedAmountCents || 0), 0);
-    const totalSpent = displayCategories.reduce((sum, c) => sum + (((c as any).spent || 0) || 0), 0);
-    const totalRemaining = displayCategories.reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
+    const activeCats = displayCategories.filter(c => c.active);
+    const totalAllocated = activeCats.reduce((sum, c) => sum + (c.allocatedAmountCents || 0), 0);
+    const totalSpent = activeCats.reduce((sum, c) => sum + (((c as any).spent || 0) || 0), 0);
+    const totalRemaining = activeCats.reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
     
     // Calculate balance from transactions
     let calculatedBalance = profile?.openingBalanceCents || 0;

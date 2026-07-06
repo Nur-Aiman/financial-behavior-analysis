@@ -39,14 +39,14 @@ function Dashboard(): React.ReactElement {
 
   // Calculate daily food spending allowance
   const calculateDailyFoodAllowance = () => {
-    const foodCategory = categories.find(c => c.name.toLowerCase().includes('food') || c.name.toLowerCase().includes('husby'));
+    const foodCategory = categories.find(c => c.active && (c.name.toLowerCase().includes('food') || c.name.toLowerCase().includes('husby')));
     if (!foodCategory || !summary) return null;
 
     const baseDailyAllowance = foodCategory.allocatedAmountCents / 30;
     
     // Calculate remaining balance excluding food category
     const otherCategoriesRemaining = categories
-      .filter(c => c.id !== foodCategory.id)
+      .filter(c => c.active && c.id !== foodCategory.id)
       .reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
     
     const availableAfterOthers = (summary.currentBalanceCents || 0) - otherCategoriesRemaining;
