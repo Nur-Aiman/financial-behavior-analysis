@@ -38,7 +38,7 @@ import { formatCurrency } from '../utils';
 import { categoryAPI } from '../api';
 
 function CategoriesPage(): React.ReactElement {
-  const { categories, loading, error, createCategory, updateCategory, deactivateCategory } = useCategories();
+  const { categories, loading, error, createCategory, updateCategory, deactivateCategory, deleteCategory } = useCategories();
   const [openDialog, setOpenDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<SpendingCategory>>({
@@ -160,6 +160,19 @@ function CategoriesPage(): React.ReactElement {
       await deactivateCategory(id);
     } catch (err) {
       console.error('Error deactivating category:', err);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this category? This action cannot be undone.'
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteCategory(id);
+    } catch (err) {
+      console.error('Error deleting category:', err);
     }
   };
 
@@ -379,7 +392,8 @@ function CategoriesPage(): React.ReactElement {
                     </IconButton>
                     <IconButton
                       size="small"
-                      onClick={() => handleDeactivate(category.id)}
+                      onClick={() => handleDelete(category.id)}
+                      color="error"
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -464,7 +478,7 @@ function CategoriesPage(): React.ReactElement {
                   color="error"
                   size="small"
                   fullWidth
-                  onClick={() => handleDeactivate(category.id)}
+                  onClick={() => handleDelete(category.id)}
                   sx={{ fontSize: '0.875rem' }}
                 >
                   Delete
