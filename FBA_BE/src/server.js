@@ -12,10 +12,23 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 import knex from 'knex';
-import knexfile from '../config/knexfile.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 import app from './app.js';
 import { store} from './storage/in-memory.store.js';
 import { dateToIsoString} from './utils/date.utils.js';
+import { setKnexfile } from './database/connection.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load knexfile using absolute path
+const knexfilePath = join(__dirname, '../config/knexfile.js');
+const knexfileModule = await import(knexfilePath);
+const knexfile = knexfileModule.default;
+
+// Make knexfile available to connection.js for other modules
+setKnexfile(knexfile);
 
 const PORT = parseInt(process.env.PORT || '3001', 10);
 const USE_REAL_DB = process.env.USE_REAL_DB === 'true';
