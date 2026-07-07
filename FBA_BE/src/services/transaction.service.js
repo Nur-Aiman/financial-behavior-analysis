@@ -36,13 +36,13 @@ export const transactionService = {
     }
 
     if (data.type === TransactionType.EXPENSE) {
-      const currentBalance = balanceService.getCurrentBalance();
-      if (currentBalance < data.amountCents) {
+      const effectiveBalance = balanceService.getEffectiveBalance();
+      if (effectiveBalance < data.amountCents) {
         throw new AppError({
           code: 'INSUFFICIENT_BALANCE',
           message: 'Insufficient balance for expense',
           statusCode: 400,
-          details: { available: currentBalance, required: data.amountCents },
+          details: { available: effectiveBalance, required: data.amountCents },
         });
       }
       await balanceService.deductFromBalance(data.amountCents);

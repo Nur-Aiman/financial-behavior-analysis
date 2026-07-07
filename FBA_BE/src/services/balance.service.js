@@ -21,6 +21,28 @@ export const balanceService = {
   },
 
   /**
+   * Get effective balance based on user preference
+   * If useCalculatedBalance is true: return expectedSalaryCents - totalExpenses
+   * Otherwise: return currentBalanceCents
+   */
+  getEffectiveBalance() {
+    const profile = financialProfileService.getProfile();
+    
+    if (!profile.useCalculatedBalance) {
+      return profile.currentBalanceCents;
+    }
+
+    // Calculate: expectedSalary - totalExpenses
+    const allTransactions = transactionRepository.findAll();
+    const totalExpenses = allTransactions
+      .filter(tx => tx.type === TransactionType.EXPENSE)
+      .reduce((sum, tx) => sum + tx.amountCents, 0);
+    
+    const calculatedBalance = (profile.expectedSalaryCents || 0) - totalExpenses;
+    return calculatedBalance;
+  },
+
+  /**
    * Get balance adjustment history
    */
   getAdjustmentHistory() {
