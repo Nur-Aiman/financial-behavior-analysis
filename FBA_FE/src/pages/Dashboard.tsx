@@ -64,6 +64,10 @@ function Dashboard(): React.ReactElement {
     if (!foodCategory) {
       foodCategory = categories.find(c => c.active && c.name.toLowerCase().includes('husby'));
     }
+    
+    // Find dining out category
+    const diningOutCategory = categories.find(c => c.active && c.name.toLowerCase().includes('dining'));
+    
     if (!foodCategory || !profile) return null;
 
     // Calculate days remaining until next payday
@@ -83,6 +87,15 @@ function Dashboard(): React.ReactElement {
     const availableForFood = balance.effectiveBalance - otherCategoriesRemaining;
     const totalYouCanSpendToday = daysUntilPayday > 0 ? availableForFood / daysUntilPayday : 0;
 
+    // Calculate remaining from other categories excluding both food and dining out
+    const otherCategoriesRemainingExcludingDining = categories
+      .filter(c => c.active && c.id !== foodCategory.id && c.id !== (diningOutCategory?.id))
+      .reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
+
+    // Total you can spend including dining out = (effective balance - other remaining excluding dining) / days
+    const availableForFoodIncludingDining = balance.effectiveBalance - otherCategoriesRemainingExcludingDining;
+    const totalIncludingDiningOut = daysUntilPayday > 0 ? availableForFoodIncludingDining / daysUntilPayday : 0;
+
     // Debug logging
     console.log('Food category:', foodCategory.name);
     console.log('Base Daily Food Allowance (allocated/30):', (baseDailyFoodAllowance / 100).toFixed(2));
@@ -90,10 +103,12 @@ function Dashboard(): React.ReactElement {
     console.log('Other categories remaining:', (otherCategoriesRemaining / 100).toFixed(2));
     console.log('Days until payday:', daysUntilPayday);
     console.log('Total you can spend today:', (totalYouCanSpendToday / 100).toFixed(2));
+    console.log('Total you can spend including dining out:', (totalIncludingDiningOut / 100).toFixed(2));
 
     return {
       baseAllowance: baseDailyFoodAllowance,
       totalAllowance: totalYouCanSpendToday,
+      totalIncludingDiningOut: totalIncludingDiningOut,
       hasExcess: false,
     };
   };
@@ -300,6 +315,21 @@ function Dashboard(): React.ReactElement {
                   </Typography>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: '#1976d2', mt: 1 }}>
                     {formatCurrency(dailyFoodAllowance.totalAllowance)}
+                  </Typography>
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Box sx={{ 
+                  p: 2, 
+                  backgroundColor: '#fff',
+                  borderRadius: 1,
+                  border: '3px solid #9c27b0'
+                }}>
+                  <Typography variant="caption" sx={{ color: '#666' }}>
+                    Total You Can Spend Today on Food (Including Dining Out)
+                  </Typography>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: '#9c27b0', mt: 1 }}>
+                    {formatCurrency(dailyFoodAllowance.totalIncludingDiningOut)}
                   </Typography>
                 </Box>
               </Grid>
