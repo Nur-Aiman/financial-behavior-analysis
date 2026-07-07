@@ -49,7 +49,7 @@ function TransactionsPage(): React.ReactElement {
     const matchesDescription = !searchDescription || 
       (tx.description?.toLowerCase().includes(searchDescription.toLowerCase()));
     const matchesCategory = !searchCategory || 
-      searchCategory === 'NO_CATEGORY' ? !tx.categoryId : (tx.categoryId === searchCategory);
+      (searchCategory === 'NO_CATEGORY' ? !tx.categoryId : (tx.categoryId === searchCategory));
     return matchesDescription && matchesCategory;
   });
 
