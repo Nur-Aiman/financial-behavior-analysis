@@ -49,7 +49,7 @@ function TransactionsPage(): React.ReactElement {
     const matchesDescription = !searchDescription || 
       (tx.description?.toLowerCase().includes(searchDescription.toLowerCase()));
     const matchesCategory = !searchCategory || 
-      (tx.categoryId === searchCategory);
+      searchCategory === 'NO_CATEGORY' ? !tx.categoryId : (tx.categoryId === searchCategory);
     return matchesDescription && matchesCategory;
   });
 
@@ -167,6 +167,7 @@ function TransactionsPage(): React.ReactElement {
               {category.name}
             </MenuItem>
           ))}
+          <MenuItem value="NO_CATEGORY">No Category</MenuItem>
         </Select>
       </Box>
 
