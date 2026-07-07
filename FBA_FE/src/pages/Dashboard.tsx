@@ -62,6 +62,11 @@ function Dashboard(): React.ReactElement {
     const foodCategory = categories.find(c => c.active && (c.name.toLowerCase().includes('food') || c.name.toLowerCase().includes('husby')));
     if (!foodCategory || !summary) return null;
 
+    // Debug logging
+    console.log('Food category:', foodCategory.name);
+    console.log('Allocated amount (cents):', foodCategory.allocatedAmountCents);
+    console.log('Allocated amount (RM):', (foodCategory.allocatedAmountCents / 100).toFixed(2));
+
     const baseDailyAllowance = foodCategory.allocatedAmountCents / 30;
     
     // Calculate remaining balance excluding food category
