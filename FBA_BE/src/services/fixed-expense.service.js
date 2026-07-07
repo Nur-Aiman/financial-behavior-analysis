@@ -83,13 +83,13 @@ export const fixedExpenseService = {
       });
     }
 
-    const currentBalance = balanceService.getCurrentBalance();
-    if (currentBalance < actualAmountCents) {
+    const effectiveBalance = balanceService.getEffectiveBalance();
+    if (effectiveBalance < actualAmountCents) {
       throw new AppError({
         code: 'INSUFFICIENT_BALANCE',
         message: 'Insufficient balance for payment',
         statusCode: 400,
-        details: { available: currentBalance, required: actualAmountCents },
+        details: { available: effectiveBalance, required: actualAmountCents },
       });
     }
 

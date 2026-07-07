@@ -128,6 +128,8 @@ export const balanceService = {
 
   /**
    * Deduct from balance
+   * Checks effective balance based on user preference
+   * Only updates currentBalanceCents when NOT using calculated balance
    */
   async deductFromBalance(amountCents, description) {
     if (amountCents <= 0) {
@@ -139,22 +141,29 @@ export const balanceService = {
     }
 
     const profile = financialProfileService.getProfile();
-    if (profile.currentBalanceCents < amountCents) {
+    const effectiveBalance = this.getEffectiveBalance();
+    if (effectiveBalance < amountCents) {
       throw new AppError({
         code: 'INSUFFICIENT_BALANCE',
         message: 'Insufficient balance for deduction',
         statusCode: 400,
-        details: { available: profile.currentBalanceCents, required: amountCents },
+        details: { available: effectiveBalance, required: amountCents },
       });
     }
 
-    const newBalance = profile.currentBalanceCents - amountCents;
+    // Only update currentBalanceCents if not using calculated balance
+    if (!profile.useCalculatedBalance) {
+      const newBalance = profile.currentBalanceCents - amountCents;
+      await financialProfileRepository.update(profile.id, {
+        currentBalanceCents: newBalance,
+      });
+      return { previous: profile.currentBalanceCents, new: newBalance };
+    }
 
-    await financialProfileRepository.update(profile.id, {
-      currentBalanceCents: newBalance,
-    });
-
-    return { previous: profile.currentBalanceCents, new: newBalance };
+    // When using calculated balance, don't update currentBalanceCents
+    // The balance is calculated from expectedSalary - totalExpenses
+    // The transaction itself updates totalExpenses, so no manual adjustment needed
+    return { previous: effectiveBalance, new: effectiveBalance - amountCents };
   },
 
   /**

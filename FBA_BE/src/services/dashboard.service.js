@@ -30,7 +30,12 @@ export const dashboardService = {
     const nextPayday = new Date(profile.nextPayday);
     const remainingDays = Math.ceil((nextPayday - today) / (1000 * 60 * 60 * 24));
 
-    const dailySpendingPool = profile.currentBalanceCents - reservedFixedExpensesCents - protectedUsageAllocationCents;
+    // Use effective balance for calculations
+    const effectiveBalance = profile.useCalculatedBalance 
+      ? (profile.expectedSalaryCents || 0) - totalSpent
+      : profile.currentBalanceCents;
+    
+    const dailySpendingPool = effectiveBalance - reservedFixedExpensesCents - protectedUsageAllocationCents;
     const safelyAvailableBalance = Math.max(0, dailySpendingPool);
     const recommendedSpendingToday = Math.max(0, Math.floor(safelyAvailableBalance / Math.max(remainingDays, 1)));
 
@@ -46,6 +51,7 @@ export const dashboardService = {
 
     return {
       currentBalanceCents: profile.currentBalanceCents,
+      effectiveBalanceCents: effectiveBalance,
       expectedSalaryCents: profile.expectedSalaryCents,
       nextPayday: profile.nextPayday,
       totalCategories: categories.filter(c => c.active).length,
@@ -54,7 +60,7 @@ export const dashboardService = {
       protectedUsageAllocationCents,
       safelyAvailableBalanceCents: safelyAvailableBalance,
       recommendedSpendingTodayCents: recommendedSpendingToday,
-      projectedBalanceOnPaydayCents: profile.currentBalanceCents + profile.expectedSalaryCents,
+      projectedBalanceOnPaydayCents: effectiveBalance + profile.expectedSalaryCents,
       remainingDays,
       status,
       warningCount: 0,

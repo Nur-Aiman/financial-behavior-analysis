@@ -116,12 +116,13 @@ export const transactionService = {
       const difference = data.amountCents - existing.amountCents;
       if (difference > 0) {
         // Amount increased, need to deduct more from balance
-        const currentBalance = balanceService.getCurrentBalance();
-        if (currentBalance < difference) {
+        const effectiveBalance = balanceService.getEffectiveBalance();
+        if (effectiveBalance < difference) {
           throw new AppError({
             code: 'INSUFFICIENT_BALANCE',
             message: 'Insufficient balance for transaction adjustment',
             statusCode: 400,
+            details: { available: effectiveBalance, required: difference },
           });
         }
         await balanceService.deductFromBalance(difference);
