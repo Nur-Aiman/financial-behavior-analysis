@@ -38,19 +38,24 @@ function TransactionsPage(): React.ReactElement {
   const { categories } = useCategories();
   const [openDialog, setOpenDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [searchDescription, setSearchDescription] = useState('');
-  const [searchCategory, setSearchCategory] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState<Partial<Transaction>>({
     type: 'EXPENSE' as any,
   });
 
-  // Filter transactions based on search criteria
+  // Filter transactions based on search criteria (description or category)
   const filteredTransactions = transactions.filter(tx => {
-    const matchesDescription = !searchDescription || 
-      (tx.description?.toLowerCase().includes(searchDescription.toLowerCase()));
-    const matchesCategory = !searchCategory || 
-      (searchCategory === 'NO_CATEGORY' ? !tx.categoryId : (tx.categoryId === searchCategory));
-    return matchesDescription && matchesCategory;
+    if (!searchTerm.trim()) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    const categoryName = tx.categoryId 
+      ? categories.find(c => c.id === tx.categoryId)?.name?.toLowerCase() || ''
+      : '';
+    
+    return (
+      (tx.description?.toLowerCase().includes(searchLower)) ||
+      (categoryName.includes(searchLower))
+    );
   });
 
   // Group transactions by date and sort
@@ -143,32 +148,16 @@ function TransactionsPage(): React.ReactElement {
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-      {/* Search Filters */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexDirection: { xs: 'column', sm: 'row' } }}>
+      {/* Search Filter */}
+      <Box sx={{ mb: 3 }}>
         <TextField
-          placeholder="Search description..."
-          value={searchDescription}
-          onChange={(e) => setSearchDescription(e.target.value)}
+          fullWidth
+          placeholder="Search by description or category..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
           variant="outlined"
           size="small"
-          sx={{ flex: 1 }}
         />
-        <Select
-          value={searchCategory}
-          onChange={(e) => setSearchCategory(e.target.value)}
-          displayEmpty
-          variant="outlined"
-          size="small"
-          sx={{ flex: 1, minWidth: 150 }}
-        >
-          <MenuItem value="">All Categories</MenuItem>
-          {categories.map(category => (
-            <MenuItem key={category.id} value={category.id}>
-              {category.name}
-            </MenuItem>
-          ))}
-          <MenuItem value="NO_CATEGORY">No Category</MenuItem>
-        </Select>
       </Box>
 
       {/* Desktop Table View */}
