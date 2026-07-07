@@ -59,7 +59,11 @@ function Dashboard(): React.ReactElement {
 
   // Calculate daily food spending allowance
   const calculateDailyFoodAllowance = () => {
-    const foodCategory = categories.find(c => c.active && (c.name.toLowerCase().includes('food') || c.name.toLowerCase().includes('husby')));
+    // Prioritize categories with 'food' in the name, fallback to 'husby'
+    let foodCategory = categories.find(c => c.active && c.name.toLowerCase().includes('food'));
+    if (!foodCategory) {
+      foodCategory = categories.find(c => c.active && c.name.toLowerCase().includes('husby'));
+    }
     if (!foodCategory || !summary) return null;
 
     // Debug logging
