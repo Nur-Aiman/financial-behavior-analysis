@@ -38,8 +38,39 @@ function TransactionsPage(): React.ReactElement {
   const { categories } = useCategories();
   const [openDialog, setOpenDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchDescription, setSearchDescription] = useState('');
+  const [searchCategory, setSearchCategory] = useState('');
   const [formData, setFormData] = useState<Partial<Transaction>>({
     type: 'EXPENSE' as any,
+  });
+
+  // Filter transactions based on search criteria
+  const filteredTransactions = transactions.filter(tx => {
+    const matchesDescription = !searchDescription || 
+      (tx.description?.toLowerCase().includes(searchDescription.toLowerCase()));
+    const matchesCategory = !searchCategory || 
+      (tx.categoryId === searchCategory);
+    return matchesDescription && matchesCategory;
+  });
+
+  // Group transactions by date and sort
+  const groupedTransactions = filteredTransactions.reduce((groups: Record<string, Transaction[]>, tx) => {
+    const date = new Date(tx.transactionDate).toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(tx);
+    return groups;
+  }, {});
+
+  // Sort dates in descending order (newest first)
+  const sortedDates = Object.keys(groupedTransactions).sort((a, b) => {
+    return new Date(b).getTime() - new Date(a).getTime();
   });
 
   const handleOpenDialog = (transaction?: any) => {
@@ -112,128 +143,195 @@ function TransactionsPage(): React.ReactElement {
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
+      {/* Search Filters */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexDirection: { xs: 'column', sm: 'row' } }}>
+        <TextField
+          placeholder="Search description..."
+          value={searchDescription}
+          onChange={(e) => setSearchDescription(e.target.value)}
+          variant="outlined"
+          size="small"
+          sx={{ flex: 1 }}
+        />
+        <Select
+          value={searchCategory}
+          onChange={(e) => setSearchCategory(e.target.value)}
+          displayEmpty
+          variant="outlined"
+          size="small"
+          sx={{ flex: 1, minWidth: 150 }}
+        >
+          <MenuItem value="">All Categories</MenuItem>
+          {categories.map(category => (
+            <MenuItem key={category.id} value={category.id}>
+              {category.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+
       {/* Desktop Table View */}
       <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-        <TableContainer component={Card}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                <TableCell>Date</TableCell>
-                <TableCell>Category</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell align="right">Amount</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {transactions.map(transaction => (
-                <TableRow key={transaction.id}>
-                  <TableCell>{formatDate(transaction.transactionDate)}</TableCell>
-                  <TableCell>
-                    {transaction.categoryId
-                      ? categories.find(c => c.id === transaction.categoryId)?.name || '—'
-                      : '—'}
-                  </TableCell>
-                  <TableCell>{transaction.description || '—'}</TableCell>
-                  <TableCell>
+        {sortedDates.length === 0 ? (
+          <Typography variant="body1" sx={{ textAlign: 'center', color: '#999', py: 4 }}>
+            No transactions found
+          </Typography>
+        ) : (
+          sortedDates.map(date => (
+            <Box key={date} sx={{ mb: 3 }}>
+              <Typography 
+                variant="subtitle2" 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#666', 
+                  mb: 1.5,
+                  fontSize: '0.95rem',
+                  borderBottom: '1px solid #e0e0e0',
+                  pb: 1,
+                }}
+              >
+                {date}
+              </Typography>
+              <TableContainer component={Card}>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                      <TableCell>Category</TableCell>
+                      <TableCell>Description</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell align="right">Amount</TableCell>
+                      <TableCell align="center">Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {groupedTransactions[date].map(transaction => (
+                      <TableRow key={transaction.id}>
+                        <TableCell>
+                          {transaction.categoryId
+                            ? categories.find(c => c.id === transaction.categoryId)?.name || '—'
+                            : '—'}
+                        </TableCell>
+                        <TableCell>{transaction.description || '—'}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={transaction.type}
+                            color={transaction.type === 'EXPENSE' ? 'error' : transaction.type === 'INCOME' ? 'success' : 'default'}
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          {formatCurrency(transaction.amountCents)}
+                        </TableCell>
+                        <TableCell align="center">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleOpenDialog(transaction)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDelete(transaction.id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          ))
+        )}
+      </Box>
+
+      {/* Mobile Card View */}
+      <Box sx={{ display: { xs: 'grid', sm: 'none' }, gridTemplateColumns: '1fr', gap: 2 }}>
+        {sortedDates.length === 0 ? (
+          <Typography variant="body1" sx={{ textAlign: 'center', color: '#999', py: 4 }}>
+            No transactions found
+          </Typography>
+        ) : (
+          sortedDates.map(date => (
+            <Box key={date}>
+              <Typography 
+                variant="subtitle2" 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#666', 
+                  mb: 1.5,
+                  fontSize: '0.9rem',
+                }}
+              >
+                {date}
+              </Typography>
+              {groupedTransactions[date].map(transaction => (
+                <Card
+                  key={transaction.id}
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 1,
+                    mb: 2,
+                  }}
+                >
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1rem' }}>
+                        {transaction.categoryId
+                          ? categories.find(c => c.id === transaction.categoryId)?.name || '—'
+                          : '—'}
+                      </Typography>
+                    </Box>
                     <Chip
                       label={transaction.type}
                       color={transaction.type === 'EXPENSE' ? 'error' : transaction.type === 'INCOME' ? 'success' : 'default'}
                       size="small"
                     />
-                  </TableCell>
-                  <TableCell align="right">
-                    {formatCurrency(transaction.amountCents)}
-                  </TableCell>
-                  <TableCell align="center">
-                    <IconButton
-                      size="small"
-                      onClick={() => handleOpenDialog(transaction)}
+                  </Box>
+
+                  {transaction.description && (
+                    <Typography variant="body2" sx={{ color: '#666', fontSize: '0.9rem' }}>
+                      {transaction.description}
+                    </Typography>
+                  )}
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+                    <Typography 
+                      variant="body1" 
+                      sx={{ 
+                        fontWeight: 600, 
+                        fontSize: '1.1rem',
+                        color: transaction.type === 'EXPENSE' ? '#d32f2f' : '#388e3c'
+                      }}
                     >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDelete(transaction.id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
+                      {transaction.type === 'EXPENSE' ? '-' : '+'}{formatCurrency(transaction.amountCents)}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleOpenDialog(transaction)}
+                        sx={{ p: '4px' }}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(transaction.id)}
+                        sx={{ p: '4px' }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                </Card>
               ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-
-      {/* Mobile Card View */}
-      <Box sx={{ display: { xs: 'grid', sm: 'none' }, gridTemplateColumns: '1fr', gap: 2 }}>
-        {transactions.map(transaction => (
-          <Card
-            key={transaction.id}
-            sx={{
-              p: 2,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1,
-            }}
-          >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="body2" sx={{ color: '#666', fontSize: '0.85rem' }}>
-                  {formatDate(transaction.transactionDate)}
-                </Typography>
-                <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1rem' }}>
-                  {transaction.categoryId
-                    ? categories.find(c => c.id === transaction.categoryId)?.name || '—'
-                    : '—'}
-                </Typography>
-              </Box>
-              <Chip
-                label={transaction.type}
-                color={transaction.type === 'EXPENSE' ? 'error' : transaction.type === 'INCOME' ? 'success' : 'default'}
-                size="small"
-              />
             </Box>
-
-            {transaction.description && (
-              <Typography variant="body2" sx={{ color: '#666', fontSize: '0.9rem' }}>
-                {transaction.description}
-              </Typography>
-            )}
-
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  fontWeight: 600, 
-                  fontSize: '1.1rem',
-                  color: transaction.type === 'EXPENSE' ? '#d32f2f' : '#388e3c'
-                }}
-              >
-                {transaction.type === 'EXPENSE' ? '-' : '+'}{formatCurrency(transaction.amountCents)}
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 0.5 }}>
-                <IconButton
-                  size="small"
-                  onClick={() => handleOpenDialog(transaction)}
-                  sx={{ p: '4px' }}
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={() => handleDelete(transaction.id)}
-                  sx={{ p: '4px' }}
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            </Box>
-          </Card>
-        ))}
+          ))
+        )}
       </Box>
 
       {/* Dialog for adding/editing transactions */}

@@ -329,7 +329,12 @@ function CategoriesPage(): React.ReactElement {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
-        <Typography variant="h4">Spending Categories</Typography>
+        <Box>
+          <Typography variant="h4">Spending Categories</Typography>
+          <Typography variant="caption" sx={{ color: '#999', display: 'block', mt: 0.5 }}>
+            Displaying {displayCategories.length} of {categories.length} categories
+          </Typography>
+        </Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}

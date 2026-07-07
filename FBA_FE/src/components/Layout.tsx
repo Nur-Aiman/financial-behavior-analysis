@@ -2,7 +2,7 @@
  * Layout Component with Navigation
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   AppBar,
@@ -26,7 +26,7 @@ import {
   Receipt as TransactionIcon,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
-import { useProfile } from '../hooks';
+import { useProfile, useTransactions } from '../hooks';
 
 const navItems = [
   { label: 'Dashboard', path: '/', icon: DashboardIcon },
@@ -39,6 +39,21 @@ function Layout(): React.ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
   const { profile } = useProfile();
+  const { transactions } = useTransactions();
+
+  // Calculate effective balance
+  const effectiveBalance = useMemo(() => {
+    if (!profile) return 0;
+    
+    if (profile.useCalculatedBalance) {
+      const totalExpenses = transactions
+        ?.filter(tx => tx.type === 'EXPENSE')
+        .reduce((sum, tx) => sum + tx.amountCents, 0) || 0;
+      return (profile.expectedSalaryCents || 0) - totalExpenses;
+    }
+    
+    return profile.currentBalanceCents || 0;
+  }, [profile, transactions]);
 
   // Get current tab value based on location
   const getCurrentTabValue = () => {
@@ -95,16 +110,29 @@ function Layout(): React.ReactElement {
             Financial Behavior Analysis
           </Typography>
           {profile && (
-            <Typography 
-              variant="body2"
-              sx={{
-                fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                ml: 1,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              RM {(profile.currentBalanceCents / 100).toFixed(2)}
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography 
+                  variant="caption"
+                  sx={{
+                    fontSize: { xs: '0.65rem', sm: '0.75rem' },
+                    display: 'block',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                  }}
+                >
+                  {profile.useCalculatedBalance ? 'Calculated Balance' : 'Current Balance'}
+                </Typography>
+                <Typography 
+                  variant="body2"
+                  sx={{
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
+                    fontWeight: 600,
+                  }}
+                >
+                  RM {(effectiveBalance / 100).toFixed(2)}
+                </Typography>
+              </Box>
+            </Box>
           )}
         </Toolbar>
       </AppBar>
