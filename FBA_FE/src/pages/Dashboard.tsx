@@ -66,36 +66,35 @@ function Dashboard(): React.ReactElement {
     }
     if (!foodCategory || !summary) return null;
 
+    // Calculate days remaining until the 24th of the current month
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const cutoffDate = new Date(currentYear, currentMonth, 24);
+    
+    // If today is past the 24th, the cutoff is the 24th of next month
+    if (today.getDate() > 24) {
+      cutoffDate.setMonth(cutoffDate.getMonth() + 1);
+    }
+    
+    const daysRemaining = Math.ceil((cutoffDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    
+    // Get remaining balance in the food category
+    const remaining = (foodCategory as any).remaining || 0;
+    
     // Debug logging
     console.log('Food category:', foodCategory.name);
-    console.log('Allocated amount (cents):', foodCategory.allocatedAmountCents);
-    console.log('Allocated amount (RM):', (foodCategory.allocatedAmountCents / 100).toFixed(2));
+    console.log('Remaining amount (cents):', remaining);
+    console.log('Remaining amount (RM):', (remaining / 100).toFixed(2));
+    console.log('Days until 24th:', daysRemaining);
 
-    const baseDailyAllowance = foodCategory.allocatedAmountCents / 30;
-    
-    // Calculate remaining balance excluding food category
-    const otherCategoriesRemaining = categories
-      .filter(c => c.active && c.id !== foodCategory.id)
-      .reduce((sum, c) => sum + (((c as any).remaining || 0) || 0), 0);
-    
-    const availableAfterOthers = balance.effectiveBalance - otherCategoriesRemaining;
-    
-    // If available balance after other categories is > RM600, can spend more
-    if (availableAfterOthers > 60000) {
-      const excessAmount = availableAfterOthers - 60000;
-      const additionalDailyAllowance = excessAmount / 30;
-      return {
-        baseAllowance: baseDailyAllowance,
-        additionalAllowance: additionalDailyAllowance,
-        totalAllowance: baseDailyAllowance + additionalDailyAllowance,
-        hasExcess: true,
-      };
-    }
+    // Calculate daily allowance: remaining / days until 24th
+    const dailyAllowance = daysRemaining > 0 ? remaining / daysRemaining : 0;
 
     return {
-      baseAllowance: baseDailyAllowance,
+      baseAllowance: dailyAllowance,
       additionalAllowance: 0,
-      totalAllowance: baseDailyAllowance,
+      totalAllowance: dailyAllowance,
       hasExcess: false,
     };
   };
