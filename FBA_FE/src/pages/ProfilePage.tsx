@@ -211,20 +211,20 @@ function ProfilePage(): React.ReactElement {
       {profile && (
         <>
           {/* Balance Comparison */}
-          <Card sx={{ mt: 3, backgroundColor: '#f3e5f5' }}>
+          <Card sx={{ mt: 3, backgroundColor: 'action.hover' }}>
             <CardContent>
-              <Typography variant="h6" sx={{ mb: 2, color: '#6a1b9a' }}>
+              <Typography variant="h6" sx={{ mb: 2, color: 'secondary.main' }}>
                 💰 Balance Overview
               </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ 
                     p: 2, 
-                    backgroundColor: '#fff',
+                    backgroundColor: 'background.paper',
                     borderRadius: 1,
                     border: formData.useCalculatedBalance ? '1px solid #ccc' : '2px solid #2196f3'
                   }}>
-                    <Typography variant="caption" sx={{ color: '#666' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                       Current Balance (User Input)
                     </Typography>
                     <Typography variant="h5" sx={{ fontWeight: 600, color: formData.useCalculatedBalance ? '#999' : '#2196f3', mt: 0.5 }}>
@@ -236,11 +236,11 @@ function ProfilePage(): React.ReactElement {
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ 
                     p: 2, 
-                    backgroundColor: '#fff',
+                    backgroundColor: 'background.paper',
                     borderRadius: 1,
                     border: formData.useCalculatedBalance ? '2px solid #4caf50' : '1px solid #ccc'
                   }}>
-                    <Typography variant="caption" sx={{ color: '#666' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                       Calculated Balance (Salary - Total Spent)
                     </Typography>
                     <Typography 
