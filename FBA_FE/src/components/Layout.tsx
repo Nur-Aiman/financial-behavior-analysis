@@ -2,7 +2,7 @@
  * Layout Component with Navigation
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   AppBar,
@@ -18,12 +18,17 @@ import {
   Container,
   BottomNavigation,
   BottomNavigationAction,
+  IconButton,
+  Tooltip,
+  useTheme,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   Person as PersonIcon,
   Category as CategoryIcon,
   Receipt as TransactionIcon,
+  LightMode as LightModeIcon,
+  DarkMode as DarkModeIcon,
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import { useProfile, useTransactions } from '../hooks';
@@ -35,7 +40,8 @@ const navItems = [
   { label: 'Transactions', path: '/transactions', icon: TransactionIcon },
 ];
 
-function Layout(): React.ReactElement {
+function Layout({ mode, onToggleTheme }: { mode: 'light' | 'dark'; onToggleTheme: () => void }): React.ReactElement {
+  const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const { profile } = useProfile();
@@ -62,9 +68,9 @@ function Layout(): React.ReactElement {
   };
 
   const drawer = (
-    <Box sx={{ width: 250 }}>
+    <Box sx={{ width: 250, p: 1.5 }}>
       <Toolbar>
-        <Typography variant="h6">FBA</Typography>
+        <Typography variant="h6" sx={{ fontWeight: 750, letterSpacing: '-0.03em' }}>Overview</Typography>
       </Toolbar>
       <Divider />
       <List>
@@ -75,10 +81,13 @@ function Layout(): React.ReactElement {
             to={item.path}
             selected={location.pathname === item.path}
             sx={{
+              borderRadius: 3,
+              mb: 0.5,
+              minHeight: 48,
               '&.Mui-selected': {
-                backgroundColor: 'primary.light',
+                backgroundColor: 'action.selected',
                 '&:hover': {
-                  backgroundColor: 'primary.light',
+                  backgroundColor: 'action.hover',
                 },
               },
             }}
@@ -96,12 +105,14 @@ function Layout(): React.ReactElement {
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
       <AppBar position="fixed" sx={{ zIndex: 1300 }}>
-        <Toolbar sx={{ '@media (max-width:600px)': { minHeight: 56 } }}>
+        <Toolbar sx={{ minHeight: { xs: 66, sm: 74 }, gap: 1.5, px: { xs: 2, sm: 3 } }}>
           <Typography 
             variant="h6" 
             sx={{ 
               flexGrow: 1,
-              fontSize: { xs: '1rem', sm: '1.25rem' },
+              fontSize: { xs: '0.92rem', sm: '1.15rem' },
+              fontWeight: 750,
+              letterSpacing: '-0.035em',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -109,6 +120,11 @@ function Layout(): React.ReactElement {
           >
             Financial Behavior Analysis (Aiman)
           </Typography>
+          <Tooltip title={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}>
+            <IconButton aria-label={mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} onClick={onToggleTheme} color="inherit" sx={{ bgcolor: 'action.hover', flexShrink: 0 }}>
+              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
+          </Tooltip>
           {profile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Box sx={{ textAlign: 'right' }}>
@@ -117,7 +133,7 @@ function Layout(): React.ReactElement {
                   sx={{
                     fontSize: { xs: '0.65rem', sm: '0.75rem' },
                     display: 'block',
-                    color: 'rgba(255, 255, 255, 0.7)',
+                    color: 'text.secondary',
                   }}
                 >
                   {profile.useCalculatedBalance ? 'Calculated Balance' : 'Current Balance'}
@@ -143,13 +159,14 @@ function Layout(): React.ReactElement {
           display: { xs: 'none', sm: 'block' },
           width: 250,
           flexShrink: 0,
-          backgroundColor: '#f5f5f5',
-          borderRight: '1px solid #e0e0e0',
+          backgroundColor: 'transparent',
+          borderRight: '1px solid',
+          borderColor: 'divider',
           position: 'fixed',
           left: 0,
-          top: 64,
+          top: 74,
           bottom: 0,
-          height: 'calc(100vh - 64px)',
+          height: 'calc(100vh - 74px)',
           overflowY: 'auto',
         }}
       >
@@ -162,11 +179,12 @@ function Layout(): React.ReactElement {
         sx={{
           flexGrow: 1,
           p: { xs: 1.5, sm: 3 },
-          mt: 8,
-          mb: { xs: 7, sm: 0 },
-          backgroundColor: '#f5f5f5',
+          mt: { xs: '66px', sm: '74px' },
+          mb: { xs: '90px', sm: 0 },
+          backgroundColor: 'transparent',
           overflowY: 'auto',
           ml: { sm: '250px' },
+          minWidth: 0,
           '@media (max-width:600px)': {
             maxWidth: '100%',
           }
@@ -195,8 +213,13 @@ function Layout(): React.ReactElement {
           left: 0,
           right: 0,
           zIndex: 1200,
-          borderTop: '1px solid #e0e0e0',
-          backgroundColor: '#fff',
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          backgroundColor: theme.palette.mode === 'dark' ? 'rgba(28,39,57,.94)' : 'rgba(255,255,255,.9)',
+          backdropFilter: 'blur(18px)',
+          WebkitBackdropFilter: 'blur(18px)',
+          minHeight: 70,
+          pb: 'env(safe-area-inset-bottom)',
         }}
       >
         {navItems.map((item) => (
@@ -207,6 +230,7 @@ function Layout(): React.ReactElement {
             sx={{
               fontSize: { xs: '0.625rem', sm: '0.75rem' },
               minWidth: 'auto',
+              '& .MuiBottomNavigationAction-label': { fontSize: '0.7rem', '&.Mui-selected': { fontSize: '0.72rem' } },
               '&.Mui-selected': {
                 color: 'primary.main',
               },

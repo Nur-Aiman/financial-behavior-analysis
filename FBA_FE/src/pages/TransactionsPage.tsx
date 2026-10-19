@@ -163,7 +163,7 @@ function TransactionsPage(): React.ReactElement {
       {/* Desktop Table View */}
       <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
         {sortedDates.length === 0 ? (
-          <Typography variant="body1" sx={{ textAlign: 'center', color: '#999', py: 4 }}>
+          <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', py: 4 }}>
             No transactions found
           </Typography>
         ) : (
@@ -173,10 +173,10 @@ function TransactionsPage(): React.ReactElement {
                 variant="subtitle2" 
                 sx={{ 
                   fontWeight: 600, 
-                  color: '#666', 
+                  color: 'text.secondary', 
                   mb: 1.5,
                   fontSize: '0.95rem',
-                  borderBottom: '1px solid #e0e0e0',
+                  borderBottom: '1px solid', borderColor: 'divider',
                   pb: 1,
                 }}
               >
@@ -185,7 +185,7 @@ function TransactionsPage(): React.ReactElement {
               <TableContainer component={Card}>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                    <TableRow sx={{ backgroundColor: 'action.hover' }}>
                       <TableCell>Category</TableCell>
                       <TableCell>Description</TableCell>
                       <TableCell>Type</TableCell>
@@ -239,7 +239,7 @@ function TransactionsPage(): React.ReactElement {
       {/* Mobile Card View */}
       <Box sx={{ display: { xs: 'grid', sm: 'none' }, gridTemplateColumns: '1fr', gap: 2 }}>
         {sortedDates.length === 0 ? (
-          <Typography variant="body1" sx={{ textAlign: 'center', color: '#999', py: 4 }}>
+          <Typography variant="body1" sx={{ textAlign: 'center', color: 'text.secondary', py: 4 }}>
             No transactions found
           </Typography>
         ) : (
@@ -249,7 +249,7 @@ function TransactionsPage(): React.ReactElement {
                 variant="subtitle2" 
                 sx={{ 
                   fontWeight: 600, 
-                  color: '#666', 
+                  color: 'text.secondary', 
                   mb: 1.5,
                   fontSize: '0.9rem',
                 }}
@@ -283,7 +283,7 @@ function TransactionsPage(): React.ReactElement {
                   </Box>
 
                   {transaction.description && (
-                    <Typography variant="body2" sx={{ color: '#666', fontSize: '0.9rem' }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
                       {transaction.description}
                     </Typography>
                   )}

@@ -331,7 +331,7 @@ function CategoriesPage(): React.ReactElement {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
         <Box>
           <Typography variant="h4">Spending Categories</Typography>
-          <Typography variant="caption" sx={{ color: '#999', display: 'block', mt: 0.5 }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', mt: 0.5 }}>
             Displaying {displayCategories.length} of {categories.length} categories
           </Typography>
         </Box>
@@ -350,7 +350,7 @@ function CategoriesPage(): React.ReactElement {
         <Grid item xs={12} sm={6} md={2.4}>
           <Card sx={{ backgroundColor: '#e3f2fd' }}>
             <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#666' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Total Allocated
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 600, mt: 1 }}>
@@ -362,7 +362,7 @@ function CategoriesPage(): React.ReactElement {
         <Grid item xs={12} sm={6} md={2.4}>
           <Card sx={{ backgroundColor: '#ffebee' }}>
             <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#666' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Total Spent
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#d32f2f', mt: 1 }}>
@@ -374,7 +374,7 @@ function CategoriesPage(): React.ReactElement {
         <Grid item xs={12} sm={6} md={2.4}>
           <Card sx={{ backgroundColor: '#e8f5e9' }}>
             <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#666' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Total Remaining
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 600, color: '#2e7d32', mt: 1 }}>
@@ -389,7 +389,7 @@ function CategoriesPage(): React.ReactElement {
             border: '2px solid ' + (profile?.useCalculatedBalance ? '#2e7d32' : '#1976d2')
           }}>
             <CardContent sx={{ p: 2 }}>
-              <Typography variant="caption" sx={{ color: '#666' }}>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                 Active Balance
               </Typography>
               <Typography 
@@ -476,7 +476,7 @@ function CategoriesPage(): React.ReactElement {
         <TableContainer component={Card}>
           <Table>
             <TableHead>
-              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableRow sx={{ backgroundColor: 'action.hover' }}>
                 <TableCell sx={{ width: 40 }}></TableCell>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
@@ -509,7 +509,7 @@ function CategoriesPage(): React.ReactElement {
                     opacity: draggedId === category.id ? 0.6 : 1,
                   }}
                 >
-                  <TableCell sx={{ width: 40, cursor: 'grab', color: '#999' }}>
+                  <TableCell sx={{ width: 40, cursor: 'grab', color: 'text.secondary' }}>
                     <DragIcon sx={{ fontSize: 20 }} />
                   </TableCell>
                   <TableCell>{category.name}</TableCell>
@@ -580,7 +580,7 @@ function CategoriesPage(): React.ReactElement {
                   <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '1rem' }}>
                     {category.name}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: '#666' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                     {category.type}
                   </Typography>
                 </Box>
@@ -589,7 +589,7 @@ function CategoriesPage(): React.ReactElement {
 
               <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1 }}>
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#999', display: 'block' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
                     Allocated
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -597,7 +597,7 @@ function CategoriesPage(): React.ReactElement {
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#999', display: 'block' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
                     Spent
                   </Typography>
                   <Typography 
@@ -611,7 +611,7 @@ function CategoriesPage(): React.ReactElement {
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="caption" sx={{ color: '#999', display: 'block' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
                     Remaining
                   </Typography>
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
