@@ -274,11 +274,11 @@ function Dashboard(): React.ReactElement {
               <Grid item xs={12} sm={6}>
                 <Box sx={{ 
                   p: 2, 
-                  backgroundColor: '#fff',
+                  backgroundColor: 'background.paper',
                   borderRadius: 1,
                   border: '2px solid #2196f3'
                 }}>
-                  <Typography variant="caption" sx={{ color: '#666' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                     Base Daily Food Allowance
                   </Typography>
                   <Typography variant="h5" sx={{ fontWeight: 600, color: '#1976d2' }}>
@@ -290,11 +290,11 @@ function Dashboard(): React.ReactElement {
                 <Grid item xs={12} sm={6}>
                   <Box sx={{ 
                     p: 2, 
-                    backgroundColor: '#fff',
+                    backgroundColor: 'background.paper',
                     borderRadius: 1,
                     border: '2px solid #4caf50'
                   }}>
-                    <Typography variant="caption" sx={{ color: '#666' }}>
+                    <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                       Additional (Excess Balance)
                     </Typography>
                     <Typography variant="h5" sx={{ fontWeight: 600, color: '#4caf50' }}>
@@ -306,11 +306,11 @@ function Dashboard(): React.ReactElement {
               <Grid item xs={12}>
                 <Box sx={{ 
                   p: 2, 
-                  backgroundColor: '#fff',
+                  backgroundColor: 'background.paper',
                   borderRadius: 1,
                   border: '3px solid #1976d2'
                 }}>
-                  <Typography variant="caption" sx={{ color: '#666' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                     Total You Can Spend Today on Food
                   </Typography>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: '#1976d2', mt: 1 }}>
@@ -321,11 +321,11 @@ function Dashboard(): React.ReactElement {
               <Grid item xs={12}>
                 <Box sx={{ 
                   p: 2, 
-                  backgroundColor: '#fff',
+                  backgroundColor: 'background.paper',
                   borderRadius: 1,
                   border: '3px solid #9c27b0'
                 }}>
-                  <Typography variant="caption" sx={{ color: '#666' }}>
+                  <Typography variant="caption" sx={{ color: 'text.secondary' }}>
                     Total You Can Spend Today on Food (Including Dining Out)
                   </Typography>
                   <Typography variant="h4" sx={{ fontWeight: 700, color: '#9c27b0', mt: 1 }}>
