@@ -107,7 +107,7 @@ function Layout(): React.ReactElement {
               whiteSpace: 'nowrap',
             }}
           >
-            Financial Behavior Analysis
+            Financial Behavior Analysis (Aiman)
           </Typography>
           {profile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
